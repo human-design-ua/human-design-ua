@@ -183,11 +183,6 @@ var HD_TRANSLATIONS = {
     'quiz.s8.opt2':         'Чула, знаю свій тип',
     'quiz.s8.opt3':         'Вже практикую — хочу глибше',
     'quiz.s8.error':        'Обери один варіант',
-    'quiz.s9.question':     'Як ти дізналася про нас?',
-    'quiz.s9.opt1':         'Instagram / Facebook реклама',
-    'quiz.s9.opt2':         'Порадила подруга',
-    'quiz.s9.opt3':         'Гугл пошук',
-    'quiz.s9.opt4':         'Інше',
 
     // Quiz — pricing
     'quiz.pricing.label':       'Майже готово!',
@@ -383,11 +378,6 @@ var HD_TRANSLATIONS = {
     'quiz.s8.opt2':         'Слышала, знаю свой тип',
     'quiz.s8.opt3':         'Уже практикую — хочу глубже',
     'quiz.s8.error':        'Выбери один вариант',
-    'quiz.s9.question':     'Как ты узнала о нас?',
-    'quiz.s9.opt1':         'Реклама в Instagram / Facebook',
-    'quiz.s9.opt2':         'Посоветовала подруга',
-    'quiz.s9.opt3':         'Поиск в Google',
-    'quiz.s9.opt4':         'Другое',
 
     'quiz.pricing.label':       'Почти готово!',
     'quiz.pricing.question':    'Выбери свой уровень расшифровки',
@@ -582,11 +572,6 @@ var HD_TRANSLATIONS = {
     'quiz.s8.opt2':         'I\'ve heard of it, I know my type',
     'quiz.s8.opt3':         'Already practicing — want to go deeper',
     'quiz.s8.error':        'Please select one option',
-    'quiz.s9.question':     'How did you hear about us?',
-    'quiz.s9.opt1':         'Instagram / Facebook ad',
-    'quiz.s9.opt2':         'A friend recommended it',
-    'quiz.s9.opt3':         'Google search',
-    'quiz.s9.opt4':         'Other',
 
     'quiz.pricing.label':       'Almost there!',
     'quiz.pricing.question':    'Choose your reading level',
