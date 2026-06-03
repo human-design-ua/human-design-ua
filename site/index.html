@@ -36,7 +36,7 @@
       <button class="theme-toggle" id="themeToggle" onclick="theme.toggle()" aria-label="Toggle theme">
         <span class="theme-icon">☀</span>
       </button>
-      <a href="quiz.html" class="btn btn-outline btn-sm" data-i18n="nav.cta">Пройти квіз →</a>
+      <a href="quiz.html" class="btn btn-outline btn-sm" data-i18n="nav.cta">Дізнатися свій дизайн →</a>
     </div>
   </nav>
 </header>
@@ -49,6 +49,7 @@
       <h1 class="hero-title" data-i18n-html="hero.title">
         Ти не зламана —<br><em>ти просто не знала<br>свій дизайн</em>
       </h1>
+      <p class="hero-tagline" data-i18n="hero.tagline">Дизайн Людини — шлях до своєї істини</p>
       <p class="hero-subtitle" data-i18n="hero.subtitle">
         Дізнайся свій тип, авторитет та профіль. Розшифровка на основі твоєї дати, часу та місця народження — готова за 10 хвилин.
       </p>
@@ -80,81 +81,76 @@
     <div class="hero-visual">
       <svg class="bodygraph" viewBox="0 0 400 560" xmlns="http://www.w3.org/2000/svg" aria-label="Бодиграф Дизайну Людини">
         <defs>
-          <filter id="glow">
-            <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
-            <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
-          </filter>
-          <radialGradient id="centerGradDefined" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stop-color="#D4A830" stop-opacity="0.3"/>
-            <stop offset="100%" stop-color="#D4A830" stop-opacity="0.05"/>
-          </radialGradient>
-          <radialGradient id="centerGradUndefined" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stop-color="#9B6EE0" stop-opacity="0.2"/>
-            <stop offset="100%" stop-color="#9B6EE0" stop-opacity="0.02"/>
-          </radialGradient>
+          <filter id="glowHead"><feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          <filter id="glowAjna"><feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          <filter id="glowThroat"><feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          <filter id="glowG"><feGaussianBlur stdDeviation="6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          <filter id="glowSacral"><feGaussianBlur stdDeviation="6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          <radialGradient id="gradHead" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#C8B8FF" stop-opacity="0.5"/><stop offset="100%" stop-color="#C8B8FF" stop-opacity="0.04"/></radialGradient>
+          <radialGradient id="gradAjna" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#80D4A0" stop-opacity="0.45"/><stop offset="100%" stop-color="#80D4A0" stop-opacity="0.04"/></radialGradient>
+          <radialGradient id="gradThroat" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#C8A878" stop-opacity="0.5"/><stop offset="100%" stop-color="#C8A878" stop-opacity="0.04"/></radialGradient>
+          <radialGradient id="gradG" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#F0D060" stop-opacity="0.55"/><stop offset="100%" stop-color="#F0D060" stop-opacity="0.04"/></radialGradient>
+          <radialGradient id="gradWill" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#E05050" stop-opacity="0.3"/><stop offset="100%" stop-color="#E05050" stop-opacity="0.02"/></radialGradient>
+          <radialGradient id="gradSP" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#E8A030" stop-opacity="0.3"/><stop offset="100%" stop-color="#E8A030" stop-opacity="0.02"/></radialGradient>
+          <radialGradient id="gradSacral" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#E06030" stop-opacity="0.55"/><stop offset="100%" stop-color="#E06030" stop-opacity="0.04"/></radialGradient>
+          <radialGradient id="gradSpleen" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#90B870" stop-opacity="0.3"/><stop offset="100%" stop-color="#90B870" stop-opacity="0.02"/></radialGradient>
+          <radialGradient id="gradRoot" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#A03030" stop-opacity="0.3"/><stop offset="100%" stop-color="#A03030" stop-opacity="0.02"/></radialGradient>
         </defs>
-        <g class="channels" stroke="#D4A830" stroke-opacity="0.25" stroke-width="1.5" fill="none">
-          <line x1="200" y1="52" x2="200" y2="108"/>
-          <line x1="200" y1="148" x2="200" y2="192"/>
-          <line x1="200" y1="228" x2="200" y2="272"/>
+        <g stroke="#9B6EE0" stroke-opacity="0.18" stroke-width="1.5" fill="none">
           <line x1="215" y1="212" x2="268" y2="252"/>
-          <line x1="200" y1="308" x2="200" y2="372"/>
           <line x1="185" y1="290" x2="138" y2="318"/>
-          <line x1="200" y1="408" x2="200" y2="468"/>
           <line x1="185" y1="390" x2="138" y2="358"/>
           <line x1="218" y1="468" x2="272" y2="380"/>
           <line x1="280" y1="268" x2="280" y2="348"/>
           <line x1="268" y1="368" x2="218" y2="400"/>
           <line x1="152" y1="318" x2="265" y2="258"/>
+          <line x1="200" y1="308" x2="200" y2="372"/>
+          <line x1="200" y1="408" x2="200" y2="468"/>
         </g>
-        <g class="channels-defined" stroke="#D4A830" stroke-opacity="0.7" stroke-width="2.5" fill="none" filter="url(#glow)">
+        <g stroke="#D4A830" stroke-opacity="0.85" stroke-width="2.5" fill="none">
           <line x1="200" y1="52" x2="200" y2="108"/>
           <line x1="200" y1="148" x2="200" y2="192"/>
           <line x1="200" y1="228" x2="200" y2="272"/>
         </g>
-        <g class="center center-defined" transform="translate(200, 32)">
-          <polygon points="0,-28 24,14 -24,14" fill="url(#centerGradDefined)" stroke="#D4A830" stroke-width="1.5"/>
-          <text y="4" text-anchor="middle" fill="#D4A830" font-size="8" font-family="Inter">ГОЛОВА</text>
+        <g class="bg-pulse" transform="translate(200, 32)" filter="url(#glowHead)">
+          <polygon points="0,-28 24,14 -24,14" fill="url(#gradHead)" stroke="#C8B8FF" stroke-width="1.5"/>
+          <text y="4" text-anchor="middle" fill="#C8B8FF" font-size="7.5" font-family="Inter" font-weight="500">ГОЛОВА</text>
         </g>
-        <g class="center center-defined" transform="translate(200, 128)">
-          <ellipse rx="28" ry="20" fill="url(#centerGradDefined)" stroke="#D4A830" stroke-width="1.5"/>
-          <text y="4" text-anchor="middle" fill="#D4A830" font-size="8" font-family="Inter">АДЖНА</text>
+        <g class="bg-pulse" transform="translate(200, 128)" filter="url(#glowAjna)" style="animation-delay:0.5s">
+          <ellipse rx="28" ry="20" fill="url(#gradAjna)" stroke="#80D4A0" stroke-width="1.5"/>
+          <text y="4" text-anchor="middle" fill="#80D4A0" font-size="7.5" font-family="Inter" font-weight="500">АДЖНА</text>
         </g>
-        <g class="center center-defined" transform="translate(200, 210)">
-          <rect x="-28" y="-18" width="56" height="36" rx="4" fill="url(#centerGradDefined)" stroke="#D4A830" stroke-width="1.5"/>
-          <text y="4" text-anchor="middle" fill="#D4A830" font-size="8" font-family="Inter">ГОРЛО</text>
+        <g class="bg-pulse" transform="translate(200, 210)" filter="url(#glowThroat)" style="animation-delay:1s">
+          <rect x="-28" y="-18" width="56" height="36" rx="4" fill="url(#gradThroat)" stroke="#C8A878" stroke-width="1.5"/>
+          <text y="4" text-anchor="middle" fill="#C8A878" font-size="7.5" font-family="Inter" font-weight="500">ГОРЛО</text>
         </g>
-        <g class="center center-defined" transform="translate(200, 290)">
-          <polygon points="0,-28 28,0 0,28 -28,0" fill="url(#centerGradDefined)" stroke="#D4A830" stroke-width="1.5"/>
-          <text y="4" text-anchor="middle" fill="#D4A830" font-size="7" font-family="Inter">САМІСТЬ</text>
+        <g class="bg-pulse" transform="translate(200, 290)" filter="url(#glowG)" style="animation-delay:1.5s">
+          <polygon points="0,-28 28,0 0,28 -28,0" fill="url(#gradG)" stroke="#F0D060" stroke-width="1.5"/>
+          <text y="4" text-anchor="middle" fill="#F0D060" font-size="7" font-family="Inter" font-weight="500">САМІСТЬ</text>
         </g>
-        <g class="center center-undefined" transform="translate(280, 258)">
-          <polygon points="0,-24 24,0 0,24 -24,0" fill="url(#centerGradUndefined)" stroke="#9B6EE0" stroke-width="1.5" stroke-dasharray="4,2"/>
-          <text y="3" text-anchor="middle" fill="#9B6EE0" font-size="6.5" font-family="Inter">ВОЛЯ</text>
+        <g transform="translate(280, 258)">
+          <polygon points="0,-24 24,0 0,24 -24,0" fill="url(#gradWill)" stroke="#E05050" stroke-width="1.5" stroke-dasharray="4,2" opacity="0.55"/>
+          <text y="3" text-anchor="middle" fill="#E05050" font-size="6.5" font-family="Inter" opacity="0.75">ВОЛЯ</text>
         </g>
-        <g class="center center-undefined" transform="translate(280, 368)">
-          <polygon points="0,-28 24,14 -24,14" fill="url(#centerGradUndefined)" stroke="#9B6EE0" stroke-width="1.5" stroke-dasharray="4,2"/>
-          <text y="3" text-anchor="middle" fill="#9B6EE0" font-size="5.5" font-family="Inter">СОН.СПЛЕТ</text>
+        <g transform="translate(280, 368)">
+          <polygon points="0,-28 24,14 -24,14" fill="url(#gradSP)" stroke="#E8A030" stroke-width="1.5" stroke-dasharray="4,2" opacity="0.55"/>
+          <text y="3" text-anchor="middle" fill="#E8A030" font-size="5.5" font-family="Inter" opacity="0.75">СОН.СПЛЕТ</text>
         </g>
-        <g class="center center-defined" transform="translate(200, 390)">
-          <rect x="-28" y="-18" width="56" height="36" rx="4" fill="url(#centerGradDefined)" stroke="#D4A830" stroke-width="1.5"/>
-          <text y="4" text-anchor="middle" fill="#D4A830" font-size="8" font-family="Inter">САКРАЛ</text>
+        <g class="bg-pulse" transform="translate(200, 390)" filter="url(#glowSacral)" style="animation-delay:2s">
+          <rect x="-28" y="-18" width="56" height="36" rx="4" fill="url(#gradSacral)" stroke="#E06030" stroke-width="1.5"/>
+          <text y="4" text-anchor="middle" fill="#E06030" font-size="7.5" font-family="Inter" font-weight="500">САКРАЛ</text>
         </g>
-        <g class="center center-undefined" transform="translate(130, 338)">
-          <polygon points="0,-28 24,14 -24,14" fill="url(#centerGradUndefined)" stroke="#9B6EE0" stroke-width="1.5" stroke-dasharray="4,2"/>
-          <text y="3" text-anchor="middle" fill="#9B6EE0" font-size="7" font-family="Inter">СЕЛЕЗІН</text>
+        <g transform="translate(130, 338)">
+          <polygon points="0,-28 24,14 -24,14" fill="url(#gradSpleen)" stroke="#90B870" stroke-width="1.5" stroke-dasharray="4,2" opacity="0.55"/>
+          <text y="3" text-anchor="middle" fill="#90B870" font-size="7" font-family="Inter" opacity="0.75">СЕЛЕЗІН</text>
         </g>
-        <g class="center center-undefined" transform="translate(200, 480)">
-          <rect x="-28" y="-18" width="56" height="36" rx="4" fill="url(#centerGradUndefined)" stroke="#9B6EE0" stroke-width="1.5" stroke-dasharray="4,2"/>
-          <text y="4" text-anchor="middle" fill="#9B6EE0" font-size="8" font-family="Inter">КОРІНЬ</text>
+        <g transform="translate(200, 480)">
+          <rect x="-28" y="-18" width="56" height="36" rx="4" fill="url(#gradRoot)" stroke="#A03030" stroke-width="1.5" stroke-dasharray="4,2" opacity="0.55"/>
+          <text y="4" text-anchor="middle" fill="#A03030" font-size="7.5" font-family="Inter" opacity="0.75">КОРІНЬ</text>
         </g>
-        <g fill="#D4A830" fill-opacity="0.4">
-          <circle cx="60" cy="80" r="1.5"/>
-          <circle cx="340" cy="120" r="1"/>
-          <circle cx="45" cy="200" r="1"/>
-          <circle cx="355" cy="450" r="1.5"/>
-          <circle cx="80" cy="480" r="1"/>
-          <circle cx="320" cy="60" r="1.5"/>
+        <g fill="#D4A830" fill-opacity="0.45">
+          <circle cx="60" cy="80" r="1.5"/><circle cx="340" cy="120" r="1"/><circle cx="45" cy="200" r="1.5"/>
+          <circle cx="355" cy="450" r="1"/><circle cx="80" cy="480" r="1.5"/><circle cx="320" cy="60" r="1"/>
         </g>
       </svg>
       <div class="bodygraph-legend">
@@ -171,85 +167,114 @@
   </div>
 </section>
 
-<!-- ABOUT -->
-<section class="about" id="about">
+<!-- PAIN POINTS -->
+<section class="pain-points" id="why">
   <div class="container">
     <div class="section-header">
-      <div class="badge badge-purple" data-i18n="about.badge">✦ Що це?</div>
-      <h2 data-i18n-html="about.title">Дизайн Людини —<br><em>це твоя енергетична карта</em></h2>
-      <p class="section-lead" data-i18n="about.lead">
-        Система, що поєднує астрологію, Каббалу, І-Цзін та квантову фізику. Розрахована за точним часом народження — як відбиток пальця, унікальна для кожного.
-      </p>
+      <div class="badge badge-purple" data-i18n="pain.badge">✦ Що вирішує</div>
+      <h2 data-i18n-html="pain.title">Що дає <em>Дизайн Людини</em></h2>
     </div>
-    <div class="about-grid">
-      <div class="about-card">
-        <div class="about-icon">☽</div>
-        <h3 data-i18n="about.card1.title">Не езотерика</h3>
-        <p data-i18n="about.card1.text">Дизайн Людини — це систематизована карта твоєї природи. Вона пояснює поведінку, прийняття рішень та взаємодію з іншими.</p>
+    <div class="pain-grid">
+      <div class="pain-card" data-animate>
+        <div class="pain-icon">🌟</div>
+        <h3 data-i18n="pain.1.title">У чому моє призначення?</h3>
+        <p data-i18n="pain.1.text">Дізнайся, для чого ти насправді прийшла в цей світ, які задачі тобі під силу і де твоя унікальна цінність.</p>
       </div>
-      <div class="about-card">
-        <div class="about-icon">◈</div>
-        <h3 data-i18n="about.card2.title">Твій тип і стратегія</h3>
-        <p data-i18n="about.card2.text">Існує 5 типів: Генератор, МГ, Маніфестор, Проектор, Рефлектор. Кожен з унікальною стратегією взаємодії зі світом.</p>
+      <div class="pain-card" data-animate>
+        <div class="pain-icon">💎</div>
+        <h3 data-i18n="pain.2.title">Які мої таланти і як їх застосовувати?</h3>
+        <p data-i18n="pain.2.text">Відкрий приховані ресурси, які ти можливо ніколи не помічала, і навчись направляти їх туди, де вони дають найбільший результат.</p>
       </div>
-      <div class="about-card">
-        <div class="about-icon">✦</div>
-        <h3 data-i18n="about.card3.title">Авторитет рішень</h3>
-        <p data-i18n="about.card3.text">Система пояснює, як саме твоє тіло та свідомість дають найкращі відповіді. Більше не потрібно мучитися в нерішучості.</p>
+      <div class="pain-card" data-animate>
+        <div class="pain-icon">🧭</div>
+        <h3 data-i18n="pain.3.title">Як зрозуміти — який шлях мій, а який нав'язаний?</h3>
+        <p data-i18n="pain.3.text">Навчися відрізняти своє від чужого: чужі очікування, нав'язані цілі, страхи не своєї природи — і нарешті почати жити за власним сценарієм.</p>
+      </div>
+      <div class="pain-card" data-animate>
+        <div class="pain-icon">💞</div>
+        <h3 data-i18n="pain.4.title">Як знайти гармонію з коханою людиною?</h3>
+        <p data-i18n="pain.4.text">Зрозумій природу партнера, причини конфліктів і те, як два різних дизайни можуть доповнювати одне одного замість зіштовхуватися.</p>
+      </div>
+      <div class="pain-card" data-animate>
+        <div class="pain-icon">🌿</div>
+        <h3 data-i18n="pain.5.title">Як налагодити стосунки з колегами, сім'єю, грошима?</h3>
+        <p data-i18n="pain.5.text">Дізнайся, яка твоя роль в команді та сім'ї, де ти природно процвітаєш фінансово і чому гроші можуть "не йти" при чужій стратегії.</p>
+      </div>
+      <div class="pain-card" data-animate>
+        <div class="pain-icon">🔮</div>
+        <h3 data-i18n="pain.6.title">У чому криється причина страху і сумнівів?</h3>
+        <p data-i18n="pain.6.text">Розкрий джерело тривоги, невпевненості та повторюваних кризових паттернів — і отримай конкретні інструменти для виходу з них.</p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- BENEFITS -->
-<section class="benefits" id="benefits">
+<!-- COSMOS / QUOTE -->
+<section class="cosmos" id="cosmos">
+  <div class="cosmos-solar">
+    <div class="solar-system" aria-hidden="true">
+      <div class="sun"></div>
+      <div class="orbit orbit-1"><div class="planet planet-1"></div></div>
+      <div class="orbit orbit-2"><div class="planet planet-2"></div></div>
+      <div class="orbit orbit-3"><div class="planet planet-3"></div></div>
+      <div class="orbit orbit-4"><div class="planet planet-4"></div></div>
+      <div class="orbit orbit-5"><div class="planet planet-5"></div></div>
+    </div>
+  </div>
+  <div class="cosmos-content">
+    <blockquote class="cosmos-quote" data-i18n="cosmos.quote">«Кожна людська істота є унікальним потоком свідомості. Коли ти живеш у злагоді зі своєю природою — ти не просто щаслива. Ти стаєш тим, ким задумана Всесвітом.»</blockquote>
+    <cite class="cosmos-author" data-i18n="cosmos.author">— Ра Уру Ху, засновник системи Дизайну Людини</cite>
+  </div>
+</section>
+
+<!-- SCIENCES -->
+<section class="about" id="about">
   <div class="container">
     <div class="section-header">
-      <div class="badge" data-i18n="benefits.badge">✦ Що ти отримаєш</div>
-      <h2 data-i18n-html="benefits.title">Розшифровка змінює <em>все</em></h2>
+      <div class="badge badge-purple" data-i18n="sciences.badge">✦ Наукова основа</div>
+      <h2 data-i18n-html="sciences.title">Синтез класичних наук<br><em>та давньої космології</em></h2>
+      <p class="section-lead" data-i18n="sciences.lead">Дизайн Людини — це унікальний пазл. Зібраний з різних елементів в єдину концепцію, яка логічно бездоганна і має практичну цінність. У ній дивовижним чином синхронізувалися квантова фізика, астрономія, генетика, хімія та біологія, а також ключові постулати езотеричних учень і теорій про космологічний устрій світу. Ці знання детально викладені в давніх Ведичних писаннях, Книзі Перемін І-Цзін та Торі.</p>
     </div>
-    <div class="benefits-list">
-      <div class="benefit-item">
-        <div class="benefit-num">01</div>
-        <div class="benefit-content">
-          <h3 data-i18n="benefits.1.title">Зрозумієш свій тип енергії</h3>
-          <p data-i18n="benefits.1.text">Чому ти втомлюєшся швидше або повільніше за інших. Як правильно планувати день під свою природу.</p>
-        </div>
+    <div class="sciences-grid">
+      <div class="about-card sciences-card">
+        <div class="about-icon">⊛</div>
+        <h4 data-i18n="about.sci1.title">Космологія та квантова фізика</h4>
+        <p data-i18n="about.sci1.text">У момент народження потоки сонячних нейтрино пронизують кожну клітину тіла. Ці частинки взаємодіють з молекулами ДНК і фіксують унікальний енергетичний профіль — персональне креслення, що визначає твою природу.</p>
       </div>
-      <div class="benefit-item">
-        <div class="benefit-num">02</div>
-        <div class="benefit-content">
-          <h3 data-i18n="benefits.2.title">Дізнаєшся як приймати рішення</h3>
-          <p data-i18n="benefits.2.text">Твій авторитет — це внутрішній компас. Він є в тілі, а не в голові. Навчися ним користуватися.</p>
-        </div>
+      <div class="about-card sciences-card">
+        <div class="about-icon">⊕</div>
+        <h4 data-i18n="about.sci2.title">Хімія та біологія</h4>
+        <p data-i18n="about.sci2.text">Білки — будівельний матеріал і регулятори всіх процесів в організмі. Їх виробництво закодоване в ДНК і відбувається суворо за генетичними інструкціями. Дизайн Людини показує, як цей код працює саме у тебе.</p>
       </div>
-      <div class="benefit-item">
-        <div class="benefit-num">03</div>
-        <div class="benefit-content">
-          <h3 data-i18n="benefits.3.title">Зрозумієш свою роль у стосунках</h3>
-          <p data-i18n="benefits.3.text">Чому з одними людьми тобі легко, а з іншими — виснажливо. Де твоя межа і як її захистити.</p>
-        </div>
+      <div class="about-card sciences-card">
+        <div class="about-icon">◎</div>
+        <h4 data-i18n="about.sci3.title">Астрономія небесних тіл</h4>
+        <p data-i18n="about.sci3.text">Координати планет Сонячної системи співвідносяться з 64 секторами гексаграм на рей-мандалі. Їх положення в момент народження фіксує конфігурацію, що впливає на поведінкові реакції та прийняття рішень.</p>
       </div>
-      <div class="benefit-item">
-        <div class="benefit-num">04</div>
-        <div class="benefit-content">
-          <h3 data-i18n="benefits.4.title">Знайдеш пояснення своїх паттернів</h3>
-          <p data-i18n="benefits.4.text">Повторювані ситуації, які тебе злять чи виснажують — не випадкові. Розшифровка покаже їх джерело.</p>
-        </div>
+      <div class="about-card sciences-card">
+        <div class="about-icon">◉</div>
+        <h4 data-i18n="about.sci4.title">Генетика та поведінкова психологія</h4>
+        <p data-i18n="about.sci4.text">Особливий клас білків регулює налаштування психіки та свідомості. Їх активність змінюється під впливом середовища і соціального тиску. Відкриті центри у карті показують, де ти найчастіше живеш за чужими цінностями.</p>
       </div>
-      <div class="benefit-item">
-        <div class="benefit-num">05</div>
-        <div class="benefit-content">
-          <h3 data-i18n="benefits.5.title">Перестанеш себе засуджувати</h3>
-          <p data-i18n="benefits.5.text">Багато рис, які ти вважала "вадами" — це просто твій дизайн. Прийняття себе починається з розуміння.</p>
-        </div>
+      <div class="about-card sciences-card">
+        <div class="about-icon">☽</div>
+        <h4 data-i18n="about.sci5.title">Ведична астрологія</h4>
+        <p data-i18n="about.sci5.text">Джйотіш охоплює більше секторів небесної сфери, ніж західна астрологія, і працює з довшими часовими циклами. У Дизайні Людини ці дані уточнюють індивідуальні характеристики твоєї карти.</p>
       </div>
-      <div class="benefit-item">
-        <div class="benefit-num">06</div>
-        <div class="benefit-content">
-          <h3 data-i18n="benefits.6.title">Отримаєш конкретні практики</h3>
-          <p data-i18n="benefits.6.text">Не загальні поради, а дії, що відповідають саме твоєму типу. Починаєш застосовувати вже завтра.</p>
-        </div>
+      <div class="about-card sciences-card">
+        <div class="about-icon">❋</div>
+        <h4 data-i18n="about.sci6.title">Чакральна система</h4>
+        <p data-i18n="about.sci6.text">У Дизайні Людини дев'ять енергетичних центрів. Кожен відповідає за конкретну функцію: Сакральний — за життєву енергію, Сонячне Сплетення — за емоційний фон, Горло — за самовираження та дію.</p>
+      </div>
+      <div class="about-card sciences-card">
+        <div class="about-icon">✡</div>
+        <h4 data-i18n="about.sci7.title">Езотерична Каббала</h4>
+        <p data-i18n="about.sci7.text">Каббалістичне Дерево Життя описує взаємозв'язки між рівнями енергії людини та світобудови. У Дизайні Людини ця структура лягла в основу каналів і воріт, що з'єднують центри бодіграфа.</p>
+      </div>
+      <div class="about-card sciences-card">
+        <div class="about-icon">☯</div>
+        <h4 data-i18n="about.sci8.title">Книга Змін І-Цзін та гексаграми</h4>
+        <p data-i18n="about.sci8.text">64 гексаграми І-Цзін збігаються за структурою з 64 кодонами генетичного коду людини. Через гексаграми описуються конкретні якості та теми, активні саме в твоїй карті.</p>
       </div>
     </div>
   </div>
@@ -305,8 +330,8 @@
 <section class="pricing" id="pricing">
   <div class="container">
     <div class="section-header">
-      <div class="badge" data-i18n="pricing.badge">✦ Тарифи</div>
-      <h2 data-i18n-html="pricing.title">Обери свій рівень <em>занурення</em></h2>
+      <div class="badge" data-i18n="pricing.start.badge">✦ З чого почати</div>
+      <h2 data-i18n-html="pricing.start.title">Обери свій перший крок<br><em>до власного дизайну</em></h2>
       <p class="section-lead" data-i18n="pricing.lead">Обидва варіанти персональні — складаються на основі твоїх даних, не шаблони.</p>
     </div>
     <div class="pricing-grid">
@@ -314,6 +339,7 @@
         <div class="pricing-header">
           <div class="pricing-badge" data-i18n="pricing.basic.name">Базовий</div>
           <div class="pricing-price">
+            <span class="price-old">1&nbsp;999 грн</span>
             <span class="price-amount">399</span>
             <span class="price-currency">грн</span>
           </div>
@@ -330,7 +356,7 @@
           <li class="feature-muted" data-i18n="pricing.basic.not3">— Аналіз стосунків</li>
         </ul>
         <div class="pricing-volume" data-i18n="pricing.basic.volume">~20 сторінок · PDF на пошту</div>
-        <a href="quiz.html?plan=basic" class="btn btn-outline btn-block" data-i18n="pricing.basic.cta">Обрати базовий</a>
+        <a href="quiz.html?plan=basic" class="btn btn-outline btn-block" data-i18n="pricing.basic.cta">Розрахувати базовий дизайн →</a>
       </div>
 
       <div class="pricing-card pricing-card-featured">
@@ -338,6 +364,7 @@
         <div class="pricing-header">
           <div class="pricing-badge" data-i18n="pricing.full.name">Повний</div>
           <div class="pricing-price">
+            <span class="price-old">3&nbsp;999 грн</span>
             <span class="price-amount">799</span>
             <span class="price-currency">грн</span>
           </div>
@@ -354,9 +381,13 @@
           <li data-i18n="pricing.full.f8">✓ Персональний план на 90 днів</li>
         </ul>
         <div class="pricing-volume" data-i18n="pricing.full.volume">~50 сторінок · PDF на пошту</div>
-        <a href="quiz.html?plan=full" class="btn btn-gold btn-block" data-i18n="pricing.full.cta">Обрати повний</a>
+        <a href="quiz.html?plan=full" class="btn btn-gold btn-block" data-i18n="pricing.full.cta">Розрахувати повний дизайн →</a>
       </div>
     </div>
+  </div>
+  <div class="pricing-timer">
+    <span class="timer-label" data-i18n="pricing.timer.label">Ціна діє ще:</span>
+    <span class="timer-display" id="pricingTimer">15:00</span>
   </div>
 </section>
 
@@ -398,6 +429,61 @@
           <div>
             <div class="author-name" data-i18n="reviews.3.name">Анна, 38 років</div>
             <div class="author-meta" data-i18n="reviews.3.meta">Харків · Повний тариф</div>
+          </div>
+        </div>
+      </div>
+      <div class="review-card">
+        <div class="review-stars">★★★★★</div>
+        <blockquote data-i18n="reviews.4.text">Я довго не могла зрозуміти, чому кар'єра не складається попри всі зусилля. Виявилося, що я діяла всупереч своєму типу. Після розшифровки змінила стратегію — і за три місяці отримала два офери.</blockquote>
+        <div class="review-author">
+          <div class="author-avatar">Т</div>
+          <div>
+            <div class="author-name" data-i18n="reviews.4.name">Тетяна, 31 рік</div>
+            <div class="author-meta" data-i18n="reviews.4.meta">Одеса · Повний тариф</div>
+          </div>
+        </div>
+      </div>
+      <div class="review-card">
+        <div class="review-stars">★★★★★</div>
+        <blockquote data-i18n="reviews.5.text">Думала, що моя тривожність — це характер. Виявилось, що відкритий Сонячний Плексус просто вбирає чужі емоції. Тепер розумію, що моє, а що чуже — і це буквально змінило якість мого життя.</blockquote>
+        <div class="review-author">
+          <div class="author-avatar">І</div>
+          <div>
+            <div class="author-name" data-i18n="reviews.5.name">Ірина, 27 років</div>
+            <div class="author-meta" data-i18n="reviews.5.meta">Дніпро · Повний тариф</div>
+          </div>
+        </div>
+      </div>
+      <div class="review-card">
+        <div class="review-stars">★★★★★</div>
+        <blockquote data-i18n="reviews.6.text">Мій чоловік скептично ставився до теми. Але коли прочитав свою розшифровку — сказав, що ніколи нічого настільки точного про себе не читав. Тепер ми обоє використовуємо це у стосунках.</blockquote>
+        <div class="review-author">
+          <div class="author-avatar">О</div>
+          <div>
+            <div class="author-name" data-i18n="reviews.6.name">Оксана, 36 років</div>
+            <div class="author-meta" data-i18n="reviews.6.meta">Запоріжжя · Базовий тариф</div>
+          </div>
+        </div>
+      </div>
+      <div class="review-card">
+        <div class="review-stars">★★★★★</div>
+        <blockquote data-i18n="reviews.7.text">Я Проектор, і мені завжди казали "працюй більше". Розшифровка пояснила, чому я вигораю від довгих проектів і як мені насправді варто будувати робочий день. Почала поважати свою природу.</blockquote>
+        <div class="review-author">
+          <div class="author-avatar">Н</div>
+          <div>
+            <div class="author-name" data-i18n="reviews.7.name">Наталія, 42 роки</div>
+            <div class="author-meta" data-i18n="reviews.7.meta">Полтава · Повний тариф</div>
+          </div>
+        </div>
+      </div>
+      <div class="review-card">
+        <div class="review-stars">★★★★★</div>
+        <blockquote data-i18n="reviews.8.text">Замовляла як подарунок мамі на день народження. Вона сказала, що це найкращий подарунок за останні роки. Тепер і вона, і я живемо зі знанням свого дизайну.</blockquote>
+        <div class="review-author">
+          <div class="author-avatar">Ю</div>
+          <div>
+            <div class="author-name" data-i18n="reviews.8.name">Юлія, 33 роки</div>
+            <div class="author-meta" data-i18n="reviews.8.meta">Київ · Базовий тариф</div>
           </div>
         </div>
       </div>
@@ -481,10 +567,35 @@
       if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }
     });
   }, { threshold: 0.1 });
-  document.querySelectorAll('.benefit-item, .step, .review-card, .pricing-card, .about-card').forEach(el => {
+  document.querySelectorAll('.benefit-item, .step, .review-card, .pricing-card, .about-card, .pain-card').forEach(el => {
     el.classList.add('reveal');
     observer.observe(el);
   });
+
+  // Pricing countdown timer — 15 min from first visit, persisted in sessionStorage
+  (function() {
+    const KEY = 'hd_timer_end';
+    const DURATION = 15 * 60 * 1000;
+    const el = document.getElementById('pricingTimer');
+    if (!el) return;
+    let end = parseInt(sessionStorage.getItem(KEY));
+    if (!end || end < Date.now()) {
+      end = Date.now() + DURATION;
+      sessionStorage.setItem(KEY, end);
+    }
+    function tick() {
+      const left = Math.max(0, end - Date.now());
+      const m = Math.floor(left / 60000);
+      const s = Math.floor((left % 60000) / 1000);
+      el.textContent = String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+      if (left === 0) {
+        el.closest('.pricing-timer').classList.add('timer-expired');
+        return;
+      }
+      setTimeout(tick, 1000);
+    }
+    tick();
+  })();
 </script>
 
 </body>
