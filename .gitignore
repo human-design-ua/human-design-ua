@@ -1,0 +1,21 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Large files / assets not for version control
+*.pdf
+*.zip
+*.tar.gz
+
+# Secrets & env
+.env
+.env.local
+.env.*.local
+secrets.json
+**/secrets/
+
+# Claude Code local settings (contains machine-specific paths)
+.claude/settings.local.json
+
+# Node (if added later)
+node_modules/

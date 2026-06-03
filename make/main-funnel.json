@@ -1,0 +1,223 @@
+{
+  "name": "Human Design — Main Funnel (LiqPay → Claude → Email)",
+  "description": "Основна автоматизація: отримання оплати від LiqPay → збереження в Supabase → генерація розшифровки Claude API → відправка email",
+  "version": "1.0",
+  "note": "Це не готовий Make.com export. Це опис сценарію для ручного налаштування.",
+  "modules": [
+    {
+      "step": 1,
+      "type": "webhooks:CustomWebhook",
+      "name": "Отримання webhook від LiqPay",
+      "config": {
+        "method": "POST",
+        "note": "URL цього webhook вказується в LiqPay особистому кабінеті як server_url"
+      }
+    },
+    {
+      "step": 2,
+      "type": "tools:SetVariable",
+      "name": "Верифікація підпису LiqPay",
+      "config": {
+        "note": "SHA1(private_key + data + private_key) повинен співпадати з signature з запиту",
+        "action": "Якщо підпис не співпадає — зупинити сценарій (Router → Error path)"
+      }
+    },
+    {
+      "step": 3,
+      "type": "tools:JSONParser",
+      "name": "Парсинг data (base64 → JSON)",
+      "config": {
+        "note": "Декодувати base64(data) → JSON з полями: order_id, amount, email, status тощо"
+      }
+    },
+    {
+      "step": 4,
+      "type": "router",
+      "name": "Перевірка статусу оплати",
+      "routes": [
+        { "condition": "status == 'success'", "goto": 5 },
+        { "condition": "status != 'success'", "goto": "error_handler" }
+      ]
+    },
+    {
+      "step": 5,
+      "type": "supabase:CreateRecord",
+      "name": "Збереження користувача в Supabase",
+      "config": {
+        "table": "users",
+        "fields": {
+          "email": "{{data.email}}",
+          "plan": "{{data.plan}}",
+          "status": "paid",
+          "birth_date": "{{data.birth_date}}",
+          "birth_time": "{{data.birth_time}}",
+          "birth_place": "{{data.birth_place}}",
+          "liqpay_order_id": "{{data.order_id}}",
+          "amount_paid": "{{data.amount}}",
+          "paid_at": "{{now()}}",
+          "utm_source": "{{data.utm_source}}",
+          "utm_campaign": "{{data.utm_campaign}}"
+        },
+        "auth": "Service Role Key (зберігати як Make.com змінну)"
+      }
+    },
+    {
+      "step": 6,
+      "type": "supabase:CreateRecord",
+      "name": "Збереження замовлення в Supabase",
+      "config": {
+        "table": "orders",
+        "fields": {
+          "user_id": "{{step5.id}}",
+          "plan": "{{data.plan}}",
+          "amount": "{{data.amount}}",
+          "payment_status": "success",
+          "provider_order_id": "{{data.order_id}}"
+        }
+      }
+    },
+    {
+      "step": 7,
+      "type": "router",
+      "name": "Визначення типу розшифровки",
+      "routes": [
+        { "condition": "plan == 'basic'", "prompt_file": "prompts/basic-reading.md" },
+        { "condition": "plan == 'full'",  "prompt_file": "prompts/full-reading.md" }
+      ]
+    },
+    {
+      "step": 8,
+      "type": "http:MakeRequest",
+      "name": "Виклик Claude API (генерація розшифровки)",
+      "config": {
+        "url": "https://api.anthropic.com/v1/messages",
+        "method": "POST",
+        "headers": {
+          "x-api-key": "{{ANTHROPIC_API_KEY}}",
+          "anthropic-version": "2023-06-01",
+          "content-type": "application/json"
+        },
+        "body": {
+          "model": "claude-sonnet-4-6",
+          "max_tokens": 4096,
+          "system": "Ти досвідчений експерт з Дизайну Людини...",
+          "messages": [
+            {
+              "role": "user",
+              "content": "{{підставити промпт з prompts/ з даними клієнта}}"
+            }
+          ]
+        },
+        "timeout": 60
+      }
+    },
+    {
+      "step": 9,
+      "type": "tools:JSONParser",
+      "name": "Витягти текст розшифровки",
+      "config": {
+        "field": "content[0].text"
+      }
+    },
+    {
+      "step": 10,
+      "type": "supabase:UpdateRecord",
+      "name": "Зберегти текст розшифровки",
+      "config": {
+        "table": "users",
+        "id": "{{step5.id}}",
+        "fields": {
+          "reading_text": "{{step9.text}}",
+          "reading_generated_at": "{{now()}}",
+          "status": "delivered"
+        }
+      }
+    },
+    {
+      "step": 11,
+      "type": "brevo:SendEmail",
+      "name": "Надіслати розшифровку клієнту",
+      "config": {
+        "to": "{{data.email}}",
+        "subject": "✦ Твоя персональна розшифровка Дизайну Людини",
+        "template": "reading_delivery",
+        "variables": {
+          "name": "{{data.name}}",
+          "reading_text": "{{step9.text}}",
+          "plan": "{{data.plan}}"
+        }
+      }
+    },
+    {
+      "step": 12,
+      "type": "supabase:UpdateRecord",
+      "name": "Позначити email як відправлений",
+      "config": {
+        "table": "orders",
+        "id": "{{step6.id}}",
+        "fields": { "email_sent_at": "{{now()}}" }
+      }
+    },
+    {
+      "step": 13,
+      "type": "tools:Sleep",
+      "name": "Очікування 1 годину (upsell таймер)",
+      "config": { "delay": 3600 }
+    },
+    {
+      "step": 14,
+      "type": "supabase:GetRecord",
+      "name": "Перевірити поточний план",
+      "config": {
+        "table": "users",
+        "id": "{{step5.id}}"
+      }
+    },
+    {
+      "step": 15,
+      "type": "router",
+      "name": "Чи досі basic?",
+      "routes": [
+        { "condition": "plan == 'basic'", "goto": 16 },
+        { "condition": "plan == 'full'", "goto": "end" }
+      ]
+    },
+    {
+      "step": 16,
+      "type": "brevo:SendEmail",
+      "name": "Надіслати upsell-лист",
+      "config": {
+        "to": "{{data.email}}",
+        "subject": "✦ Хочеш більше? Доплати 400 грн за повну розшифровку",
+        "template": "upsell_offer",
+        "variables": {
+          "name": "{{data.name}}",
+          "upsell_url": "https://humandesign.com.ua/upsell.html?uid={{step5.id}}"
+        }
+      }
+    },
+    {
+      "step": 17,
+      "type": "supabase:UpdateRecord",
+      "name": "Записати дату відправки upsell",
+      "config": {
+        "table": "users",
+        "id": "{{step5.id}}",
+        "fields": { "upsell_sent_at": "{{now()}}" }
+      }
+    }
+  ],
+  "error_handler": {
+    "step": "error_handler",
+    "type": "supabase:CreateRecord",
+    "name": "Логувати помилку",
+    "config": {
+      "table": "error_logs",
+      "fields": {
+        "source": "make_main_funnel",
+        "error_msg": "{{error.message}}",
+        "context": "{{toJSON(data)}}"
+      }
+    }
+  }
+}

@@ -1,0 +1,89 @@
+{
+  "name": "Human Design — Upsell Payment Flow",
+  "description": "Обробка upsell-оплати: клієнт доплачує 400 грн за повну розшифровку",
+  "version": "1.0",
+  "modules": [
+    {
+      "step": 1,
+      "type": "webhooks:CustomWebhook",
+      "name": "Webhook від upsell LiqPay оплати",
+      "note": "Той самий webhook URL або окремий — залежно від order_id префіксу (HD-UP-)"
+    },
+    {
+      "step": 2,
+      "type": "tools:SetVariable",
+      "name": "Верифікація підпису + перевірка що це upsell (order_id починається з HD-UP-)"
+    },
+    {
+      "step": 3,
+      "type": "supabase:GetRecord",
+      "name": "Знайти існуючого користувача за user_id",
+      "config": {
+        "table": "users",
+        "id": "{{data.user_id}}"
+      }
+    },
+    {
+      "step": 4,
+      "type": "supabase:UpdateRecord",
+      "name": "Оновити план на full",
+      "config": {
+        "table": "users",
+        "id": "{{data.user_id}}",
+        "fields": {
+          "plan": "full",
+          "status": "paid",
+          "amount_paid": "{{step3.amount_paid + 400}}",
+          "upsell_converted": true,
+          "upsell_converted_at": "{{now()}}"
+        }
+      }
+    },
+    {
+      "step": 5,
+      "type": "supabase:CreateRecord",
+      "name": "Новий запис в orders",
+      "config": {
+        "table": "orders",
+        "fields": {
+          "user_id": "{{data.user_id}}",
+          "plan": "full",
+          "amount": 400,
+          "payment_status": "success",
+          "provider_order_id": "{{data.order_id}}"
+        }
+      }
+    },
+    {
+      "step": 6,
+      "type": "http:MakeRequest",
+      "name": "Виклик Claude API — повна розшифровка",
+      "config": {
+        "note": "Той самий виклик що і в основній воронці, але з prompts/full-reading.md"
+      }
+    },
+    {
+      "step": 7,
+      "type": "supabase:UpdateRecord",
+      "name": "Зберегти повну розшифровку",
+      "config": {
+        "table": "users",
+        "id": "{{data.user_id}}",
+        "fields": {
+          "reading_text": "{{full_reading_text}}",
+          "status": "upsold"
+        }
+      }
+    },
+    {
+      "step": 8,
+      "type": "brevo:SendEmail",
+      "name": "Надіслати повну розшифровку",
+      "config": {
+        "to": "{{step3.email}}",
+        "subject": "✦ Твоя ПОВНА розшифровка Дизайну Людини готова!",
+        "template": "full_reading_delivery"
+      }
+    }
+  ]
+}

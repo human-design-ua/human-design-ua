@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="uk" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Квіз — Дизайн Людини</title>
+  <meta name="robots" content="noindex">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/main.css">
+  <script src="config.js"></script>
+  <script src="locales/translations.js"></script>
+  <script src="assets/js/theme.js"></script>
+</head>
+<body class="quiz-page">
+
+<!-- HEADER -->
+<header class="quiz-header">
+  <div class="container quiz-nav">
+    <a href="index.html" class="logo" data-i18n-aria="nav.logo">
+      <span class="logo-symbol">✦</span>
+    </a>
+    <div class="quiz-progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="9" aria-valuenow="1">
+      <div class="quiz-progress-fill" id="progressFill" style="width: 11%"></div>
+    </div>
+    <div style="display:flex; align-items:center; gap:0.5rem;">
+      <div class="lang-switcher">
+        <button class="lang-btn active" data-lang="uk" onclick="i18n.switch('uk')">UK</button>
+        <button class="lang-btn" data-lang="ru" onclick="i18n.switch('ru')">RU</button>
+        <button class="lang-btn" data-lang="en" onclick="i18n.switch('en')">EN</button>
+      </div>
+      <button class="theme-toggle" id="themeToggle" onclick="theme.toggle()" aria-label="Toggle theme">
+        <span class="theme-icon">☀</span>
+      </button>
+      <span class="quiz-progress-text" id="progressText">1 / 9</span>
+    </div>
+  </div>
+</header>
+
+<!-- MAIN QUIZ AREA -->
+<main class="quiz-main">
+  <div class="container">
+
+    <!-- STEP 1: Name -->
+    <div class="quiz-step active" id="step1">
+      <div class="step-label" data-i18n-template="quiz.step.label" data-i18n-var-n="1" data-i18n-var-total="9">Крок 1 з 9</div>
+      <h2 class="step-question" data-i18n="quiz.s1.question">Як тебе звати?</h2>
+      <div class="form-group">
+        <label class="form-label" for="name" data-i18n="quiz.s1.label">Ім'я</label>
+        <input class="form-input" type="text" id="name" name="name"
+               data-i18n-placeholder="quiz.s1.placeholder"
+               placeholder="Наприклад: Олена"
+               autocomplete="given-name" maxlength="50">
+        <div class="form-error" id="nameError" data-i18n="quiz.s1.error">Введи, будь ласка, своє ім'я</div>
+      </div>
+      <div class="quiz-nav-buttons">
+        <div></div>
+        <button class="btn btn-gold" onclick="nextStep(1)" data-i18n="quiz.btn.next">Далі →</button>
+      </div>
+    </div>
+
+    <!-- STEP 2: Email -->
+    <div class="quiz-step" id="step2">
+      <div class="step-label" data-i18n-template="quiz.step.label" data-i18n-var-n="2" data-i18n-var-total="9">Крок 2 з 9</div>
+      <h2 class="step-question" data-i18n="quiz.s2.question">На яку пошту надіслати розшифровку?</h2>
+      <p style="font-size:0.9rem; color:var(--text-dim); margin-bottom:1.5rem" data-i18n="quiz.s2.hint">Готову розшифровку ми надішлемо саме сюди впродовж 10 хвилин після оплати.</p>
+      <div class="form-group">
+        <label class="form-label" for="email" data-i18n="quiz.s2.label">Email-адреса</label>
+        <input class="form-input" type="email" id="email" name="email" placeholder="your@email.com" autocomplete="email">
+        <div class="form-error" id="emailError" data-i18n="quiz.s2.error">Введи коректну email-адресу</div>
+      </div>
+      <div class="quiz-nav-buttons">
+        <button class="btn-back" onclick="prevStep(2)" data-i18n="quiz.btn.back">← Назад</button>
+        <button class="btn btn-gold" onclick="nextStep(2)" data-i18n="quiz.btn.next">Далі →</button>
+      </div>
+    </div>
+
+    <!-- STEP 3: Birth date -->
+    <div class="quiz-step" id="step3">
+      <div class="step-label" data-i18n-template="quiz.step.label" data-i18n-var-n="3" data-i18n-var-total="9">Крок 3 з 9</div>
+      <h2 class="step-question" data-i18n="quiz.s3.question">Коли ти народилася?</h2>
+      <p style="font-size:0.9rem; color:var(--text-dim); margin-bottom:1.5rem" data-i18n="quiz.s3.hint">Дата народження — основа для розрахунку бодиграфу.</p>
+      <div class="form-group">
+        <label class="form-label" for="birthDate" data-i18n="quiz.s3.label">Дата народження</label>
+        <input class="form-input" type="date" id="birthDate" name="birthDate" max="">
+        <div class="form-error" id="birthDateError" data-i18n="quiz.s3.error">Вкажи коректну дату народження</div>
+      </div>
+      <div class="quiz-nav-buttons">
+        <button class="btn-back" onclick="prevStep(3)" data-i18n="quiz.btn.back">← Назад</button>
+        <button class="btn btn-gold" onclick="nextStep(3)" data-i18n="quiz.btn.next">Далі →</button>
+      </div>
+    </div>
+
+    <!-- STEP 4: Birth time -->
+    <div class="quiz-step" id="step4">
+      <div class="step-label" data-i18n-template="quiz.step.label" data-i18n-var-n="4" data-i18n-var-total="9">Крок 4 з 9</div>
+      <h2 class="step-question" data-i18n="quiz.s4.question">О котрій годині ти народилася?</h2>
+      <p style="font-size:0.9rem; color:var(--text-dim); margin-bottom:1.5rem" data-i18n="quiz.s4.hint">Час впливає на визначення центрів. Якщо точно не знаєш — введи приблизний.</p>
+      <div class="form-group">
+        <label class="form-label" for="birthTime" data-i18n="quiz.s4.label">Час народження</label>
+        <input class="form-input" type="time" id="birthTime" name="birthTime">
+        <div class="form-error" id="birthTimeError" data-i18n="quiz.s4.error">Вкажи час народження</div>
+      </div>
+      <div class="quiz-nav-buttons">
+        <button class="btn-back" onclick="prevStep(4)" data-i18n="quiz.btn.back">← Назад</button>
+        <button class="btn btn-gold" onclick="nextStep(4)" data-i18n="quiz.btn.next">Далі →</button>
+      </div>
+    </div>
+
+    <!-- STEP 5: Birth place -->
+    <div class="quiz-step" id="step5">
+      <div class="step-label" data-i18n-template="quiz.step.label" data-i18n-var-n="5" data-i18n-var-total="9">Крок 5 з 9</div>
+      <h2 class="step-question" data-i18n="quiz.s5.question">Де ти народилася?</h2>
+      <p style="font-size:0.9rem; color:var(--text-dim); margin-bottom:1.5rem" data-i18n="quiz.s5.hint">Місто та країна для точного розрахунку планетарних позицій.</p>
+      <div class="form-group">
+        <label class="form-label" for="birthPlace" data-i18n="quiz.s5.label">Місто, країна</label>
+        <input class="form-input" type="text" id="birthPlace" name="birthPlace"
+               data-i18n-placeholder="quiz.s5.placeholder"
+               placeholder="Наприклад: Київ, Україна" maxlength="100">
+        <div class="form-error" id="birthPlaceError" data-i18n="quiz.s5.error">Вкажи місто народження</div>
+      </div>
+      <div class="quiz-nav-buttons">
+        <button class="btn-back" onclick="prevStep(5)" data-i18n="quiz.btn.back">← Назад</button>
+        <button class="btn btn-gold" onclick="nextStep(5)" data-i18n="quiz.btn.next">Далі →</button>
+      </div>
+    </div>
+
+    <!-- STEP 6: Life area -->
+    <div class="quiz-step" id="step6">
+      <div class="step-label" data-i18n-template="quiz.step.label" data-i18n-var-n="6" data-i18n-var-total="9">Крок 6 з 9</div>
+      <h2 class="step-question" data-i18n="quiz.s6.question">Яка сфера зараз найважливіша для тебе?</h2>
+      <div class="quiz-options" id="lifeAreaOptions">
+        <div class="quiz-option" onclick="selectOption('lifeArea','career',this)">
+          <span class="quiz-option-icon">💼</span><span data-i18n="quiz.s6.opt1">Кар'єра та покликання</span>
+        </div>
+        <div class="quiz-option" onclick="selectOption('lifeArea','relationships',this)">
+          <span class="quiz-option-icon">💫</span><span data-i18n="quiz.s6.opt2">Стосунки та партнерство</span>
+        </div>
+        <div class="quiz-option" onclick="selectOption('lifeArea','energy',this)">
+          <span class="quiz-option-icon">⚡</span><span data-i18n="quiz.s6.opt3">Енергія та здоров'я</span>
+        </div>
+        <div class="quiz-option" onclick="selectOption('lifeArea','selfknowledge',this)">
+          <span class="quiz-option-icon">🌙</span><span data-i18n="quiz.s6.opt4">Пізнання себе</span>
+        </div>
+      </div>
+      <div class="form-error" id="lifeAreaError" style="margin-top:0.5rem" data-i18n="quiz.s6.error">Обери один варіант</div>
+      <div class="quiz-nav-buttons">
+        <button class="btn-back" onclick="prevStep(6)" data-i18n="quiz.btn.back">← Назад</button>
+        <button class="btn btn-gold" onclick="nextStep(6)" data-i18n="quiz.btn.next">Далі →</button>
+      </div>
+    </div>
+
+    <!-- STEP 7: Challenge -->
+    <div class="quiz-step" id="step7">
+      <div class="step-label" data-i18n-template="quiz.step.label" data-i18n-var-n="7" data-i18n-var-total="9">Крок 7 з 9</div>
+      <h2 class="step-question" data-i18n="quiz.s7.question">Що тебе турбує найбільше?</h2>
+      <div class="quiz-options" id="challengeOptions">
+        <div class="quiz-option" onclick="selectOption('challenge','decisions',this)">
+          <span class="quiz-option-icon">🔮</span><span data-i18n="quiz.s7.opt1">Складно приймати рішення</span>
+        </div>
+        <div class="quiz-option" onclick="selectOption('challenge','energy',this)">
+          <span class="quiz-option-icon">😮‍💨</span><span data-i18n="quiz.s7.opt2">Хронічна втома та виснаження</span>
+        </div>
+        <div class="quiz-option" onclick="selectOption('challenge','purpose',this)">
+          <span class="quiz-option-icon">🌟</span><span data-i18n="quiz.s7.opt3">Не розумію свого призначення</span>
+        </div>
+        <div class="quiz-option" onclick="selectOption('challenge','people',this)">
+          <span class="quiz-option-icon">🤝</span><span data-i18n="quiz.s7.opt4">Складно з людьми та кордонами</span>
+        </div>
+      </div>
+      <div class="form-error" id="challengeError" style="margin-top:0.5rem" data-i18n="quiz.s7.error">Обери один варіант</div>
+      <div class="quiz-nav-buttons">
+        <button class="btn-back" onclick="prevStep(7)" data-i18n="quiz.btn.back">← Назад</button>
+        <button class="btn btn-gold" onclick="nextStep(7)" data-i18n="quiz.btn.next">Далі →</button>
+      </div>
+    </div>
+
+    <!-- STEP 8: HD knowledge -->
+    <div class="quiz-step" id="step8">
+      <div class="step-label" data-i18n-template="quiz.step.label" data-i18n-var-n="8" data-i18n-var-total="9">Крок 8 з 9</div>
+      <h2 class="step-question" data-i18n="quiz.s8.question">Чи знайома ти з Дизайном Людини?</h2>
+      <div class="quiz-options" id="hdKnowledgeOptions">
+        <div class="quiz-option" onclick="selectOption('hdKnowledge','beginner',this)">
+          <span class="quiz-option-icon">🌱</span><span data-i18n="quiz.s8.opt1">Вперше чую — цікаво дізнатися</span>
+        </div>
+        <div class="quiz-option" onclick="selectOption('hdKnowledge','basic',this)">
+          <span class="quiz-option-icon">📖</span><span data-i18n="quiz.s8.opt2">Чула, знаю свій тип</span>
+        </div>
+        <div class="quiz-option" onclick="selectOption('hdKnowledge','experienced',this)">
+          <span class="quiz-option-icon">✨</span><span data-i18n="quiz.s8.opt3">Вже практикую — хочу глибше</span>
+        </div>
+      </div>
+      <div class="form-error" id="hdKnowledgeError" style="margin-top:0.5rem" data-i18n="quiz.s8.error">Обери один варіант</div>
+      <div class="quiz-nav-buttons">
+        <button class="btn-back" onclick="prevStep(8)" data-i18n="quiz.btn.back">← Назад</button>
+        <button class="btn btn-gold" onclick="nextStep(8)" data-i18n="quiz.btn.next">Далі →</button>
+      </div>
+    </div>
+
+    <!-- STEP 9: Source -->
+    <div class="quiz-step" id="step9">
+      <div class="step-label" data-i18n-template="quiz.step.label" data-i18n-var-n="9" data-i18n-var-total="9">Крок 9 з 9</div>
+      <h2 class="step-question" data-i18n="quiz.s9.question">Як ти дізналася про нас?</h2>
+      <div class="quiz-options" id="sourceOptions">
+        <div class="quiz-option" onclick="selectOption('source','instagram',this)">
+          <span class="quiz-option-icon">📸</span><span data-i18n="quiz.s9.opt1">Instagram / Facebook реклама</span>
+        </div>
+        <div class="quiz-option" onclick="selectOption('source','friend',this)">
+          <span class="quiz-option-icon">💬</span><span data-i18n="quiz.s9.opt2">Порадила подруга</span>
+        </div>
+        <div class="quiz-option" onclick="selectOption('source','search',this)">
+          <span class="quiz-option-icon">🔍</span><span data-i18n="quiz.s9.opt3">Гугл пошук</span>
+        </div>
+        <div class="quiz-option" onclick="selectOption('source','other',this)">
+          <span class="quiz-option-icon">✦</span><span data-i18n="quiz.s9.opt4">Інше</span>
+        </div>
+      </div>
+      <div class="quiz-nav-buttons">
+        <button class="btn-back" onclick="prevStep(9)" data-i18n="quiz.btn.back">← Назад</button>
+        <button class="btn btn-gold" onclick="goToPricing()" data-i18n="quiz.btn.next">Далі →</button>
+      </div>
+    </div>
+
+    <!-- PRICING STEP -->
+    <div class="quiz-step" id="stepPricing">
+      <div class="step-label" data-i18n="quiz.pricing.label">Майже готово!</div>
+      <h2 class="step-question" data-i18n="quiz.pricing.question">Обери свій рівень розшифровки</h2>
+      <p style="font-size:0.9rem; color:var(--text-dim); margin-bottom:1.5rem" data-i18n="quiz.pricing.hint">Розшифровка буде персональною — складена саме для тебе на основі твоїх даних.</p>
+
+      <div class="plan-grid">
+        <div class="plan-card" id="planBasic" onclick="selectPlan('basic')">
+          <div class="plan-name" data-i18n="quiz.pricing.basic.name">Базовий</div>
+          <div class="plan-price">399 <span style="font-size:1rem; color:var(--text-muted)">грн</span></div>
+          <ul class="plan-features">
+            <li data-i18n="quiz.pricing.basic.f1">✓ Тип та стратегія</li>
+            <li data-i18n="quiz.pricing.basic.f2">✓ Авторитет рішень</li>
+            <li data-i18n="quiz.pricing.basic.f3">✓ Профіль (роль у житті)</li>
+            <li data-i18n="quiz.pricing.basic.f4">✓ Ключові центри</li>
+            <li data-i18n="quiz.pricing.basic.f5">✓ Практичні поради</li>
+            <li style="color:var(--text-dim); opacity:0.5" data-i18n="quiz.pricing.basic.vol">— ~20 сторінок</li>
+          </ul>
+        </div>
+        <div class="plan-card plan-card-featured" id="planFull" onclick="selectPlan('full')">
+          <div class="plan-card-badge" data-i18n="quiz.pricing.full.badge">Популярний</div>
+          <div class="plan-name" data-i18n="quiz.pricing.full.name">Повний</div>
+          <div class="plan-price">799 <span style="font-size:1rem; color:var(--text-muted)">грн</span></div>
+          <ul class="plan-features">
+            <li data-i18n="quiz.pricing.full.f1">✓ Все з базового</li>
+            <li data-i18n="quiz.pricing.full.f2">✓ Канали та гексаграми</li>
+            <li data-i18n="quiz.pricing.full.f3">✓ Інкарнаційний хрест</li>
+            <li data-i18n="quiz.pricing.full.f4">✓ Аналіз стосунків</li>
+            <li data-i18n="quiz.pricing.full.f5">✓ Персональний план 90 днів</li>
+            <li style="color:var(--text-dim); opacity:0.7" data-i18n="quiz.pricing.full.vol">— ~50 сторінок</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="form-error" id="planError" style="margin-bottom:1rem" data-i18n="quiz.pricing.plan.error">Обери тариф</div>
+
+      <div class="consent-row">
+        <input type="checkbox" id="consent" name="consent">
+        <label for="consent">
+          <span data-i18n="quiz.pricing.consent">Я погоджуюся з </span>
+          <a href="privacy.html" target="_blank" data-i18n="quiz.pricing.privacy">Політикою конфіденційності</a>
+          <span data-i18n="quiz.pricing.consent.and"> та </span>
+          <a href="terms.html" target="_blank" data-i18n="quiz.pricing.terms">Публічною офертою</a>
+        </label>
+      </div>
+
+      <div class="form-error" id="consentError" style="margin-bottom:1rem" data-i18n="quiz.pricing.consent.err">Необхідно погодитися з умовами</div>
+
+      <button class="btn btn-gold btn-lg btn-block" id="payBtn" onclick="submitPayment()" data-i18n="quiz.pricing.paybtn">
+        Оплатити та отримати розшифровку →
+      </button>
+
+      <p style="font-size:0.75rem; color:var(--text-dim); text-align:center; margin-top:0.75rem" data-i18n="quiz.pricing.security">
+        🔒 Безпечна оплата через LiqPay · Visa / Mastercard / Apple Pay / Google Pay
+      </p>
+
+      <div class="quiz-nav-buttons" style="margin-top:1rem">
+        <button class="btn-back" onclick="showStep('step9',9)" data-i18n="quiz.btn.back">← Назад</button>
+        <div></div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<script src="assets/js/analytics.js"></script>
+<script src="assets/js/i18n.js"></script>
+<script src="assets/js/quiz.js"></script>
+<script src="assets/js/payment.js"></script>
+
+</body>
+</html>

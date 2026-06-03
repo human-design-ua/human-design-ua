@@ -1,0 +1,53 @@
+# Human Design — Netlify Configuration
+# Two environments: production (main branch) and dev (deploy previews + dev branches)
+
+[build]
+  publish = "site"
+  command = "echo 'Static site — no build step'"
+
+# ── Production environment ──────────────────────────────────
+[context.production]
+  publish = "site"
+
+# ── Development / Deploy previews ──────────────────────────
+[context.deploy-preview]
+  publish = "site"
+
+[context.branch-deploy]
+  publish = "site"
+
+# ── Security headers (all environments) ────────────────────
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://connect.facebook.net https://fonts.googleapis.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://hook.eu1.make.com https://api.anthropic.com; frame-src https://www.liqpay.ua;"
+
+# ── Clean URL redirects ─────────────────────────────────────
+[[redirects]]
+  from = "/quiz"
+  to = "/quiz.html"
+  status = 200
+
+[[redirects]]
+  from = "/success"
+  to = "/success.html"
+  status = 200
+
+[[redirects]]
+  from = "/upsell"
+  to = "/upsell.html"
+  status = 200
+
+[[redirects]]
+  from = "/privacy"
+  to = "/privacy.html"
+  status = 200
+
+[[redirects]]
+  from = "/terms"
+  to = "/terms.html"
+  status = 200

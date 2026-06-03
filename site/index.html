@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="uk" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Персональна розшифровка Дизайну Людини — дізнайся свій тип, авторитет та профіль. Отримай на пошту за 10 хвилин.">
+  <meta property="og:title" content="Твій Дизайн Людини — Персональна розшифровка">
+  <meta property="og:description" content="Дізнайся, як ти насправді приймаєш рішення. Розшифровка від 399 грн. Готова за 10 хвилин.">
+  <meta property="og:image" content="/assets/img/og-image.jpg">
+  <meta property="og:type" content="website">
+  <title>Дизайн Людини — Персональна розшифровка бодиграфу</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/main.css">
+  <!-- Theme init runs first to prevent flash of wrong theme -->
+  <script src="config.js"></script>
+  <script src="locales/translations.js"></script>
+  <script src="assets/js/theme.js"></script>
+</head>
+<body>
+
+<!-- NAVIGATION -->
+<header class="header">
+  <nav class="nav container">
+    <a href="/" class="logo">
+      <span class="logo-symbol">✦</span>
+      <span class="logo-text" data-i18n="nav.logo">Дизайн Людини</span>
+    </a>
+    <div class="nav-controls">
+      <div class="lang-switcher" role="group" aria-label="Language / Мова / Язык">
+        <button class="lang-btn active" data-lang="uk" onclick="i18n.switch('uk')">UK</button>
+        <button class="lang-btn" data-lang="ru" onclick="i18n.switch('ru')">RU</button>
+        <button class="lang-btn" data-lang="en" onclick="i18n.switch('en')">EN</button>
+      </div>
+      <button class="theme-toggle" id="themeToggle" onclick="theme.toggle()" aria-label="Toggle theme">
+        <span class="theme-icon">☀</span>
+      </button>
+      <a href="quiz.html" class="btn btn-outline btn-sm" data-i18n="nav.cta">Пройти квіз →</a>
+    </div>
+  </nav>
+</header>
+
+<!-- HERO -->
+<section class="hero" id="hero">
+  <div class="container hero-grid">
+    <div class="hero-content">
+      <div class="badge" data-i18n="hero.badge">✦ Персоналізована розшифровка</div>
+      <h1 class="hero-title" data-i18n-html="hero.title">
+        Ти не зламана —<br><em>ти просто не знала<br>свій дизайн</em>
+      </h1>
+      <p class="hero-subtitle" data-i18n="hero.subtitle">
+        Дізнайся свій тип, авторитет та профіль. Розшифровка на основі твоєї дати, часу та місця народження — готова за 10 хвилин.
+      </p>
+      <div class="hero-cta">
+        <a href="quiz.html" class="btn btn-gold btn-lg">
+          <span data-i18n="hero.cta.btn">Отримати розшифровку</span>
+          <span class="btn-arrow">→</span>
+        </a>
+        <p class="hero-cta-note" data-i18n="hero.cta.note">від 399 грн · готова за 10 хвилин</p>
+      </div>
+      <div class="hero-stats">
+        <div class="stat">
+          <span class="stat-num">2 400+</span>
+          <span class="stat-label" data-i18n="hero.stat1.label">розшифровок</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat">
+          <span class="stat-num">4.9 ★</span>
+          <span class="stat-label" data-i18n="hero.stat2.label">середня оцінка</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat">
+          <span class="stat-num">&lt; 10</span>
+          <span class="stat-label" data-i18n="hero.stat3.label">хвилин очікування</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-visual">
+      <svg class="bodygraph" viewBox="0 0 400 560" xmlns="http://www.w3.org/2000/svg" aria-label="Бодиграф Дизайну Людини">
+        <defs>
+          <filter id="glow">
+            <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+            <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+          <radialGradient id="centerGradDefined" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#D4A830" stop-opacity="0.3"/>
+            <stop offset="100%" stop-color="#D4A830" stop-opacity="0.05"/>
+          </radialGradient>
+          <radialGradient id="centerGradUndefined" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#9B6EE0" stop-opacity="0.2"/>
+            <stop offset="100%" stop-color="#9B6EE0" stop-opacity="0.02"/>
+          </radialGradient>
+        </defs>
+        <g class="channels" stroke="#D4A830" stroke-opacity="0.25" stroke-width="1.5" fill="none">
+          <line x1="200" y1="52" x2="200" y2="108"/>
+          <line x1="200" y1="148" x2="200" y2="192"/>
+          <line x1="200" y1="228" x2="200" y2="272"/>
+          <line x1="215" y1="212" x2="268" y2="252"/>
+          <line x1="200" y1="308" x2="200" y2="372"/>
+          <line x1="185" y1="290" x2="138" y2="318"/>
+          <line x1="200" y1="408" x2="200" y2="468"/>
+          <line x1="185" y1="390" x2="138" y2="358"/>
+          <line x1="218" y1="468" x2="272" y2="380"/>
+          <line x1="280" y1="268" x2="280" y2="348"/>
+          <line x1="268" y1="368" x2="218" y2="400"/>
+          <line x1="152" y1="318" x2="265" y2="258"/>
+        </g>
+        <g class="channels-defined" stroke="#D4A830" stroke-opacity="0.7" stroke-width="2.5" fill="none" filter="url(#glow)">
+          <line x1="200" y1="52" x2="200" y2="108"/>
+          <line x1="200" y1="148" x2="200" y2="192"/>
+          <line x1="200" y1="228" x2="200" y2="272"/>
+        </g>
+        <g class="center center-defined" transform="translate(200, 32)">
+          <polygon points="0,-28 24,14 -24,14" fill="url(#centerGradDefined)" stroke="#D4A830" stroke-width="1.5"/>
+          <text y="4" text-anchor="middle" fill="#D4A830" font-size="8" font-family="Inter">ГОЛОВА</text>
+        </g>
+        <g class="center center-defined" transform="translate(200, 128)">
+          <ellipse rx="28" ry="20" fill="url(#centerGradDefined)" stroke="#D4A830" stroke-width="1.5"/>
+          <text y="4" text-anchor="middle" fill="#D4A830" font-size="8" font-family="Inter">АДЖНА</text>
+        </g>
+        <g class="center center-defined" transform="translate(200, 210)">
+          <rect x="-28" y="-18" width="56" height="36" rx="4" fill="url(#centerGradDefined)" stroke="#D4A830" stroke-width="1.5"/>
+          <text y="4" text-anchor="middle" fill="#D4A830" font-size="8" font-family="Inter">ГОРЛО</text>
+        </g>
+        <g class="center center-defined" transform="translate(200, 290)">
+          <polygon points="0,-28 28,0 0,28 -28,0" fill="url(#centerGradDefined)" stroke="#D4A830" stroke-width="1.5"/>
+          <text y="4" text-anchor="middle" fill="#D4A830" font-size="7" font-family="Inter">САМІСТЬ</text>
+        </g>
+        <g class="center center-undefined" transform="translate(280, 258)">
+          <polygon points="0,-24 24,0 0,24 -24,0" fill="url(#centerGradUndefined)" stroke="#9B6EE0" stroke-width="1.5" stroke-dasharray="4,2"/>
+          <text y="3" text-anchor="middle" fill="#9B6EE0" font-size="6.5" font-family="Inter">ВОЛЯ</text>
+        </g>
+        <g class="center center-undefined" transform="translate(280, 368)">
+          <polygon points="0,-28 24,14 -24,14" fill="url(#centerGradUndefined)" stroke="#9B6EE0" stroke-width="1.5" stroke-dasharray="4,2"/>
+          <text y="3" text-anchor="middle" fill="#9B6EE0" font-size="5.5" font-family="Inter">СОН.СПЛЕТ</text>
+        </g>
+        <g class="center center-defined" transform="translate(200, 390)">
+          <rect x="-28" y="-18" width="56" height="36" rx="4" fill="url(#centerGradDefined)" stroke="#D4A830" stroke-width="1.5"/>
+          <text y="4" text-anchor="middle" fill="#D4A830" font-size="8" font-family="Inter">САКРАЛ</text>
+        </g>
+        <g class="center center-undefined" transform="translate(130, 338)">
+          <polygon points="0,-28 24,14 -24,14" fill="url(#centerGradUndefined)" stroke="#9B6EE0" stroke-width="1.5" stroke-dasharray="4,2"/>
+          <text y="3" text-anchor="middle" fill="#9B6EE0" font-size="7" font-family="Inter">СЕЛЕЗІН</text>
+        </g>
+        <g class="center center-undefined" transform="translate(200, 480)">
+          <rect x="-28" y="-18" width="56" height="36" rx="4" fill="url(#centerGradUndefined)" stroke="#9B6EE0" stroke-width="1.5" stroke-dasharray="4,2"/>
+          <text y="4" text-anchor="middle" fill="#9B6EE0" font-size="8" font-family="Inter">КОРІНЬ</text>
+        </g>
+        <g fill="#D4A830" fill-opacity="0.4">
+          <circle cx="60" cy="80" r="1.5"/>
+          <circle cx="340" cy="120" r="1"/>
+          <circle cx="45" cy="200" r="1"/>
+          <circle cx="355" cy="450" r="1.5"/>
+          <circle cx="80" cy="480" r="1"/>
+          <circle cx="320" cy="60" r="1.5"/>
+        </g>
+      </svg>
+      <div class="bodygraph-legend">
+        <span class="legend-item">
+          <span class="legend-dot dot-gold"></span>
+          <span data-i18n="hero.legend.defined">Визначений</span>
+        </span>
+        <span class="legend-item">
+          <span class="legend-dot dot-purple"></span>
+          <span data-i18n="hero.legend.undefined">Невизначений</span>
+        </span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="about" id="about">
+  <div class="container">
+    <div class="section-header">
+      <div class="badge badge-purple" data-i18n="about.badge">✦ Що це?</div>
+      <h2 data-i18n-html="about.title">Дизайн Людини —<br><em>це твоя енергетична карта</em></h2>
+      <p class="section-lead" data-i18n="about.lead">
+        Система, що поєднує астрологію, Каббалу, І-Цзін та квантову фізику. Розрахована за точним часом народження — як відбиток пальця, унікальна для кожного.
+      </p>
+    </div>
+    <div class="about-grid">
+      <div class="about-card">
+        <div class="about-icon">☽</div>
+        <h3 data-i18n="about.card1.title">Не езотерика</h3>
+        <p data-i18n="about.card1.text">Дизайн Людини — це систематизована карта твоєї природи. Вона пояснює поведінку, прийняття рішень та взаємодію з іншими.</p>
+      </div>
+      <div class="about-card">
+        <div class="about-icon">◈</div>
+        <h3 data-i18n="about.card2.title">Твій тип і стратегія</h3>
+        <p data-i18n="about.card2.text">Існує 5 типів: Генератор, МГ, Маніфестор, Проектор, Рефлектор. Кожен з унікальною стратегією взаємодії зі світом.</p>
+      </div>
+      <div class="about-card">
+        <div class="about-icon">✦</div>
+        <h3 data-i18n="about.card3.title">Авторитет рішень</h3>
+        <p data-i18n="about.card3.text">Система пояснює, як саме твоє тіло та свідомість дають найкращі відповіді. Більше не потрібно мучитися в нерішучості.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BENEFITS -->
+<section class="benefits" id="benefits">
+  <div class="container">
+    <div class="section-header">
+      <div class="badge" data-i18n="benefits.badge">✦ Що ти отримаєш</div>
+      <h2 data-i18n-html="benefits.title">Розшифровка змінює <em>все</em></h2>
+    </div>
+    <div class="benefits-list">
+      <div class="benefit-item">
+        <div class="benefit-num">01</div>
+        <div class="benefit-content">
+          <h3 data-i18n="benefits.1.title">Зрозумієш свій тип енергії</h3>
+          <p data-i18n="benefits.1.text">Чому ти втомлюєшся швидше або повільніше за інших. Як правильно планувати день під свою природу.</p>
+        </div>
+      </div>
+      <div class="benefit-item">
+        <div class="benefit-num">02</div>
+        <div class="benefit-content">
+          <h3 data-i18n="benefits.2.title">Дізнаєшся як приймати рішення</h3>
+          <p data-i18n="benefits.2.text">Твій авторитет — це внутрішній компас. Він є в тілі, а не в голові. Навчися ним користуватися.</p>
+        </div>
+      </div>
+      <div class="benefit-item">
+        <div class="benefit-num">03</div>
+        <div class="benefit-content">
+          <h3 data-i18n="benefits.3.title">Зрозумієш свою роль у стосунках</h3>
+          <p data-i18n="benefits.3.text">Чому з одними людьми тобі легко, а з іншими — виснажливо. Де твоя межа і як її захистити.</p>
+        </div>
+      </div>
+      <div class="benefit-item">
+        <div class="benefit-num">04</div>
+        <div class="benefit-content">
+          <h3 data-i18n="benefits.4.title">Знайдеш пояснення своїх паттернів</h3>
+          <p data-i18n="benefits.4.text">Повторювані ситуації, які тебе злять чи виснажують — не випадкові. Розшифровка покаже їх джерело.</p>
+        </div>
+      </div>
+      <div class="benefit-item">
+        <div class="benefit-num">05</div>
+        <div class="benefit-content">
+          <h3 data-i18n="benefits.5.title">Перестанеш себе засуджувати</h3>
+          <p data-i18n="benefits.5.text">Багато рис, які ти вважала "вадами" — це просто твій дизайн. Прийняття себе починається з розуміння.</p>
+        </div>
+      </div>
+      <div class="benefit-item">
+        <div class="benefit-num">06</div>
+        <div class="benefit-content">
+          <h3 data-i18n="benefits.6.title">Отримаєш конкретні практики</h3>
+          <p data-i18n="benefits.6.text">Не загальні поради, а дії, що відповідають саме твоєму типу. Починаєш застосовувати вже завтра.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how" id="how">
+  <div class="container">
+    <div class="section-header">
+      <div class="badge badge-purple" data-i18n="how.badge">✦ Як це працює</div>
+      <h2 data-i18n-html="how.title">Від квізу до розшифровки<br><em>за 10 хвилин</em></h2>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <h3 data-i18n="how.step1.title">Пройди квіз</h3>
+          <p data-i18n="how.step1.text">9 простих запитань: дата, час та місце народження + кілька питань про тебе. Займає 3 хвилини.</p>
+        </div>
+      </div>
+      <div class="step-arrow">→</div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <h3 data-i18n="how.step2.title">Обери тариф</h3>
+          <p data-i18n="how.step2.text">Базовий (399 грн) або Повний (799 грн). Обидва персональні — не шаблони.</p>
+        </div>
+      </div>
+      <div class="step-arrow">→</div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <h3 data-i18n="how.step3.title">Оплати картою</h3>
+          <p data-i18n="how.step3.text">LiqPay: Visa/Mastercard, Apple Pay, Google Pay. Безпечно та швидко.</p>
+        </div>
+      </div>
+      <div class="step-arrow">→</div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <h3 data-i18n="how.step4.title">Отримай на пошту</h3>
+          <p data-i18n="how.step4.text">Через 5–10 хвилин на твою email-адресу прийде повна персональна розшифровка.</p>
+        </div>
+      </div>
+    </div>
+    <div class="how-cta">
+      <a href="quiz.html" class="btn btn-gold btn-lg" data-i18n="how.cta">Почати квіз →</a>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="pricing" id="pricing">
+  <div class="container">
+    <div class="section-header">
+      <div class="badge" data-i18n="pricing.badge">✦ Тарифи</div>
+      <h2 data-i18n-html="pricing.title">Обери свій рівень <em>занурення</em></h2>
+      <p class="section-lead" data-i18n="pricing.lead">Обидва варіанти персональні — складаються на основі твоїх даних, не шаблони.</p>
+    </div>
+    <div class="pricing-grid">
+      <div class="pricing-card">
+        <div class="pricing-header">
+          <div class="pricing-badge" data-i18n="pricing.basic.name">Базовий</div>
+          <div class="pricing-price">
+            <span class="price-amount">399</span>
+            <span class="price-currency">грн</span>
+          </div>
+          <p class="pricing-desc" data-i18n="pricing.basic.desc">Ідеально для знайомства з Дизайном Людини</p>
+        </div>
+        <ul class="pricing-features">
+          <li data-i18n="pricing.basic.f1">✓ Твій тип та стратегія</li>
+          <li data-i18n="pricing.basic.f2">✓ Авторитет прийняття рішень</li>
+          <li data-i18n="pricing.basic.f3">✓ Профіль — твоя роль у житті</li>
+          <li data-i18n="pricing.basic.f4">✓ Ключові центри бодиграфу</li>
+          <li data-i18n="pricing.basic.f5">✓ Практичні рекомендації</li>
+          <li class="feature-muted" data-i18n="pricing.basic.not1">— Детальний аналіз каналів</li>
+          <li class="feature-muted" data-i18n="pricing.basic.not2">— Інкарнаційний хрест</li>
+          <li class="feature-muted" data-i18n="pricing.basic.not3">— Аналіз стосунків</li>
+        </ul>
+        <div class="pricing-volume" data-i18n="pricing.basic.volume">~20 сторінок · PDF на пошту</div>
+        <a href="quiz.html?plan=basic" class="btn btn-outline btn-block" data-i18n="pricing.basic.cta">Обрати базовий</a>
+      </div>
+
+      <div class="pricing-card pricing-card-featured">
+        <div class="pricing-popular" data-i18n="pricing.full.popular">Найпопулярніший</div>
+        <div class="pricing-header">
+          <div class="pricing-badge" data-i18n="pricing.full.name">Повний</div>
+          <div class="pricing-price">
+            <span class="price-amount">799</span>
+            <span class="price-currency">грн</span>
+          </div>
+          <p class="pricing-desc" data-i18n="pricing.full.desc">Глибоке занурення у всі аспекти твого дизайну</p>
+        </div>
+        <ul class="pricing-features">
+          <li data-i18n="pricing.full.f1">✓ Все з базового тарифу</li>
+          <li data-i18n="pricing.full.f2">✓ Детальний аналіз усіх центрів</li>
+          <li data-i18n="pricing.full.f3">✓ Ключові канали та гексаграми</li>
+          <li data-i18n="pricing.full.f4">✓ Інкарнаційний хрест</li>
+          <li data-i18n="pricing.full.f5">✓ Аналіз стосунків та партнерства</li>
+          <li data-i18n="pricing.full.f6">✓ Тип визначення бодиграфу</li>
+          <li data-i18n="pricing.full.f7">✓ Практики декондиціювання</li>
+          <li data-i18n="pricing.full.f8">✓ Персональний план на 90 днів</li>
+        </ul>
+        <div class="pricing-volume" data-i18n="pricing.full.volume">~50 сторінок · PDF на пошту</div>
+        <a href="quiz.html?plan=full" class="btn btn-gold btn-block" data-i18n="pricing.full.cta">Обрати повний</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="testimonials" id="reviews">
+  <div class="container">
+    <div class="section-header">
+      <div class="badge badge-purple" data-i18n="reviews.badge">✦ Відгуки</div>
+      <h2 data-i18n-html="reviews.title">Що кажуть <em>клієнтки</em></h2>
+    </div>
+    <div class="reviews-grid">
+      <div class="review-card">
+        <div class="review-stars">★★★★★</div>
+        <blockquote data-i18n="reviews.1.text">Я плакала, читаючи розшифровку. Нарешті зрозуміла, чому так виснажуюся від людей і чому не можу просто "взяти і зробити". Я Проектор — і це пояснює все.</blockquote>
+        <div class="review-author">
+          <div class="author-avatar">О</div>
+          <div>
+            <div class="author-name" data-i18n="reviews.1.name">Олена, 34 роки</div>
+            <div class="author-meta" data-i18n="reviews.1.meta">Київ · Повний тариф</div>
+          </div>
+        </div>
+      </div>
+      <div class="review-card">
+        <div class="review-stars">★★★★★</div>
+        <blockquote data-i18n="reviews.2.text">Думала, що це чергова езотерика. Але прочитала і відчула — ніби хтось уперше описав мене точно. Особливо частина про авторитет — тепер знаю, як приймати рішення.</blockquote>
+        <div class="review-author">
+          <div class="author-avatar">М</div>
+          <div>
+            <div class="author-name" data-i18n="reviews.2.name">Марія, 29 років</div>
+            <div class="author-meta" data-i18n="reviews.2.meta">Львів · Базовий тариф</div>
+          </div>
+        </div>
+      </div>
+      <div class="review-card">
+        <div class="review-stars">★★★★★</div>
+        <blockquote data-i18n="reviews.3.text">Надіслала також своєму чоловікові. Стало набагато легше спілкуватися — розуміємо, чому реагуємо по-різному. Рекомендую всім парам!</blockquote>
+        <div class="review-author">
+          <div class="author-avatar">А</div>
+          <div>
+            <div class="author-name" data-i18n="reviews.3.name">Анна, 38 років</div>
+            <div class="author-meta" data-i18n="reviews.3.meta">Харків · Повний тариф</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="faq" id="faq">
+  <div class="container">
+    <div class="section-header">
+      <div class="badge" data-i18n="faq.badge">✦ Питання та відповіді</div>
+      <h2><em data-i18n="faq.title">FAQ</em></h2>
+    </div>
+    <div class="faq-list">
+      <details class="faq-item">
+        <summary class="faq-question" data-i18n="faq.q1">Що потрібно для розшифровки?</summary>
+        <div class="faq-answer"><p data-i18n="faq.a1">Тільки три речі: точна дата народження, час народження (хоча б приблизний) та місце народження. Ці дані дозволяють розрахувати твій бодиграф та Дизайн Людини.</p></div>
+      </details>
+      <details class="faq-item">
+        <summary class="faq-question" data-i18n="faq.q2">Як швидко я отримаю розшифровку?</summary>
+        <div class="faq-answer"><p data-i18n="faq.a2">Зазвичай 5–10 хвилин після оплати. У рідких випадках до 20 хвилин. Розшифровка надсилається на email, який ти вкажеш у квізі.</p></div>
+      </details>
+      <details class="faq-item">
+        <summary class="faq-question" data-i18n="faq.q3">Чим базовий тариф відрізняється від повного?</summary>
+        <div class="faq-answer"><p data-i18n="faq.a3">Базовий (399 грн) — це ~20 сторінок з ключовими аспектами: тип, авторитет, профіль, основні центри та практики. Повний (799 грн) — це ~50 сторінок, що включають канали, гексаграми, інкарнаційний хрест, аналіз стосунків та план на 90 днів.</p></div>
+      </details>
+      <details class="faq-item">
+        <summary class="faq-question" data-i18n="faq.q4">А що якщо я не знаю точний час народження?</summary>
+        <div class="faq-answer"><p data-i18n="faq.a4">Введи приблизний час або вкажи "невідомо". Ми зможемо розрахувати тип, авторитет та профіль з достатньою точністю. Деякі аспекти будуть позначені як орієнтовні.</p></div>
+      </details>
+      <details class="faq-item">
+        <summary class="faq-question" data-i18n="faq.q5">Чи можна замовити розшифровку в подарунок?</summary>
+        <div class="faq-answer"><p data-i18n="faq.a5">Так! Пройди квіз, вкажи дані людини та свою email-адресу — або email отримувача. Ми надішлемо розшифровку прямо на потрібну скриньку.</p></div>
+      </details>
+      <details class="faq-item">
+        <summary class="faq-question" data-i18n="faq.q6">Як приймається оплата?</summary>
+        <div class="faq-answer"><p data-i18n="faq.a6">Через платіжну систему LiqPay: Visa/Mastercard, Apple Pay, Google Pay. Всі транзакції захищені. Ми не зберігаємо дані твоєї картки.</p></div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="cta-final" id="cta">
+  <div class="container">
+    <div class="cta-card">
+      <div class="cta-decoration">✦ ✦ ✦</div>
+      <h2 data-i18n-html="cta.title">Готова дізнатися<br><em>свій дизайн?</em></h2>
+      <p data-i18n="cta.text">Пройди 9 запитань та отримай персональну розшифровку вже за 10 хвилин.</p>
+      <a href="quiz.html" class="btn btn-gold btn-lg">
+        <span data-i18n="cta.btn">Почати безкоштовний квіз</span>
+        <span class="btn-arrow">→</span>
+      </a>
+      <p class="cta-note" data-i18n="cta.note">399 грн · безпечна оплата · миттєва доставка на email</p>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="container footer-inner">
+    <div class="footer-brand">
+      <span class="logo-symbol">✦</span>
+      <span data-i18n="footer.brand">Дизайн Людини</span>
+    </div>
+    <nav class="footer-links">
+      <a href="privacy.html" data-i18n="footer.privacy">Конфіденційність</a>
+      <a href="terms.html" data-i18n="footer.terms">Публічна оферта</a>
+    </nav>
+    <p class="footer-copy" data-i18n="footer.copy">© 2026 Human Design UA. Всі права захищені.</p>
+  </div>
+</footer>
+
+<script src="assets/js/analytics.js"></script>
+<script src="assets/js/i18n.js"></script>
+<script>
+  // Scroll reveal
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }
+    });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.benefit-item, .step, .review-card, .pricing-card, .about-card').forEach(el => {
+    el.classList.add('reveal');
+    observer.observe(el);
+  });
+</script>
+
+</body>
+</html>

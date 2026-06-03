@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Розшири свою розшифровку — Дизайн Людини</title>
+  <meta name="robots" content="noindex">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
+
+<div class="upsell-page">
+  <div class="upsell-card">
+    <div class="badge badge-purple">✦ Спеціальна пропозиція</div>
+    <h1>Хочеш <em>більше глибини?</em></h1>
+    <p style="margin: 1rem 0 0.5rem;">У тебе вже є базова розшифровка. Але є ще рівень глибше — канали, хрест, стосунки.</p>
+    <p style="margin-bottom: 1.5rem; font-size: 0.9rem;">Доплати лише <strong style="color:var(--gold)">400 грн</strong> та отримай повну версію (~50 сторінок).</p>
+
+    <div style="background: var(--bg); border: 1px solid var(--border-card); border-radius: 12px; padding: 1.5rem; margin: 1.5rem 0; text-align: left;">
+      <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;"><strong style="color:var(--text)">Що додається в повній версії:</strong></p>
+      <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.5rem;">
+        <li style="font-size: 0.85rem; color: var(--text-muted);">✓ Детальний аналіз каналів та гексаграм</li>
+        <li style="font-size: 0.85rem; color: var(--text-muted);">✓ Інкарнаційний хрест — твоє покликання</li>
+        <li style="font-size: 0.85rem; color: var(--text-muted);">✓ Аналіз стосунків та партнерства</li>
+        <li style="font-size: 0.85rem; color: var(--text-muted);">✓ Практики декондиціювання</li>
+        <li style="font-size: 0.85rem; color: var(--text-muted);">✓ Персональний план на 90 днів</li>
+      </ul>
+    </div>
+
+    <div style="display: flex; align-items: center; gap: 1rem; justify-content: center; margin-bottom: 1.5rem; flex-wrap: wrap;">
+      <div style="text-decoration: line-through; color: var(--text-dim); font-size: 1.1rem;">799 грн</div>
+      <div style="font-family: var(--font-serif); font-size: 2rem; color: var(--gold);">400 грн доплата</div>
+    </div>
+
+    <a href="#" class="btn btn-gold btn-lg btn-block" id="upsellPayBtn" onclick="initiateUpsellPayment()">
+      Отримати повну розшифровку →
+    </a>
+    <p style="font-size: 0.75rem; color: var(--text-dim); margin-top: 0.75rem;">🔒 Безпечна оплата · миттєва доставка на ту ж пошту</p>
+
+    <div style="margin-top: 1.5rem;">
+      <a href="index.html" style="font-size: 0.85rem; color: var(--text-dim);">Ні, дякую, базової достатньо</a>
+    </div>
+  </div>
+</div>
+
+<script src="assets/js/analytics.js"></script>
+<script src="assets/js/payment.js"></script>
+<script>
+  // Track upsell page view
+  if (typeof fbq !== 'undefined') fbq('track', 'ViewContent', { content_name: 'upsell' });
+
+  function initiateUpsellPayment() {
+    if (typeof fbq !== 'undefined') fbq('track', 'InitiateCheckout', { value: 400, currency: 'UAH' });
+    // Get user data from URL params or localStorage
+    const userId = new URLSearchParams(window.location.search).get('uid') || localStorage.getItem('hd_user_id');
+    if (!userId) {
+      alert('Помилка: не знайдено дані замовлення. Зверніться до підтримки.');
+      return;
+    }
+    // Initiate upsell payment via payment.js
+    initiateUpsell(userId);
+  }
+</script>
+
+</body>
+</html>

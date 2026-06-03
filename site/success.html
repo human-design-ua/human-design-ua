@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Дякуємо за замовлення — Дизайн Людини</title>
+  <meta name="robots" content="noindex">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
+
+<div class="success-page">
+  <div class="success-card">
+    <div class="success-icon">✦</div>
+    <h1>Дякуємо!<br><em>Оплата успішна</em></h1>
+    <p>Твоя персональна розшифровка вже готується. Ми надішлемо її на пошту:</p>
+    <p class="success-email" id="successEmail">твою email-адресу</p>
+    <p style="font-size:0.9rem;">впродовж <strong style="color:var(--gold)">5–10 хвилин</strong>.</p>
+
+    <div style="background: var(--bg); border: 1px solid var(--border-card); border-radius: 10px; padding: 1.25rem; margin: 2rem 0; text-align: left;">
+      <p style="font-size:0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;"><strong style="color:var(--text)">Що далі:</strong></p>
+      <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.5rem;">
+        <li style="font-size:0.85rem; color: var(--text-muted);">📧 Перевір папку "Вхідні" та "Спам"</li>
+        <li style="font-size:0.85rem; color: var(--text-muted);">⏳ Якщо через 15 хв нічого — напиши нам</li>
+        <li style="font-size:0.85rem; color: var(--text-muted);">🌙 Читай у спокійній обстановці</li>
+      </ul>
+    </div>
+
+    <a href="index.html" class="btn btn-outline">← На головну</a>
+  </div>
+</div>
+
+<script src="assets/js/analytics.js"></script>
+<script>
+  // Show email from localStorage if available
+  const savedEmail = localStorage.getItem('hd_email');
+  if (savedEmail) {
+    document.getElementById('successEmail').textContent = savedEmail;
+  }
+
+  // Fire GA4 & Pixel purchase event
+  const savedPlan = localStorage.getItem('hd_plan');
+  const amount = savedPlan === 'full' ? 799 : 399;
+  if (typeof gtag !== 'undefined') {
+    gtag('event', 'purchase', { currency: 'UAH', value: amount });
+  }
+  if (typeof fbq !== 'undefined') {
+    fbq('track', 'Purchase', { currency: 'UAH', value: amount });
+  }
+</script>
+
+</body>
+</html>
