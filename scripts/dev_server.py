@@ -91,6 +91,7 @@ class DevHandler(BaseHTTPRequestHandler):
             'challenge':   data.get('challenge', ''),
             'utm_source':  data.get('utm_source', ''),
             'utm_campaign':data.get('utm_campaign', ''),
+            'locale':      data.get('locale', 'ua'),
             'paid_at':     datetime.now().strftime('%d.%m.%Y %H:%M'),
             'env':         'dev',
         }

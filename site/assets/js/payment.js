@@ -263,6 +263,7 @@ async function devPaymentResult(result, orderId, note) {
           challenge:   quizData.challenge  || '',
           utm_source:  getUTM('utm_source'),
           utm_campaign:getUTM('utm_campaign'),
+          locale:      window.i18n ? window.i18n.current() : localStorage.getItem('hd_lang') || 'ua',
         }),
       });
       const json = await res.json();
@@ -316,6 +317,7 @@ async function initiatePayment(quizData) {
     challenge:    quizData.challenge,
     hd_knowledge: quizData.hdKnowledge,
     source:       quizData.source || 'direct',
+    locale:       window.i18n ? window.i18n.current() : localStorage.getItem('hd_lang') || 'ua',
     utm_source:   getUTM('utm_source'),
     utm_campaign: getUTM('utm_campaign'),
   };

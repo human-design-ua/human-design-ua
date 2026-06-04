@@ -26,7 +26,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
 from dotenv import load_dotenv
-from generate_receipt import generate_receipt, PLAN_NAMES, PLAN_AMOUNTS
+from generate_receipt import generate_receipt, PLAN_NAMES, PLAN_AMOUNTS, T as RECEIPT_T
 
 # Load .env
 load_dotenv(os.path.join(os.path.dirname(__file__), '..', '.env'))
@@ -45,15 +45,32 @@ SMTP_HOST      = 'smtp.gmail.com'
 SMTP_PORT      = 587
 
 
+EMAIL_GREETINGS = {
+    'ua': ('Вітаємо', 'Ваша оплата успішно прийнята.',
+           'Ваша розшифровка вже генерується і буде надіслана протягом 5-10 хвилин.',
+           'У вкладенні - чек про оплату.', 'З повагою,',
+           'DEV - тестовий лист. Реальні гроші не списувались.'),
+    'ru': ('Привет', 'Ваша оплата успешно принята.',
+           'Ваша расшифровка уже генерируется и будет отправлена в течение 5-10 минут.',
+           'Во вложении - чек об оплате.', 'С уважением,',
+           'DEV - тестовое письмо. Реальные деньги не списывались.'),
+    'en': ('Hello', 'Your payment has been successfully received.',
+           'Your reading is being generated and will be sent within 5-10 minutes.',
+           'Attached is your payment receipt.', 'Best regards,',
+           'DEV - test email. No real money was charged.'),
+}
+
 def build_email_body(order_data: dict) -> str:
     plan      = order_data.get('plan', 'basic')
     name      = order_data.get('name', '')
     order_id  = order_data.get('order_id', '')
     amount    = order_data.get('amount', PLAN_AMOUNTS.get(plan, 399))
-    greeting  = f'Вітаємо, {name}!' if name else 'Вітаємо!'
-    plan_name = PLAN_NAMES.get(plan, 'Розшифровка бодіграфу')
-    dev_note  = '\n⚠ DEV РЕЖИМ — тестовий лист. Реальні гроші не списувались.\n' \
-                if order_data.get('env') == 'dev' else ''
+    locale    = order_data.get('locale', 'ua')
+    g         = EMAIL_GREETINGS.get(locale, EMAIL_GREETINGS['ua'])
+    greeting  = f'{g[0]}, {name}!' if name else f'{g[0]}!'
+    plan_names= PLAN_NAMES.get(locale, PLAN_NAMES['ua'])
+    plan_name = plan_names.get(plan, plan)
+    dev_note  = f'\n⚠ {g[5]}\n' if order_data.get('env') == 'dev' else ''
 
     birth_date  = order_data.get('birth_date',  '')
     birth_time  = order_data.get('birth_time',  '')
