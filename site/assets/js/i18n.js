@@ -9,8 +9,8 @@
 //                               → interpolates {{n}} and {{total}} in text
 
 var I18N_KEY        = 'hd_lang';
-var SUPPORTED_LANGS = ['uk', 'ru', 'en'];
-var DEFAULT_LANG    = 'uk';
+var SUPPORTED_LANGS = ['ua', 'ru', 'en'];
+var DEFAULT_LANG    = 'ua';
 var currentLang     = DEFAULT_LANG;
 
 // ── Init ───────────────────────────────────────────────────

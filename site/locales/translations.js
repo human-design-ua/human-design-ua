@@ -1,6 +1,6 @@
 // Human Design — Translation Store
 // Keys are flat strings, values are translated strings
-// Languages: uk (Ukrainian), ru (Russian), en (English)
+// Languages: ua (Ukrainian), ru (Russian), en (English)
 // To update translations: edit values in the respective language object
 // To add a key: add it to all 3 language objects
 
@@ -9,7 +9,7 @@ var HD_TRANSLATIONS = {
   // ============================================================
   // UKRAINIAN (default / primary market language)
   // ============================================================
-  uk: {
+  ua: {
     // Navigation
     'nav.logo':         'Дизайн\nЛюдини',
     'nav.cta':          'Дізнатися свій дизайн →',
