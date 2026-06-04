@@ -87,7 +87,7 @@ var HD_TRANSLATIONS = {
 
     // Pricing start
     'pricing.start.badge': '✦ З чого почати',
-    'pricing.start.title': 'Обери свій перший крок<br><em>до власного дизайну</em>',
+    'pricing.start.title': 'З чого почати',
     'pricing.basic.cta':   'Розрахувати базовий дизайн →',
     'pricing.full.cta':    'Розрахувати повний дизайн →',
 
@@ -186,7 +186,7 @@ var HD_TRANSLATIONS = {
 
     // FAQ
     'faq.badge':  '✦ Питання та відповіді',
-    'faq.title':  'FAQ',
+    'faq.title':  'Часті запитання',
     'faq.q1':     'Що потрібно для розшифровки?',
     'faq.a1':     'Тільки три речі: точна дата народження, час народження (хоча б приблизний) та місце народження. Ці дані дозволяють розрахувати твій бодиграф та Дизайн Людини.',
     'faq.q2':     'Як швидко я отримаю розшифровку?',
@@ -356,7 +356,7 @@ var HD_TRANSLATIONS = {
     'sciences.title':   'Синтез классических наук<br><em>и древней космологии</em>',
     'sciences.lead':    'Ра Уру Ху, основатель системы, получил знания о Дизайне Человека в 1987 году в виде целостной системы, объединившей несколько научных и духовных традиций. Квантовая физика объясняет, как нейтрино влияют на ДНК; астрология и астрономия — как положение планет формирует нашу карту; генетика — почему мы реагируем именно так; а эзотерические системы — как эта карта вписана в великую структуру Вселенной.',
     'pricing.start.badge': '✦ С чего начать',
-    'pricing.start.title': 'Выбери свой первый шаг<br><em>к собственному дизайну</em>',
+    'pricing.start.title': 'С чего начать',
     'pricing.basic.cta':   'Рассчитать базовый дизайн →',
     'pricing.full.cta':    'Рассчитать полный дизайн →',
     'reviews.4.text':   'Долго не могла понять, почему карьера не складывается несмотря на все усилия. Оказалось, я действовала против своего типа. После расшифровки изменила стратегию — и за три месяца получила два оффера.',
@@ -447,7 +447,7 @@ var HD_TRANSLATIONS = {
     'reviews.3.meta':   'Харьков · Полный тариф',
 
     'faq.badge':  '✦ Вопросы и ответы',
-    'faq.title':  'FAQ',
+    'faq.title':  'Частые вопросы',
     'faq.q1':     'Что нужно для расшифровки?',
     'faq.a1':     'Только три вещи: точная дата рождения, время рождения (хотя бы приблизительное) и место рождения. Эти данные позволяют рассчитать твой бодиграф.',
     'faq.q2':     'Как быстро я получу расшифровку?',
@@ -612,7 +612,7 @@ var HD_TRANSLATIONS = {
     'sciences.title':   'A synthesis of classical science<br><em>and ancient cosmology</em>',
     'sciences.lead':    'Human Design is a unique puzzle — assembled from diverse elements into a single concept that is logically impeccable and practically valuable. In it, quantum physics, astronomy, genetics, chemistry and biology are synchronised in a remarkable way, along with the key tenets of esoteric teachings and theories about the cosmological structure of the world. This knowledge is detailed in the ancient Vedic scriptures, the I Ching Book of Changes, and the Torah.',
     'pricing.start.badge': '✦ Where to begin',
-    'pricing.start.title': 'Choose your first step<br><em>toward your own design</em>',
+    'pricing.start.title': 'Where to begin',
     'pricing.basic.cta':   'Calculate Basic Design →',
     'pricing.full.cta':    'Calculate Full Design →',
     'reviews.4.text':   'I couldn\'t understand for a long time why my career wasn\'t working despite all my effort. Turns out I was acting against my type. After the reading I changed my strategy — and within three months got two job offers.',
@@ -703,7 +703,7 @@ var HD_TRANSLATIONS = {
     'reviews.3.meta':   'Kharkiv · Full plan',
 
     'faq.badge':  '✦ Questions & Answers',
-    'faq.title':  'FAQ',
+    'faq.title':  'Frequently Asked Questions',
     'faq.q1':     'What do I need for a reading?',
     'faq.a1':     'Just three things: exact birth date, birth time (even approximate) and birth place. These allow us to calculate your bodygraph and Human Design.',
     'faq.q2':     'How quickly will I receive the reading?',
