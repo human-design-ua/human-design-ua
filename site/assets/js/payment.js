@@ -5,10 +5,182 @@
 const MAKE_WEBHOOK_URL = 'YOUR_MAKE_WEBHOOK_URL_HERE';
 
 // ── DEV MOCK ──────────────────────────────────────────────
-function showDevPaymentModal(quizData, orderId, amount) {
-  // Remove existing modal
-  document.getElementById('devPayModal')?.remove();
+// ── DEV Card input screen ─────────────────────────────────
+function showDevCardScreen(quizData, orderId, amount) {
+  document.getElementById('devCardScreen')?.remove();
 
+  const T = window.t || (k => k);
+
+  const overlay = document.createElement('div');
+  overlay.id = 'devCardScreen';
+  overlay.style.cssText = `
+    position:fixed; inset:0; background:rgba(0,0,0,0.88);
+    display:flex; align-items:center; justify-content:center;
+    z-index:9998; font-family:Inter,sans-serif;
+  `;
+
+  overlay.innerHTML = `
+    <div style="background:#fff; border-radius:16px; padding:0;
+                max-width:400px; width:92%; overflow:hidden; box-shadow:0 24px 60px rgba(0,0,0,0.5);">
+
+      <!-- Header -->
+      <div style="background:#1A1440; padding:1.25rem 1.5rem; display:flex; align-items:center; justify-content:space-between;">
+        <div style="color:#D4A830; font-size:0.7rem; letter-spacing:0.1em; text-transform:uppercase; font-weight:700;">
+          🛠 DEV — Тестова форма оплати
+        </div>
+        <div style="color:#F0ECE8; font-size:1rem; font-weight:700;">${amount} грн</div>
+      </div>
+
+      <!-- Alt pay buttons -->
+      <div style="padding:1rem 1.5rem 0; display:flex; gap:0.75rem;">
+        <button onclick="devAltPay('apple', '${orderId}')"
+          style="flex:1; background:#000; color:#fff; border:none; border-radius:8px;
+                 padding:0.65rem; font-size:0.9rem; cursor:pointer; display:flex;
+                 align-items:center; justify-content:center; gap:0.4rem;">
+          🍎 Apple Pay
+        </button>
+        <button onclick="devAltPay('google', '${orderId}')"
+          style="flex:1; background:#fff; color:#000; border:1px solid #ddd; border-radius:8px;
+                 padding:0.65rem; font-size:0.9rem; cursor:pointer; display:flex;
+                 align-items:center; justify-content:center; gap:0.4rem;">
+          <span style="font-size:1rem;">G</span> Google Pay
+        </button>
+      </div>
+
+      <div style="display:flex; align-items:center; gap:0.75rem; padding:0.75rem 1.5rem;">
+        <div style="flex:1; height:1px; background:#eee;"></div>
+        <div style="font-size:0.75rem; color:#999;">або картою</div>
+        <div style="flex:1; height:1px; background:#eee;"></div>
+      </div>
+
+      <!-- Card form -->
+      <div style="padding:0 1.5rem 1.5rem;">
+
+        <!-- Card number -->
+        <div style="margin-bottom:0.85rem;">
+          <label style="font-size:0.75rem; color:#666; display:block; margin-bottom:0.3rem;">Номер картки</label>
+          <div style="position:relative;">
+            <input id="devCardNum" type="text" value="4242 4242 4242 4242"
+              style="width:100%; padding:0.65rem 3rem 0.65rem 0.75rem; border:1.5px solid #ddd;
+                     border-radius:8px; font-size:1rem; letter-spacing:0.12em; box-sizing:border-box;
+                     outline:none; font-family:monospace;"
+              oninput="this.style.borderColor='#9B6EE0'"
+              maxlength="19"
+              placeholder="0000 0000 0000 0000">
+            <span style="position:absolute; right:0.75rem; top:50%; transform:translateY(-50%);
+                         font-size:1.1rem;">💳</span>
+          </div>
+        </div>
+
+        <!-- Card holder -->
+        <div style="margin-bottom:0.85rem;">
+          <label style="font-size:0.75rem; color:#666; display:block; margin-bottom:0.3rem;">Ім'я власника картки</label>
+          <input id="devCardHolder" type="text" value="TEST USER"
+            style="width:100%; padding:0.65rem 0.75rem; border:1.5px solid #ddd;
+                   border-radius:8px; font-size:0.95rem; text-transform:uppercase;
+                   box-sizing:border-box; outline:none;"
+            oninput="this.style.borderColor='#9B6EE0'"
+            placeholder="IVAN IVANOV">
+        </div>
+
+        <!-- Expiry + CVV -->
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; margin-bottom:1.25rem;">
+          <div>
+            <label style="font-size:0.75rem; color:#666; display:block; margin-bottom:0.3rem;">Термін дії</label>
+            <input id="devCardExpiry" type="text" value="12/28"
+              style="width:100%; padding:0.65rem 0.75rem; border:1.5px solid #ddd;
+                     border-radius:8px; font-size:0.95rem; box-sizing:border-box; outline:none;"
+              oninput="this.style.borderColor='#9B6EE0'"
+              maxlength="5" placeholder="MM/YY">
+          </div>
+          <div>
+            <label style="font-size:0.75rem; color:#666; display:block; margin-bottom:0.3rem;">CVV</label>
+            <input id="devCardCvv" type="password" value="123"
+              style="width:100%; padding:0.65rem 0.75rem; border:1.5px solid #ddd;
+                     border-radius:8px; font-size:0.95rem; box-sizing:border-box; outline:none;"
+              oninput="this.style.borderColor='#9B6EE0'"
+              maxlength="4" placeholder="•••">
+          </div>
+        </div>
+
+        <!-- Pay button -->
+        <button onclick="devConfirmCard('${orderId}')"
+          style="width:100%; background:#D4A830; color:#0D0B1E; border:none; border-radius:10px;
+                 padding:0.9rem; font-size:1rem; font-weight:700; cursor:pointer;">
+          Оплатити ${amount} грн →
+        </button>
+
+        <!-- Security note -->
+        <div style="text-align:center; margin-top:0.75rem; font-size:0.72rem; color:#aaa; display:flex; align-items:center; justify-content:center; gap:0.3rem;">
+          🔒 Тестова форма · DEV · дані не зберігаються
+        </div>
+
+        <!-- Test cards hint -->
+        <div style="margin-top:0.75rem; padding:0.6rem 0.75rem; background:#f8f5ff; border-radius:8px; border-left:3px solid #9B6EE0;">
+          <div style="font-size:0.7rem; color:#9B6EE0; font-weight:700; margin-bottom:0.3rem;">Тестові картки:</div>
+          <div style="font-size:0.7rem; color:#555; line-height:1.6;">
+            ✅ Успішна:   4242 4242 4242 4242<br>
+            ❌ Відхилена: 4000 0000 0000 0002<br>
+            ⏳ 3D-Secure:  4000 0027 6000 3184
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(overlay);
+}
+
+function devConfirmCard(orderId) {
+  const num    = document.getElementById('devCardNum')?.value.replace(/\s/g, '');
+  const holder = document.getElementById('devCardHolder')?.value;
+
+  document.getElementById('devCardScreen')?.remove();
+
+  // Simulate card decline for test decline number
+  if (num === '4000000000000002') {
+    showDevResultModal(false, orderId, '❌ Картка відхилена банком');
+    return;
+  }
+  // Simulate 3DS for specific number
+  if (num === '4000002760003184') {
+    show3DSModal(orderId);
+    return;
+  }
+  // Default — success
+  showDevResultModal(true, orderId);
+}
+
+function devAltPay(method, orderId) {
+  document.getElementById('devCardScreen')?.remove();
+  // Simulate slight delay for realism
+  const label = method === 'apple' ? 'Apple Pay' : 'Google Pay';
+  showDevResultModal(true, orderId, `✅ ${label} авторизовано`);
+}
+
+function show3DSModal(orderId) {
+  const m = document.createElement('div');
+  m.id = 'dev3dsModal';
+  m.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.88);display:flex;align-items:center;justify-content:center;z-index:9999;font-family:Inter,sans-serif;';
+  m.innerHTML = `
+    <div style="background:#fff;border-radius:12px;padding:2rem;max-width:340px;width:90%;text-align:center;">
+      <div style="font-size:1.5rem;margin-bottom:0.75rem;">🏦</div>
+      <div style="font-size:1rem;font-weight:700;color:#1A1440;margin-bottom:0.5rem;">3D Secure підтвердження</div>
+      <div style="font-size:0.85rem;color:#666;margin-bottom:1.25rem;">Введіть код з SMS від банку</div>
+      <input type="text" value="123456" maxlength="6"
+        style="width:100%;padding:0.75rem;border:1.5px solid #9B6EE0;border-radius:8px;font-size:1.1rem;text-align:center;letter-spacing:0.2em;box-sizing:border-box;">
+      <button onclick="document.getElementById('dev3dsModal').remove(); showDevResultModal(true,'${orderId}')"
+        style="width:100%;margin-top:1rem;background:#1A1440;color:#fff;border:none;border-radius:8px;padding:0.75rem;cursor:pointer;font-weight:600;">
+        Підтвердити
+      </button>
+    </div>
+  `;
+  document.body.appendChild(m);
+}
+
+function showDevResultModal(success, orderId, note) {
+  const T = window.t || (k => k);
+  document.getElementById('devPayModal')?.remove();
   const modal = document.createElement('div');
   modal.id = 'devPayModal';
   modal.style.cssText = `
@@ -21,6 +193,7 @@ function showDevPaymentModal(quizData, orderId, amount) {
     ? (window.t ? window.t('quiz.pricing.full.name')  : 'Full')
     : (window.t ? window.t('quiz.pricing.basic.name') : 'Basic');
 
+  const noteHtml = note ? `<div style="font-size:0.8rem;color:#A090C0;margin-bottom:1rem;">${note}</div>` : '';
   modal.innerHTML = `
     <div style="background:#1A1440; border:1px solid #D4A830; border-radius:16px;
                 padding:2rem; max-width:420px; width:90%; text-align:center;">
@@ -28,6 +201,7 @@ function showDevPaymentModal(quizData, orderId, amount) {
                   text-transform:uppercase; margin-bottom:1rem;">
         ${T('dev.modal.title')}
       </div>
+      ${noteHtml}
       <div style="font-size:1.5rem; font-weight:600; color:#F0ECE8; margin-bottom:0.5rem;">
         ${amount} грн
       </div>
@@ -41,12 +215,12 @@ function showDevPaymentModal(quizData, orderId, amount) {
         ${T('dev.modal.order')} ${orderId}
       </div>
       <div style="display:flex; gap:0.75rem; justify-content:center;">
-        <button onclick="devPaymentResult('success', '${orderId}')"
+        <button onclick="devPaymentResult(true, '${orderId}')"
           style="background:#D4A830; color:#0D0B1E; border:none; border-radius:8px;
                  padding:0.75rem 1.5rem; font-weight:600; cursor:pointer; font-size:0.95rem;">
           ${T('dev.modal.success')}
         </button>
-        <button onclick="devPaymentResult('failure', '${orderId}')"
+        <button onclick="devPaymentResult(false, '${orderId}')"
           style="background:transparent; color:#E05050; border:1px solid #E05050;
                  border-radius:8px; padding:0.75rem 1.5rem; cursor:pointer; font-size:0.95rem;">
           ${T('dev.modal.fail')}
@@ -63,9 +237,9 @@ function showDevPaymentModal(quizData, orderId, amount) {
   document.body.appendChild(modal);
 }
 
-async function devPaymentResult(result, orderId) {
+async function devPaymentResult(result, orderId, note) {
   document.getElementById('devPayModal')?.remove();
-  if (result === 'success') {
+  if (result === 'success' || result === true) {
     localStorage.setItem('hd_order_id', orderId);
     localStorage.setItem('hd_payment_status', 'success');
 
@@ -125,7 +299,7 @@ async function initiatePayment(quizData) {
     localStorage.setItem('hd_plan',     quizData.plan);
     localStorage.setItem('hd_email',    quizData.email);
     localStorage.setItem('hd_quiz_data', JSON.stringify(quizData));
-    showDevPaymentModal(quizData, orderId, amount);
+    showDevCardScreen(quizData, orderId, amount);
     return;
   }
 
