@@ -123,8 +123,18 @@ class ReceiptPDF(FPDF):
 
         # ── Customer ───────────────────────────────────────
         self._section('Інформація про клієнта')
-        self._row("Ім'я",  o.get('name',  '—'))
-        self._row('Email', o.get('email', '—'))
+        self._row("Ім'я",          o.get('name',        '—'))
+        self._row('Email',         o.get('email',       '—'))
+        if o.get('birth_date'):
+            self._row('Дата народження', o['birth_date'])
+        if o.get('birth_time'):
+            self._row('Час народження',  o['birth_time'])
+        if o.get('birth_place'):
+            self._row('Місце народження',o['birth_place'])
+        if o.get('life_area'):
+            areas = {'career':'Кар\'єра та покликання','relationships':'Стосунки',
+                     'energy':'Енергія та здоров\'я','self':'Пізнання себе'}
+            self._row('Сфера інтересу', areas.get(o['life_area'], o['life_area']))
         self.ln(6)
 
         # ── Product table ──────────────────────────────────

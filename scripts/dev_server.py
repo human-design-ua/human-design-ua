@@ -79,13 +79,20 @@ class DevHandler(BaseHTTPRequestHandler):
         print('─' * 50)
 
         order_data = {
-            'order_id': data.get('order_id', f'HD-DEV-{int(datetime.now().timestamp())}'),
-            'email':    data.get('email', ''),
-            'name':     data.get('name', ''),
-            'plan':     data.get('plan', 'basic'),
-            'amount':   data.get('amount', 399),
-            'paid_at':  datetime.now().strftime('%d.%m.%Y %H:%M'),
-            'env':      'dev',
+            'order_id':    data.get('order_id', f'HD-DEV-{int(datetime.now().timestamp())}'),
+            'email':       data.get('email', ''),
+            'name':        data.get('name', ''),
+            'plan':        data.get('plan', 'basic'),
+            'amount':      data.get('amount', 399),
+            'birth_date':  data.get('birth_date', ''),
+            'birth_time':  data.get('birth_time', ''),
+            'birth_place': data.get('birth_place', ''),
+            'life_area':   data.get('life_area', ''),
+            'challenge':   data.get('challenge', ''),
+            'utm_source':  data.get('utm_source', ''),
+            'utm_campaign':data.get('utm_campaign', ''),
+            'paid_at':     datetime.now().strftime('%d.%m.%Y %H:%M'),
+            'env':         'dev',
         }
 
         # Validate email

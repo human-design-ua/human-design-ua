@@ -78,11 +78,18 @@ async function devPaymentResult(result, orderId) {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          order_id: orderId,
-          email:    quizData.email || '',
-          name:     quizData.name  || '',
-          plan:     quizData.plan  || 'basic',
-          amount:   amount,
+          order_id:    orderId,
+          email:       quizData.email      || '',
+          name:        quizData.name       || '',
+          plan:        quizData.plan       || 'basic',
+          amount:      amount,
+          birth_date:  quizData.birthDate  || '',
+          birth_time:  quizData.birthTime  || '',
+          birth_place: quizData.birthPlace || '',
+          life_area:   quizData.lifeArea   || '',
+          challenge:   quizData.challenge  || '',
+          utm_source:  getUTM('utm_source'),
+          utm_campaign:getUTM('utm_campaign'),
         }),
       });
       const json = await res.json();

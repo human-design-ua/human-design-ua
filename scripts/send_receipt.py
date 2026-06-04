@@ -55,6 +55,17 @@ def build_email_body(order_data: dict) -> str:
     dev_note  = '\n⚠ DEV РЕЖИМ — тестовий лист. Реальні гроші не списувались.\n' \
                 if order_data.get('env') == 'dev' else ''
 
+    birth_date  = order_data.get('birth_date',  '')
+    birth_time  = order_data.get('birth_time',  '')
+    birth_place = order_data.get('birth_place', '')
+    birth_block = ''
+    if any([birth_date, birth_time, birth_place]):
+        birth_block = (
+            f"\n  Дата народження  : {birth_date}"
+            f"\n  Час народження   : {birth_time or 'не вказано'}"
+            f"\n  Місце народження : {birth_place}"
+        )
+
     return f"""
 {dev_note}
 {greeting}
@@ -64,12 +75,12 @@ def build_email_body(order_data: dict) -> str:
   Номер замовлення : {order_id}
   Послуга          : {plan_name}
   Сума             : {amount} грн
-  Статус           : ✓ Оплачено
+  Статус           : Оплачено{birth_block}
 
 Ваша персональна розшифровка Дизайну Людини вже генерується
-і буде надіслана на цю адресу протягом 5–10 хвилин.
+і буде надіслана на цю адресу протягом 5-10 хвилин.
 
-У вкладенні — чек про оплату у форматі PDF.
+У вкладенні - чек про оплату у форматі PDF.
 
 З повагою,
 Human Design UA
