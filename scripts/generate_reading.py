@@ -925,84 +925,102 @@ class HumanDesignPDF(FPDF):
         self._page_number()
 
     # ── Page 4: YOUR TYPE (part 1) ───────────────────────────────────────────
-    def build_type_p1(self, name):
+    def build_type_p1(self, name, content=None):
         self.add_page()
         t = self.t
         self._orange_accent_bar()
         self._page_header(name)
         self.set_y(18)
         self._section_header(t["s02_num"], t["s02_title"], with_bar=False)
-        self._big_value_box(t["your_type"], "[ТИП]")
-        self._body(t["type_box_desc"], size=10)
+        hd_type = content.get("hd_type", "[ТИП]") if content else "[ТИП]"
+        self._big_value_box(t["your_type"], hd_type)
+        body_text = (content.get("type_description", t["type_box_desc"])
+                     if content else t["type_box_desc"])
+        self._body(body_text, size=10)
         self._page_number()
 
     # ── Page 5: YOUR TYPE (part 2) — Strategy ───────────────────────────────
-    def build_type_p2(self, name):
+    def build_type_p2(self, name, content=None):
         self.add_page()
         t = self.t
         self._orange_accent_bar()
         self._page_header(name)
         self.set_y(18)
         self._section_header(t["s02_num"], t["s02b_title"], with_bar=False)
-        self._big_value_box(t["your_strategy"], "[СТРАТЕГІЯ]")
-        self._body(t["strategy_box_desc"], size=10)
+        strategy = content.get("strategy", "[СТРАТЕГІЯ]") if content else "[СТРАТЕГІЯ]"
+        self._big_value_box(t["your_strategy"], strategy)
+        body_text = (content.get("strategy_description", t["strategy_box_desc"])
+                     if content else t["strategy_box_desc"])
+        self._body(body_text, size=10)
         self._page_number()
 
     # ── Page 6: AUTHORITY (part 1) ───────────────────────────────────────────
-    def build_authority_p1(self, name):
+    def build_authority_p1(self, name, content=None):
         self.add_page()
         t = self.t
         self._orange_accent_bar()
         self._page_header(name)
         self.set_y(18)
         self._section_header(t["s03_num"], t["s03_title"], with_bar=False)
-        self._big_value_box(t["your_authority"], "[АВТОРИТЕТ]")
-        self._body(t["authority_p1"], size=10)
+        authority = content.get("authority", "[АВТОРИТЕТ]") if content else "[АВТОРИТЕТ]"
+        self._big_value_box(t["your_authority"], authority)
+        body_text = (content.get("authority_description", t["authority_p1"])
+                     if content else t["authority_p1"])
+        self._body(body_text, size=10)
         self._page_number()
 
     # ── Page 7: AUTHORITY (part 2) ───────────────────────────────────────────
-    def build_authority_p2(self, name):
+    def build_authority_p2(self, name, content=None):
         self.add_page()
         t = self.t
         self._orange_accent_bar()
         self._page_header(name)
         self.set_y(18)
         self._section_header(t["s03_num"], t["s03b_title"], with_bar=False)
-        self._body(t["authority_p2"], size=10)
+        body_text = (content.get("authority_how_to", t["authority_p2"])
+                     if content else t["authority_p2"])
+        self._body(body_text, size=10)
         self._page_number()
 
     # ── Page 8: PROFILE (part 1) ─────────────────────────────────────────────
-    def build_profile_p1(self, name):
+    def build_profile_p1(self, name, content=None):
         self.add_page()
         t = self.t
         self._orange_accent_bar()
         self._page_header(name)
         self.set_y(18)
         self._section_header(t["s04_num"], t["s04_title"], with_bar=False)
-        self._big_value_box(t["your_profile"], "[ПРОФІЛЬ]")
-        self._body(t["profile_p1"], size=10)
+        profile = content.get("profile", "[ПРОФІЛЬ]") if content else "[ПРОФІЛЬ]"
+        self._big_value_box(t["your_profile"], profile)
+        body_text = (content.get("profile_description", t["profile_p1"])
+                     if content else t["profile_p1"])
+        self._body(body_text, size=10)
         self._page_number()
 
     # ── Page 9: PROFILE (part 2) ─────────────────────────────────────────────
-    def build_profile_p2(self, name):
+    def build_profile_p2(self, name, content=None):
         self.add_page()
         t = self.t
         self._orange_accent_bar()
         self._page_header(name)
         self.set_y(18)
         self._section_header(t["s04_num"], t["s04b_title"], with_bar=False)
-        self._body(t["profile_p2"], size=10)
+        body_text = (content.get("profile_role", t["profile_p2"])
+                     if content else t["profile_p2"])
+        self._body(body_text, size=10)
         self._page_number()
 
     # ── Page 10: CENTERS OVERVIEW ────────────────────────────────────────────
-    def build_centers_overview(self, name):
+    def build_centers_overview(self, name, content=None):
         self.add_page()
         t = self.t
         self._orange_accent_bar()
         self._page_header(name)
         self.set_y(18)
         self._section_header(t["s05_num"], t["s05_title"], with_bar=False)
-        self._body(t["centers_overview_p1"], size=10)
+        overview = (content.get("centers_overview", t["centers_overview_p1"])
+                    if content else t["centers_overview_p1"])
+        self._body(overview, size=10)
         self._body(t["centers_overview_p2"], size=10)
         self.ln(3)
 
@@ -1042,17 +1060,44 @@ class HumanDesignPDF(FPDF):
         self._body(t[content_key], size=10)
         self._page_number()
 
-    def build_center1(self, name):
-        self._build_center_page(name, self.t["s06_num"], self.t["s06_title"], "center1_p1")
+    def build_center1(self, name, content=None):
+        body = (f"{content.get('center1_name','')}\n\n{content.get('center1_description','')}"
+                if content and content.get("center1_description") else None)
+        if body:
+            self.add_page()
+            t = self.t
+            self._orange_accent_bar(); self._page_header(name); self.set_y(18)
+            self._section_header(t["s06_num"], t["s06_title"], with_bar=False)
+            self._body(body, size=10); self._page_number()
+        else:
+            self._build_center_page(name, self.t["s06_num"], self.t["s06_title"], "center1_p1")
 
-    def build_center2(self, name):
-        self._build_center_page(name, self.t["s06_num"], self.t["s06b_title"], "center2_p1")
+    def build_center2(self, name, content=None):
+        body = (f"{content.get('center2_name','')}\n\n{content.get('center2_description','')}"
+                if content and content.get("center2_description") else None)
+        if body:
+            self.add_page()
+            t = self.t
+            self._orange_accent_bar(); self._page_header(name); self.set_y(18)
+            self._section_header(t["s06_num"], t["s06b_title"], with_bar=False)
+            self._body(body, size=10); self._page_number()
+        else:
+            self._build_center_page(name, self.t["s06_num"], self.t["s06b_title"], "center2_p1")
 
-    def build_center3(self, name):
-        self._build_center_page(name, self.t["s06_num"], self.t["s06c_title"], "center3_p1")
+    def build_center3(self, name, content=None):
+        body = (f"{content.get('center3_name','')}\n\n{content.get('center3_description','')}"
+                if content and content.get("center3_description") else None)
+        if body:
+            self.add_page()
+            t = self.t
+            self._orange_accent_bar(); self._page_header(name); self.set_y(18)
+            self._section_header(t["s06_num"], t["s06c_title"], with_bar=False)
+            self._body(body, size=10); self._page_number()
+        else:
+            self._build_center_page(name, self.t["s06_num"], self.t["s06c_title"], "center3_p1")
 
     # ── Page 14: OPEN CENTERS ────────────────────────────────────────────────
-    def build_open_centers(self, name):
+    def build_open_centers(self, name, content=None):
         self.add_page()
         t = self.t
         self._orange_accent_bar()
@@ -1061,7 +1106,9 @@ class HumanDesignPDF(FPDF):
         self._section_header(t["s07_num"], t["s07_title"], with_bar=False)
         self._body(t["open_centers_p1"], size=10)
         self.ln(2)
-        self._body(t["open_centers_p2"], size=10)
+        open_desc = (content.get("open_centers_description", t["open_centers_p2"])
+                     if content else t["open_centers_p2"])
+        self._body(open_desc, size=10)
         self.ln(2)
         self._amber_line(self.get_y(), x=self._lm(), w=self._w(), thickness=0.3)
         self.ln(5)
@@ -1069,38 +1116,45 @@ class HumanDesignPDF(FPDF):
         self._page_number()
 
     # ── Page 15: SIGNATURE & NOT-SELF ────────────────────────────────────────
-    def build_signature(self, name):
+    def build_signature(self, name, content=None):
         self.add_page()
         t = self.t
         self._orange_accent_bar()
         self._page_header(name)
         self.set_y(18)
         self._section_header(t["s08_num"], t["s08_title"], with_bar=False)
-        self._highlight_box(t["your_signature"], "[СИГНАТУРА]")
-        self._body(t["signature_p1"], size=10)
+        self._highlight_box(t["your_signature"],
+                            content.get("signature", "[СИГНАТУРА]") if content else "[СИГНАТУРА]")
+        sig_body = content.get("signature", t["signature_p1"]) if content else t["signature_p1"]
+        self._body(sig_body, size=10)
         self.ln(4)
         self._amber_line(self.get_y(), x=self._lm(), w=self._w(), thickness=0.4)
         self.ln(6)
-        self._highlight_box(t["your_not_self"], "[НЕ-Я ТЕМА]")
-        self._body(t["not_self_p1"], size=10)
+        self._highlight_box(t["your_not_self"],
+                            content.get("not_self", "[НЕ-Я ТЕМА]") if content else "[НЕ-Я ТЕМА]")
+        not_self_body = content.get("not_self", t["not_self_p1"]) if content else t["not_self_p1"]
+        self._body(not_self_body, size=10)
         self._page_number()
 
     # ── Page 16: LIFE THEME ──────────────────────────────────────────────────
-    def build_life_theme(self, name, life_area):
+    def build_life_theme(self, name, life_area, content=None):
         self.add_page()
         t = self.t
         self._orange_accent_bar()
         self._page_header(name)
         self.set_y(18)
         self._section_header(t["s09_num"], t["s09_title"], with_bar=False)
-        key = f"life_theme_{life_area}"
-        if key not in t:
-            key = "life_theme_self"
-        self._body(t[key], size=10)
+        if content and content.get("life_theme"):
+            self._body(content["life_theme"], size=10)
+        else:
+            key = f"life_theme_{life_area}"
+            if key not in t:
+                key = "life_theme_self"
+            self._body(t[key], size=10)
         self._page_number()
 
     # ── Page 17: RECOMMENDATIONS (part 1) ───────────────────────────────────
-    def build_recs_p1(self, name, life_area):
+    def build_recs_p1(self, name, life_area, content=None):
         self.add_page()
         t = self.t
         self._orange_accent_bar()
@@ -1115,30 +1169,38 @@ class HumanDesignPDF(FPDF):
         self.set_text_color(*ORANGE_L)
         self.cell(self._w(), 7, t[intro_key], new_x="LMARGIN", new_y="NEXT")
         self.ln(3)
-        recs_key = f"recs_{life_area}_1"
-        if recs_key not in t:
-            recs_key = "recs_self_1"
-        for rec in t[recs_key]:
+        if content and content.get("recommendations"):
+            recs = content["recommendations"][:5]
+        else:
+            recs_key = f"recs_{life_area}_1"
+            if recs_key not in t:
+                recs_key = "recs_self_1"
+            recs = t[recs_key]
+        for rec in recs:
             self._bullet(rec)
         self._page_number()
 
     # ── Page 18: RECOMMENDATIONS (part 2) ───────────────────────────────────
-    def build_recs_p2(self, name, life_area):
+    def build_recs_p2(self, name, life_area, content=None):
         self.add_page()
         t = self.t
         self._orange_accent_bar()
         self._page_header(name)
         self.set_y(18)
         self._section_header(t["s10_num"], t["s10b_title"], with_bar=False)
-        recs_key = f"recs_{life_area}_2"
-        if recs_key not in t:
-            recs_key = "recs_self_2"
-        for rec in t[recs_key]:
+        if content and content.get("recommendations"):
+            recs = content["recommendations"][5:10]
+        else:
+            recs_key = f"recs_{life_area}_2"
+            if recs_key not in t:
+                recs_key = "recs_self_2"
+            recs = t[recs_key]
+        for rec in recs:
             self._bullet(rec)
         self._page_number()
 
     # ── Page 19: NEXT 30 DAYS ────────────────────────────────────────────────
-    def build_30days(self, name, life_area):
+    def build_30days(self, name, life_area, content=None):
         self.add_page()
         t = self.t
         self._orange_accent_bar()
@@ -1146,17 +1208,28 @@ class HumanDesignPDF(FPDF):
         self.set_y(18)
         self._section_header(t["s11_num"], t["s11_title"], with_bar=False)
 
-        week_keys = [
-            f"plan_week1_{life_area}",
-            f"plan_week2_{life_area}",
-            f"plan_week3_{life_area}",
-            f"plan_week4_{life_area}",
-        ]
-        fallback_area = "self"
         labels = t["week_labels"]
-        for i, wk in enumerate(week_keys):
-            content = t.get(wk, t.get(f"plan_week{i+1}_{fallback_area}", ""))
-            self._week_box(labels[i], content)
+        fallback_area = "self"
+
+        if content and any(content.get(f"week{i}") for i in range(1, 5)):
+            week_texts = [
+                content.get("week1", ""),
+                content.get("week2", ""),
+                content.get("week3", ""),
+                content.get("week4", ""),
+            ]
+            for i, wtext in enumerate(week_texts):
+                self._week_box(labels[i], wtext)
+        else:
+            week_keys = [
+                f"plan_week1_{life_area}",
+                f"plan_week2_{life_area}",
+                f"plan_week3_{life_area}",
+                f"plan_week4_{life_area}",
+            ]
+            for i, wk in enumerate(week_keys):
+                wtext = t.get(wk, t.get(f"plan_week{i+1}_{fallback_area}", ""))
+                self._week_box(labels[i], wtext)
 
         self._page_number()
 
@@ -1220,33 +1293,41 @@ class HumanDesignPDF(FPDF):
 
 # ─── Main generator ───────────────────────────────────────────────────────────
 def generate_reading(order, name, birth_date, birth_time, birth_place,
-                     life_area, challenge, plan, locale):
+                     life_area, challenge, plan, locale, content=None):
+    """
+    Generate a Human Design reading PDF.
+
+    Args:
+        content: optional dict from claude_reading.get_reading_content().
+                 When provided, AI-generated text replaces template placeholders.
+    """
     os.makedirs(OUTPUT_DIR, exist_ok=True)
-    output_path = os.path.join(OUTPUT_DIR, f"reading_{order}_{plan}.pdf")
+    suffix = "ai" if content else plan
+    output_path = os.path.join(OUTPUT_DIR, f"reading_{order}_{suffix}.pdf")
 
     pdf = HumanDesignPDF(locale=locale, plan=plan, name=name)
     pdf._add_fonts()
 
     # ── BASIC PLAN: exactly 20 pages ─────────────────────────────────────────
-    pdf.build_cover(name, birth_date, birth_time, birth_place, plan)   # 1
+    pdf.build_cover(name, birth_date, birth_time, birth_place, plan)    # 1
     pdf.build_welcome(name, birth_date, birth_time, birth_place)        # 2
     pdf.build_what_is_hd(name, birth_date, birth_time, birth_place)     # 3
-    pdf.build_type_p1(name)                                             # 4
-    pdf.build_type_p2(name)                                             # 5
-    pdf.build_authority_p1(name)                                        # 6
-    pdf.build_authority_p2(name)                                        # 7
-    pdf.build_profile_p1(name)                                          # 8
-    pdf.build_profile_p2(name)                                          # 9
-    pdf.build_centers_overview(name)                                    # 10
-    pdf.build_center1(name)                                             # 11
-    pdf.build_center2(name)                                             # 12
-    pdf.build_center3(name)                                             # 13
-    pdf.build_open_centers(name)                                        # 14
-    pdf.build_signature(name)                                           # 15
-    pdf.build_life_theme(name, life_area)                               # 16
-    pdf.build_recs_p1(name, life_area)                                  # 17
-    pdf.build_recs_p2(name, life_area)                                  # 18
-    pdf.build_30days(name, life_area)                                   # 19
+    pdf.build_type_p1(name, content)                                    # 4
+    pdf.build_type_p2(name, content)                                    # 5
+    pdf.build_authority_p1(name, content)                               # 6
+    pdf.build_authority_p2(name, content)                               # 7
+    pdf.build_profile_p1(name, content)                                 # 8
+    pdf.build_profile_p2(name, content)                                 # 9
+    pdf.build_centers_overview(name, content)                           # 10
+    pdf.build_center1(name, content)                                    # 11
+    pdf.build_center2(name, content)                                    # 12
+    pdf.build_center3(name, content)                                    # 13
+    pdf.build_open_centers(name, content)                               # 14
+    pdf.build_signature(name, content)                                  # 15
+    pdf.build_life_theme(name, life_area, content)                      # 16
+    pdf.build_recs_p1(name, life_area, content)                         # 17
+    pdf.build_recs_p2(name, life_area, content)                         # 18
+    pdf.build_30days(name, life_area, content)                          # 19
     pdf.build_closing(name)                                             # 20
 
     # ── FULL PLAN: 30 additional pages (pages 21-50) ─────────────────────────
@@ -1374,6 +1455,59 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+def generate_reading_with_ai(order_data: dict) -> str:
+    """
+    Generate a reading PDF with Claude AI-generated content.
+    1. Calls Claude API to get personalized content
+    2. Passes content to generate_reading() for PDF generation
+    Falls back to template placeholders if AI is unavailable.
+    """
+    import importlib
+    import re as _re
+
+    # Parse birth_date
+    raw_date = order_data.get('birth_date', '')
+    if _re.match(r'\d{2}\.\d{2}\.\d{4}', raw_date):
+        d, m, y = raw_date.split('.')
+        birth_date = f'{y}-{m}-{d}'
+    else:
+        birth_date = raw_date or '2000-01-01'
+
+    life_area = order_data.get('life_area', 'career')
+    if life_area not in ('career', 'relationships', 'energy', 'self'):
+        life_area = 'career'
+
+    challenge = order_data.get('challenge', 'decisions')
+    if challenge not in ('decisions', 'fatigue', 'purpose', 'people'):
+        challenge = 'decisions'
+
+    # Normalise order_data for claude_reading
+    normalized = {**order_data, 'birth_date': birth_date, 'life_area': life_area,
+                  'challenge': challenge}
+
+    # Get AI content
+    content = None
+    try:
+        claude_reading = importlib.import_module('claude_reading')
+        content = claude_reading.get_reading_content(normalized)
+        print(f"✨ AI content: {content.get('hd_type','?')} / {content.get('authority','?')} / {content.get('profile','?')}")
+    except Exception as e:
+        print(f"⚠ Claude reading failed ({e}), using template placeholders")
+
+    return generate_reading(
+        order       = order_data.get('order_id', 'HD-DEV'),
+        name        = order_data.get('name', 'Клієнт'),
+        birth_date  = birth_date,
+        birth_time  = order_data.get('birth_time', '12:00'),
+        birth_place = order_data.get('birth_place', 'Україна'),
+        life_area   = life_area,
+        challenge   = challenge,
+        plan        = order_data.get('plan', 'basic'),
+        locale      = order_data.get('locale', 'ua'),
+        content     = content,
+    )
 
 
 def generate_reading_pdf(order_data: dict) -> str:

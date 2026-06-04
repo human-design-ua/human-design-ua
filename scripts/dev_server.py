@@ -28,7 +28,7 @@ import threading
 from generate_receipt import generate_receipt
 from send_receipt import send_receipt_email, send_reading_email
 from dev_db import init_db, save_order, get_orders, get_stats
-from generate_reading import generate_reading_pdf
+from generate_reading import generate_reading_with_ai
 
 PORT = 4000
 
@@ -133,7 +133,7 @@ class DevHandler(BaseHTTPRequestHandler):
                 time.sleep(delay)
                 print(f'\n📖 Generating reading PDF...')
                 try:
-                    rpath = generate_reading_pdf(od)
+                    rpath = generate_reading_with_ai(od)
                     print(f'✅ Reading generated: {rpath}')
                     send_reading_email(od, rpath)
                 except Exception as e:
