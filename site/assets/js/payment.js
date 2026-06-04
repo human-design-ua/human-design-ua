@@ -188,7 +188,6 @@ function showDevResultModal(success, orderId, note) {
     display:flex; align-items:center; justify-content:center;
     z-index:9999; font-family:Inter,sans-serif;
   `;
-  const T = window.t || (k => k);
   const planName = quizData.plan === 'full'
     ? (window.t ? window.t('quiz.pricing.full.name')  : 'Full')
     : (window.t ? window.t('quiz.pricing.basic.name') : 'Basic');
