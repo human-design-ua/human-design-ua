@@ -179,7 +179,14 @@ function show3DSModal(orderId) {
 }
 
 function showDevResultModal(success, orderId, note) {
-  const T = window.t || (k => k);
+  const T        = window.t || (k => k);
+  // quizData is global from quiz.js
+  const qd       = (typeof quizData !== 'undefined') ? quizData : {};
+  const amount   = qd.plan === 'full' ? 799 : 399;
+  const planName = qd.plan === 'full'
+    ? (window.t ? window.t('quiz.pricing.full.name')  : 'Full')
+    : (window.t ? window.t('quiz.pricing.basic.name') : 'Basic');
+
   document.getElementById('devPayModal')?.remove();
   const modal = document.createElement('div');
   modal.id = 'devPayModal';
@@ -188,9 +195,6 @@ function showDevResultModal(success, orderId, note) {
     display:flex; align-items:center; justify-content:center;
     z-index:9999; font-family:Inter,sans-serif;
   `;
-  const planName = quizData.plan === 'full'
-    ? (window.t ? window.t('quiz.pricing.full.name')  : 'Full')
-    : (window.t ? window.t('quiz.pricing.basic.name') : 'Basic');
 
   const noteHtml = note ? `<div style="font-size:0.8rem;color:#A090C0;margin-bottom:1rem;">${note}</div>` : '';
   modal.innerHTML = `
@@ -208,7 +212,7 @@ function showDevResultModal(success, orderId, note) {
         ${T('dev.modal.plan')} <strong style="color:#F0ECE8">${planName}</strong>
       </div>
       <div style="font-size:0.85rem; color:#A090C0; margin-bottom:0.25rem;">
-        ${T('dev.modal.email')} ${quizData.email}
+        ${T('dev.modal.email')} ${qd.email || "—"}
       </div>
       <div style="font-size:0.8rem; color:#6B5F80; margin-bottom:1.5rem;">
         ${T('dev.modal.order')} ${orderId}
