@@ -58,6 +58,8 @@ class DevHandler(BaseHTTPRequestHandler):
             self._json(200, {'orders': get_orders()})
         elif path == '/admin/stats':
             self._json(200, get_stats())
+        elif path in ('/admin', '/admin/'):
+            self._serve_admin()
         else:
             self._json(404, {'error': 'Not found'})
 
@@ -143,6 +145,30 @@ class DevHandler(BaseHTTPRequestHandler):
         except Exception as e:
             traceback.print_exc()
             self._json(500, {'error': str(e)})
+
+    def _serve_admin(self):
+        admin_path = os.path.join(
+            os.path.dirname(os.path.abspath(__file__)),
+            '..', 'site', 'admin.html'
+        )
+        try:
+            with open(admin_path, 'rb') as f:
+                body = f.read()
+            # Patch fetch URLs to use relative paths
+            body = body.replace(
+                b"fetch('http://localhost:4000/admin/orders')",
+                b"fetch('/admin/orders')"
+            ).replace(
+                b"fetch('http://localhost:4000/admin/stats')",
+                b"fetch('/admin/stats')"
+            )
+            self.send_response(200)
+            self.send_header('Content-Type', 'text/html; charset=utf-8')
+            self.send_header('Content-Length', len(body))
+            self.end_headers()
+            self.wfile.write(body)
+        except FileNotFoundError:
+            self._json(404, {'error': 'admin.html not found'})
 
     def _json(self, status: int, payload: dict):
         body = json.dumps(payload, ensure_ascii=False).encode('utf-8')
