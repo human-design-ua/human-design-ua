@@ -27,6 +27,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from generate_receipt import generate_receipt
 from send_receipt import send_receipt_email
 from dev_db import init_db, save_order, get_orders, get_stats
+from generate_reading import generate_reading_pdf
 
 PORT = 4000
 
@@ -115,13 +116,22 @@ class DevHandler(BaseHTTPRequestHandler):
             # Save to DB
             save_order(order_data)
 
-            # Step 1: Generate PDF
+            # Step 1: Generate receipt PDF
             print('\n📄 Generating PDF receipt...')
             pdf_path = generate_receipt(order_data)
 
-            # Step 2: Send email
+            # Step 2: Generate reading PDF
+            print('\n📖 Generating reading PDF...')
+            reading_path = None
+            try:
+                reading_path = generate_reading_pdf(order_data)
+                print(f'✅ Reading: {reading_path}')
+            except Exception as re:
+                print(f'⚠ Reading generation failed: {re}')
+
+            # Step 3: Send both PDFs to email
             print(f'\n📧 Sending to {order_data["email"]}...')
-            sent = send_receipt_email(order_data, pdf_path)
+            sent = send_receipt_email(order_data, pdf_path, reading_path)
 
             if sent:
                 print(f'\n✅ DEV flow complete!')

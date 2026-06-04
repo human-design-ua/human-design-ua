@@ -1374,3 +1374,36 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+def generate_reading_pdf(order_data: dict) -> str:
+    """Wrapper called by dev_server — converts order_data dict to reading PDF."""
+    import re as _re
+
+    # Parse birth_date from YYYY-MM-DD or DD.MM.YYYY
+    raw_date = order_data.get('birth_date', '')
+    if _re.match(r'\d{2}\.\d{2}\.\d{4}', raw_date):
+        d, m, y = raw_date.split('.')
+        birth_date = f'{y}-{m}-{d}'
+    else:
+        birth_date = raw_date or '2000-01-01'
+
+    life_area = order_data.get('life_area', 'career')
+    if life_area not in ('career','relationships','energy','self'):
+        life_area = 'career'
+
+    challenge = order_data.get('challenge', 'decisions')
+    if challenge not in ('decisions','fatigue','purpose','people'):
+        challenge = 'decisions'
+
+    return generate_reading(
+        order       = order_data.get('order_id', 'HD-DEV'),
+        name        = order_data.get('name', 'Клієнт'),
+        birth_date  = birth_date,
+        birth_time  = order_data.get('birth_time', '12:00'),
+        birth_place = order_data.get('birth_place', 'Україна'),
+        life_area   = life_area,
+        challenge   = challenge,
+        plan        = order_data.get('plan', 'basic'),
+        locale      = order_data.get('locale', 'ua'),
+    )

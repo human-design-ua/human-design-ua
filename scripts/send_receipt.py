@@ -105,7 +105,7 @@ humandesign.finance@gmail.com
 """.strip()
 
 
-def send_receipt_email(order_data: dict, pdf_path: str) -> bool:
+def send_receipt_email(order_data: dict, pdf_path: str, reading_path: str = None) -> bool:
     """Send receipt email with PDF attachment."""
 
     if not GMAIL_PASSWORD:
@@ -121,24 +121,34 @@ def send_receipt_email(order_data: dict, pdf_path: str) -> bool:
     msg = MIMEMultipart()
     msg['From']     = f'Human Design UA <{GMAIL_USER}>'
     msg['To']       = to_email
-    msg['Subject']  = Header(f'Chek pro oplatu - {plan_name}', 'utf-8')
+    msg['Subject']  = Header(f'Vasha rozshyfrovka - {plan_name}', 'utf-8')
     msg['Reply-To'] = GMAIL_USER
 
     # Body — strip any non-breaking spaces to avoid encoding issues
     body = build_email_body(order_data).replace('\xa0', ' ')
     msg.attach(MIMEText(body, 'plain', 'utf-8'))
 
-    # Attach PDF
+    # Attach receipt PDF
     if os.path.exists(pdf_path):
         with open(pdf_path, 'rb') as f:
-            pdf_attachment = MIMEApplication(f.read(), _subtype='pdf')
-            pdf_attachment.add_header(
-                'Content-Disposition', 'attachment',
-                filename=f'receipt_{order_data["order_id"]}.pdf'
-            )
-            msg.attach(pdf_attachment)
+            att = MIMEApplication(f.read(), _subtype='pdf')
+            att.add_header('Content-Disposition', 'attachment',
+                           filename=f'receipt_{order_data["order_id"]}.pdf')
+            msg.attach(att)
     else:
-        print(f'⚠ PDF not found: {pdf_path}')
+        print(f'⚠ Receipt PDF not found: {pdf_path}')
+
+    # Attach reading PDF (if exists)
+    if reading_path and os.path.exists(reading_path):
+        plan  = order_data.get('plan', 'basic')
+        rname = 'reading_full.pdf' if plan == 'full' else 'reading_basic.pdf'
+        with open(reading_path, 'rb') as f:
+            att2 = MIMEApplication(f.read(), _subtype='pdf')
+            att2.add_header('Content-Disposition', 'attachment', filename=rname)
+            msg.attach(att2)
+        print(f'📎 Reading PDF attached: {rname}')
+    elif reading_path:
+        print(f'⚠ Reading PDF not found: {reading_path}')
 
     # Send via Gmail SMTP
     try:
