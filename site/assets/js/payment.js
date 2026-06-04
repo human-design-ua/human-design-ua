@@ -1,8 +1,78 @@
 // Human Design — Payment Integration (LiqPay)
-// IMPORTANT: LiqPay signature is generated server-side via Make.com webhook
-// This file only collects data and submits the payment form
+// DEV mode: uses mock payment, no real money charged
+// PROD mode: real LiqPay via Make.com webhook
 
-const MAKE_WEBHOOK_URL = 'YOUR_MAKE_WEBHOOK_URL_HERE'; // Replace with your Make.com webhook URL
+const MAKE_WEBHOOK_URL = 'YOUR_MAKE_WEBHOOK_URL_HERE';
+
+// ── DEV MOCK ──────────────────────────────────────────────
+function showDevPaymentModal(quizData, orderId, amount) {
+  // Remove existing modal
+  document.getElementById('devPayModal')?.remove();
+
+  const modal = document.createElement('div');
+  modal.id = 'devPayModal';
+  modal.style.cssText = `
+    position:fixed; inset:0; background:rgba(0,0,0,0.85);
+    display:flex; align-items:center; justify-content:center;
+    z-index:9999; font-family:Inter,sans-serif;
+  `;
+  modal.innerHTML = `
+    <div style="background:#1A1440; border:1px solid #D4A830; border-radius:16px;
+                padding:2rem; max-width:420px; width:90%; text-align:center;">
+      <div style="font-size:0.75rem; color:#D4A830; letter-spacing:0.1em;
+                  text-transform:uppercase; margin-bottom:1rem;">
+        🛠 DEV MODE — Тестовий платіж
+      </div>
+      <div style="font-size:1.5rem; font-weight:600; color:#F0ECE8; margin-bottom:0.5rem;">
+        ${amount} грн
+      </div>
+      <div style="font-size:0.9rem; color:#A090C0; margin-bottom:0.25rem;">
+        Тариф: <strong style="color:#F0ECE8">${quizData.plan === 'full' ? 'Повний' : 'Базовий'}</strong>
+      </div>
+      <div style="font-size:0.85rem; color:#A090C0; margin-bottom:1.5rem;">
+        Email: ${quizData.email}
+      </div>
+      <div style="font-size:0.8rem; color:#6B5F80; margin-bottom:1.5rem;">
+        Order ID: ${orderId}
+      </div>
+      <div style="display:flex; gap:0.75rem; justify-content:center;">
+        <button onclick="devPaymentResult('success', '${orderId}')"
+          style="background:#D4A830; color:#0D0B1E; border:none; border-radius:8px;
+                 padding:0.75rem 1.5rem; font-weight:600; cursor:pointer; font-size:0.95rem;">
+          ✓ Оплата успішна
+        </button>
+        <button onclick="devPaymentResult('failure', '${orderId}')"
+          style="background:transparent; color:#E05050; border:1px solid #E05050;
+                 border-radius:8px; padding:0.75rem 1.5rem; cursor:pointer; font-size:0.95rem;">
+          ✗ Помилка оплати
+        </button>
+      </div>
+      <div style="margin-top:1rem;">
+        <button onclick="document.getElementById('devPayModal').remove()"
+          style="background:none; border:none; color:#6B5F80; cursor:pointer; font-size:0.8rem;">
+          Скасувати
+        </button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+}
+
+function devPaymentResult(result, orderId) {
+  document.getElementById('devPayModal')?.remove();
+  if (result === 'success') {
+    localStorage.setItem('hd_order_id', orderId);
+    localStorage.setItem('hd_payment_status', 'success');
+    // Trigger receipt generation via Python script (dev only)
+    console.log('[DEV] Payment success. Order:', orderId);
+    console.log('[DEV] Run: python3 scripts/send_receipt.py --order', orderId);
+    window.location.href = 'success.html?order_id=' + orderId + '&status=success';
+  } else {
+    showPaymentError('[DEV] Симуляція помилки оплати');
+    const btn = document.getElementById('payBtn');
+    setLoading(btn, false);
+  }
+}
 
 // ── Initiate payment ──────────────────────────────────────
 async function initiatePayment(quizData) {
@@ -11,6 +81,17 @@ async function initiatePayment(quizData) {
 
   const orderId = 'HD-' + Date.now() + '-' + Math.random().toString(36).slice(2, 7).toUpperCase();
   const amount  = quizData.plan === 'full' ? 799 : 399;
+
+  // ── DEV MODE: показати mock замість реального LiqPay ──
+  if (window.HD_ENV === 'dev') {
+    setLoading(btn, false);
+    localStorage.setItem('hd_order_id', orderId);
+    localStorage.setItem('hd_plan',     quizData.plan);
+    localStorage.setItem('hd_email',    quizData.email);
+    localStorage.setItem('hd_quiz_data', JSON.stringify(quizData));
+    showDevPaymentModal(quizData, orderId, amount);
+    return;
+  }
 
   const payload = {
     action:       'get_liqpay_form',
