@@ -191,6 +191,105 @@ def run(order_data: dict):
     send_receipt_email(order_data, pdf_path)
 
 
+
+def send_reading_email(order_data: dict, reading_path: str) -> bool:
+    """Send the reading PDF as a separate email 1-2 min after receipt."""
+
+    if not GMAIL_PASSWORD:
+        return False
+
+    locale    = order_data.get('locale', 'ua')
+    name      = order_data.get('name', '')
+    plan      = order_data.get('plan', 'basic')
+    to_email  = order_data['email']
+
+    SUBJECTS = {
+        'ua': f'✦ Ваш персональний розрахунок Дизайну Людини готовий',
+        'ru': f'✦ Ваш персональный расчёт Дизайна Человека готов',
+        'en': f'✦ Your personal Human Design reading is ready',
+    }
+
+    BODIES = {
+        'ua': f"""{name + ", т" if name else "Т"}римайте свій персональний розрахунок Дизайну Людини!
+
+У вкладенні — ваша персональна розшифровка бодіграфу.
+Вона створена спеціально для вас на основі точних астрологічних даних вашого народження.
+
+Рекомендуємо читати у спокійній обстановці — це ваша карта, ваш унікальний код.
+
+З теплом,
+Human Design UA
+humandesign.finance@gmail.com
+
+⚠ DEV РЕЖИМ — тестовий лист.""" if order_data.get('env') == 'dev' else f"""{name + ", т" if name else "Т"}римайте свій персональний розрахунок Дизайну Людини!
+
+У вкладенні — ваша персональна розшифровка бодіграфу.
+
+З теплом,
+Human Design UA
+humandesign.finance@gmail.com""",
+
+        'ru': f"""{name + ", д" if name else "Д"}ержите свой персональный расчёт Дизайна Человека!
+
+Во вложении — ваша персональная расшифровка бодиграфа.
+Она создана специально для вас на основе точных астрологических данных вашего рождения.
+
+Рекомендуем читать в спокойной обстановке — это ваша карта, ваш уникальный код.
+
+С теплом,
+Human Design UA
+humandesign.finance@gmail.com""",
+
+        'en': f"""{"Hey " + name + ", y" if name else "Y"}our personal Human Design reading is ready!
+
+Attached is your personal bodygraph reading.
+It was created specifically for you based on your exact birth data.
+
+We recommend reading it in a calm environment — this is your map, your unique code.
+
+With warmth,
+Human Design UA
+humandesign.finance@gmail.com""",
+    }
+
+    plan_names_map = PLAN_NAMES.get(locale, PLAN_NAMES['ua'])
+    plan_name = plan_names_map.get(plan, plan)
+
+    msg = MIMEMultipart()
+    msg['From']     = f'Human Design UA <{GMAIL_USER}>'
+    msg['To']       = to_email
+    msg['Subject']  = Header(SUBJECTS.get(locale, SUBJECTS['ua']), 'utf-8')
+    msg['Reply-To'] = GMAIL_USER
+
+    body = BODIES.get(locale, BODIES['ua']).replace('\xa0', ' ')
+    msg.attach(MIMEText(body, 'plain', 'utf-8'))
+
+    # Attach reading PDF
+    if reading_path and os.path.exists(reading_path):
+        rname = 'rozshyfrovka_povna.pdf' if plan == 'full' else 'rozshyfrovka_bazova.pdf'
+        with open(reading_path, 'rb') as f:
+            att = MIMEApplication(f.read(), _subtype='pdf')
+            att.add_header('Content-Disposition', 'attachment', filename=rname)
+            msg.attach(att)
+    else:
+        print(f'⚠ Reading PDF not found: {reading_path}')
+        return False
+
+    try:
+        with smtplib.SMTP(SMTP_HOST, SMTP_PORT, local_hostname='localhost') as server:
+            server.ehlo('localhost')
+            server.starttls()
+            server.ehlo('localhost')
+            server.login(GMAIL_USER, GMAIL_PASSWORD)
+            server.sendmail(GMAIL_USER, [to_email], msg.as_bytes(),
+                            mail_options=['BODY=8BITMIME'])
+        print(f'✅ Reading email sent to {to_email}')
+        return True
+    except Exception as e:
+        print(f'❌ Reading email failed: {e}')
+        return False
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Send HD receipt via Gmail')
     parser.add_argument('--order',  required=True)

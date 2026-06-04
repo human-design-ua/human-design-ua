@@ -24,8 +24,9 @@ from urllib.parse import urlparse
 
 # Allow importing sibling scripts
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import threading
 from generate_receipt import generate_receipt
-from send_receipt import send_receipt_email
+from send_receipt import send_receipt_email, send_reading_email
 from dev_db import init_db, save_order, get_orders, get_stats
 from generate_reading import generate_reading_pdf
 
@@ -117,21 +118,30 @@ class DevHandler(BaseHTTPRequestHandler):
             save_order(order_data)
 
             # Step 1: Generate receipt PDF
-            print('\n📄 Generating PDF receipt...')
+            print('\n📄 Generating receipt PDF...')
             pdf_path = generate_receipt(order_data)
 
-            # Step 2: Generate reading PDF
-            print('\n📖 Generating reading PDF...')
-            reading_path = None
-            try:
-                reading_path = generate_reading_pdf(order_data)
-                print(f'✅ Reading: {reading_path}')
-            except Exception as re:
-                print(f'⚠ Reading generation failed: {re}')
+            # Step 2: Send receipt immediately
+            print(f'\n📧 Sending receipt to {order_data["email"]}...')
+            sent = send_receipt_email(order_data, pdf_path)
 
-            # Step 3: Send both PDFs to email
-            print(f'\n📧 Sending to {order_data["email"]}...')
-            sent = send_receipt_email(order_data, pdf_path, reading_path)
+            # Step 3: Generate reading + send after 90s delay
+            def send_reading_delayed(od):
+                import time
+                delay = 90  # 1.5 min
+                print(f'\n⏳ Reading will be sent in {delay}s...')
+                time.sleep(delay)
+                print(f'\n📖 Generating reading PDF...')
+                try:
+                    rpath = generate_reading_pdf(od)
+                    print(f'✅ Reading generated: {rpath}')
+                    send_reading_email(od, rpath)
+                except Exception as e:
+                    print(f'❌ Reading send failed: {e}')
+
+            t = threading.Thread(target=send_reading_delayed, args=(order_data,), daemon=True)
+            t.start()
+            print(f'🕐 Reading will be sent in ~90 seconds...')
 
             if sent:
                 print(f'\n✅ DEV flow complete!')
