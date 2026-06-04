@@ -226,6 +226,21 @@ var HD_TRANSLATIONS = {
     'cta.btn':    'Почати безкоштовний квіз',
     'cta.note':   '399 грн · безпечна оплата · миттєва доставка на email',
 
+
+    // Dev card screen
+    'dev.card.title':    '🛠 DEV — Тестова форма оплати',
+    'dev.card.or':       'або картою',
+    'dev.card.num':      'Номер картки',
+    'dev.card.holder':   "Ім'я власника картки",
+    'dev.card.expiry':   'Термін дії',
+    'dev.card.cvv':      'CVV',
+    'dev.card.pay':      'Оплатити',
+    'dev.card.secure':   '🔒 Тестова форма · DEV · дані не зберігаються',
+    'dev.card.hint':     'Тестові картки:',
+    'dev.card.success_card': '✅ Успішна:',
+    'dev.card.fail_card':    '❌ Відхилена:',
+    'dev.card.3ds_card':     '⏳ 3D-Secure:',
+
     // Dev modal
     'dev.modal.title':   '🛠 DEV MODE — Тестовий платіж',
     'dev.modal.plan':    'Тариф:',
@@ -521,6 +536,21 @@ var HD_TRANSLATIONS = {
     'cta.btn':    'Начать бесплатный квиз',
     'cta.note':   '399 грн · безопасная оплата · мгновенная доставка на email',
 
+
+    // Dev card screen
+    'dev.card.title':    '🛠 DEV — Тестова форма оплати',
+    'dev.card.or':       'або картою',
+    'dev.card.num':      'Номер картки',
+    'dev.card.holder':   "Ім'я власника картки",
+    'dev.card.expiry':   'Термін дії',
+    'dev.card.cvv':      'CVV',
+    'dev.card.pay':      'Оплатити',
+    'dev.card.secure':   '🔒 Тестова форма · DEV · дані не зберігаються',
+    'dev.card.hint':     'Тестові картки:',
+    'dev.card.success_card': '✅ Успішна:',
+    'dev.card.fail_card':    '❌ Відхилена:',
+    'dev.card.3ds_card':     '⏳ 3D-Secure:',
+
     // Dev modal
     'dev.modal.title':   '🛠 DEV MODE — Тестовий платіж',
     'dev.modal.plan':    'Тариф:',
@@ -529,6 +559,21 @@ var HD_TRANSLATIONS = {
     'dev.modal.success': '✓ Оплата успішна',
     'dev.modal.fail':    '✗ Помилка оплати',
     'dev.modal.cancel':  'Скасувати',
+
+
+    // Dev card screen
+    'dev.card.title':    '🛠 DEV — Тестовая форма оплаты',
+    'dev.card.or':       'или картой',
+    'dev.card.num':      'Номер карты',
+    'dev.card.holder':   'Имя владельца карты',
+    'dev.card.expiry':   'Срок действия',
+    'dev.card.cvv':      'CVV',
+    'dev.card.pay':      'Оплатить',
+    'dev.card.secure':   '🔒 Тестовая форма · DEV · данные не сохраняются',
+    'dev.card.hint':     'Тестовые карты:',
+    'dev.card.success_card': '✅ Успешная:',
+    'dev.card.fail_card':    '❌ Отклонённая:',
+    'dev.card.3ds_card':     '⏳ 3D-Secure:',
 
     // Dev modal
     'dev.modal.title':   '🛠 DEV MODE — Тестовый платёж',
@@ -821,6 +866,21 @@ var HD_TRANSLATIONS = {
     'cta.btn':    'Start the free quiz',
     'cta.note':   '399 UAH · secure payment · instant email delivery',
 
+
+    // Dev card screen
+    'dev.card.title':    '🛠 DEV — Тестова форма оплати',
+    'dev.card.or':       'або картою',
+    'dev.card.num':      'Номер картки',
+    'dev.card.holder':   "Ім'я власника картки",
+    'dev.card.expiry':   'Термін дії',
+    'dev.card.cvv':      'CVV',
+    'dev.card.pay':      'Оплатити',
+    'dev.card.secure':   '🔒 Тестова форма · DEV · дані не зберігаються',
+    'dev.card.hint':     'Тестові картки:',
+    'dev.card.success_card': '✅ Успішна:',
+    'dev.card.fail_card':    '❌ Відхилена:',
+    'dev.card.3ds_card':     '⏳ 3D-Secure:',
+
     // Dev modal
     'dev.modal.title':   '🛠 DEV MODE — Тестовий платіж',
     'dev.modal.plan':    'Тариф:',
@@ -829,6 +889,21 @@ var HD_TRANSLATIONS = {
     'dev.modal.success': '✓ Оплата успішна',
     'dev.modal.fail':    '✗ Помилка оплати',
     'dev.modal.cancel':  'Скасувати',
+
+
+    // Dev card screen
+    'dev.card.title':    '🛠 DEV — Test payment form',
+    'dev.card.or':       'or pay by card',
+    'dev.card.num':      'Card number',
+    'dev.card.holder':   'Cardholder name',
+    'dev.card.expiry':   'Expiry date',
+    'dev.card.cvv':      'CVV',
+    'dev.card.pay':      'Pay',
+    'dev.card.secure':   '🔒 Test form · DEV · data not stored',
+    'dev.card.hint':     'Test cards:',
+    'dev.card.success_card': '✅ Success:',
+    'dev.card.fail_card':    '❌ Declined:',
+    'dev.card.3ds_card':     '⏳ 3D-Secure:',
 
     // Dev modal
     'dev.modal.title':   '🛠 DEV MODE — Test payment',

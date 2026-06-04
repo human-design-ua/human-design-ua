@@ -26,7 +26,7 @@ function showDevCardScreen(quizData, orderId, amount) {
       <!-- Header -->
       <div style="background:#1A1440; padding:1.25rem 1.5rem; display:flex; align-items:center; justify-content:space-between;">
         <div style="color:#D4A830; font-size:0.7rem; letter-spacing:0.1em; text-transform:uppercase; font-weight:700;">
-          🛠 DEV — Тестова форма оплати
+          ${T('dev.card.title')}
         </div>
         <div style="color:#F0ECE8; font-size:1rem; font-weight:700;">${amount} грн</div>
       </div>
@@ -49,7 +49,7 @@ function showDevCardScreen(quizData, orderId, amount) {
 
       <div style="display:flex; align-items:center; gap:0.75rem; padding:0.75rem 1.5rem;">
         <div style="flex:1; height:1px; background:#eee;"></div>
-        <div style="font-size:0.75rem; color:#999;">або картою</div>
+        <div style="font-size:0.75rem; color:#999;">${T('dev.card.or')}</div>
         <div style="flex:1; height:1px; background:#eee;"></div>
       </div>
 
@@ -58,7 +58,7 @@ function showDevCardScreen(quizData, orderId, amount) {
 
         <!-- Card number -->
         <div style="margin-bottom:0.85rem;">
-          <label style="font-size:0.75rem; color:#666; display:block; margin-bottom:0.3rem;">Номер картки</label>
+          <label style="font-size:0.75rem; color:#666; display:block; margin-bottom:0.3rem;">${T('dev.card.num')}</label>
           <div style="position:relative;">
             <input id="devCardNum" type="text" value="4242 4242 4242 4242"
               style="width:100%; padding:0.65rem 3rem 0.65rem 0.75rem; border:1.5px solid #ddd;
@@ -74,7 +74,7 @@ function showDevCardScreen(quizData, orderId, amount) {
 
         <!-- Card holder -->
         <div style="margin-bottom:0.85rem;">
-          <label style="font-size:0.75rem; color:#666; display:block; margin-bottom:0.3rem;">Ім'я власника картки</label>
+          <label style="font-size:0.75rem; color:#666; display:block; margin-bottom:0.3rem;">${T('dev.card.holder')}</label>
           <input id="devCardHolder" type="text" value="TEST USER"
             style="width:100%; padding:0.65rem 0.75rem; border:1.5px solid #ddd;
                    border-radius:8px; font-size:0.95rem; text-transform:uppercase;
@@ -86,7 +86,7 @@ function showDevCardScreen(quizData, orderId, amount) {
         <!-- Expiry + CVV -->
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; margin-bottom:1.25rem;">
           <div>
-            <label style="font-size:0.75rem; color:#666; display:block; margin-bottom:0.3rem;">Термін дії</label>
+            <label style="font-size:0.75rem; color:#666; display:block; margin-bottom:0.3rem;">${T('dev.card.expiry')}</label>
             <input id="devCardExpiry" type="text" value="12/28"
               style="width:100%; padding:0.65rem 0.75rem; border:1.5px solid #ddd;
                      border-radius:8px; font-size:0.95rem; box-sizing:border-box; outline:none;"
@@ -94,7 +94,7 @@ function showDevCardScreen(quizData, orderId, amount) {
               maxlength="5" placeholder="MM/YY">
           </div>
           <div>
-            <label style="font-size:0.75rem; color:#666; display:block; margin-bottom:0.3rem;">CVV</label>
+            <label style="font-size:0.75rem; color:#666; display:block; margin-bottom:0.3rem;">${T('dev.card.cvv')}</label>
             <input id="devCardCvv" type="password" value="123"
               style="width:100%; padding:0.65rem 0.75rem; border:1.5px solid #ddd;
                      border-radius:8px; font-size:0.95rem; box-sizing:border-box; outline:none;"
@@ -107,21 +107,21 @@ function showDevCardScreen(quizData, orderId, amount) {
         <button onclick="devConfirmCard('${orderId}')"
           style="width:100%; background:#D4A830; color:#0D0B1E; border:none; border-radius:10px;
                  padding:0.9rem; font-size:1rem; font-weight:700; cursor:pointer;">
-          Оплатити ${amount} грн →
+          ${T('dev.card.pay')} ${amount} грн →
         </button>
 
         <!-- Security note -->
         <div style="text-align:center; margin-top:0.75rem; font-size:0.72rem; color:#aaa; display:flex; align-items:center; justify-content:center; gap:0.3rem;">
-          🔒 Тестова форма · DEV · дані не зберігаються
+          ${T('dev.card.secure')}
         </div>
 
         <!-- Test cards hint -->
         <div style="margin-top:0.75rem; padding:0.6rem 0.75rem; background:#f8f5ff; border-radius:8px; border-left:3px solid #9B6EE0;">
-          <div style="font-size:0.7rem; color:#9B6EE0; font-weight:700; margin-bottom:0.3rem;">Тестові картки:</div>
+          <div style="font-size:0.7rem; color:#9B6EE0; font-weight:700; margin-bottom:0.3rem;">${T('dev.card.hint')}</div>
           <div style="font-size:0.7rem; color:#555; line-height:1.6;">
-            ✅ Успішна:   4242 4242 4242 4242<br>
-            ❌ Відхилена: 4000 0000 0000 0002<br>
-            ⏳ 3D-Secure:  4000 0027 6000 3184
+            ${T('dev.card.success_card')}   4242 4242 4242 4242<br>
+            ${T('dev.card.fail_card')} 4000 0000 0000 0002<br>
+            ${T('dev.card.3ds_card')}  4000 0027 6000 3184
           </div>
         </div>
       </div>
