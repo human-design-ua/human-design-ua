@@ -58,14 +58,38 @@ function showDevPaymentModal(quizData, orderId, amount) {
   document.body.appendChild(modal);
 }
 
-function devPaymentResult(result, orderId) {
+async function devPaymentResult(result, orderId) {
   document.getElementById('devPayModal')?.remove();
   if (result === 'success') {
     localStorage.setItem('hd_order_id', orderId);
     localStorage.setItem('hd_payment_status', 'success');
-    // Trigger receipt generation via Python script (dev only)
-    console.log('[DEV] Payment success. Order:', orderId);
-    console.log('[DEV] Run: python3 scripts/send_receipt.py --order', orderId);
+
+    // Send to local dev server → generates PDF + sends email
+    const quizData = JSON.parse(localStorage.getItem('hd_quiz_data') || '{}');
+    const amount   = quizData.plan === 'full' ? 799 : 399;
+
+    try {
+      const res = await fetch('http://localhost:4000/pay', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          order_id: orderId,
+          email:    quizData.email || '',
+          name:     quizData.name  || '',
+          plan:     quizData.plan  || 'basic',
+          amount:   amount,
+        }),
+      });
+      const json = await res.json();
+      if (json.status === 'partial') {
+        console.warn('[DEV] PDF ok but email failed:', json.message);
+      } else {
+        console.log('[DEV] Receipt sent:', json);
+      }
+    } catch (e) {
+      console.warn('[DEV] Dev server not running on :4000 — start with: python3 scripts/dev_server.py');
+    }
+
     window.location.href = 'success.html?order_id=' + orderId + '&status=success';
   } else {
     showPaymentError('[DEV] Симуляція помилки оплати');
