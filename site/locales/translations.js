@@ -226,6 +226,15 @@ var HD_TRANSLATIONS = {
     'cta.btn':    'Почати безкоштовний квіз',
     'cta.note':   '399 грн · безпечна оплата · миттєва доставка на email',
 
+    // Dev modal
+    'dev.modal.title':   '🛠 DEV MODE — Тестовий платіж',
+    'dev.modal.plan':    'Тариф:',
+    'dev.modal.email':   'Email:',
+    'dev.modal.order':   'Order ID:',
+    'dev.modal.success': '✓ Оплата успішна',
+    'dev.modal.fail':    '✗ Помилка оплати',
+    'dev.modal.cancel':  'Скасувати',
+
     // Payment errors
     'pay.error.generic':  'Сталася помилка. Спробуй ще раз або напиши нам.',
     'pay.error.server':   'Помилка сервера. Спробуй за кілька хвилин.',
@@ -512,6 +521,24 @@ var HD_TRANSLATIONS = {
     'cta.btn':    'Начать бесплатный квиз',
     'cta.note':   '399 грн · безопасная оплата · мгновенная доставка на email',
 
+    // Dev modal
+    'dev.modal.title':   '🛠 DEV MODE — Тестовий платіж',
+    'dev.modal.plan':    'Тариф:',
+    'dev.modal.email':   'Email:',
+    'dev.modal.order':   'Order ID:',
+    'dev.modal.success': '✓ Оплата успішна',
+    'dev.modal.fail':    '✗ Помилка оплати',
+    'dev.modal.cancel':  'Скасувати',
+
+    // Dev modal
+    'dev.modal.title':   '🛠 DEV MODE — Тестовый платёж',
+    'dev.modal.plan':    'Тариф:',
+    'dev.modal.email':   'Email:',
+    'dev.modal.order':   'Order ID:',
+    'dev.modal.success': '✓ Оплата успешна',
+    'dev.modal.fail':    '✗ Ошибка оплаты',
+    'dev.modal.cancel':  'Отмена',
+
     // Payment errors
     'pay.error.generic':  'Произошла ошибка. Попробуй ещё раз или напиши нам.',
     'pay.error.server':   'Ошибка сервера. Попробуй через несколько минут.',
@@ -793,6 +820,24 @@ var HD_TRANSLATIONS = {
     'cta.text':   'Answer 9 questions and get your personalised reading in 10 minutes.',
     'cta.btn':    'Start the free quiz',
     'cta.note':   '399 UAH · secure payment · instant email delivery',
+
+    // Dev modal
+    'dev.modal.title':   '🛠 DEV MODE — Тестовий платіж',
+    'dev.modal.plan':    'Тариф:',
+    'dev.modal.email':   'Email:',
+    'dev.modal.order':   'Order ID:',
+    'dev.modal.success': '✓ Оплата успішна',
+    'dev.modal.fail':    '✗ Помилка оплати',
+    'dev.modal.cancel':  'Скасувати',
+
+    // Dev modal
+    'dev.modal.title':   '🛠 DEV MODE — Test payment',
+    'dev.modal.plan':    'Plan:',
+    'dev.modal.email':   'Email:',
+    'dev.modal.order':   'Order ID:',
+    'dev.modal.success': '✓ Payment success',
+    'dev.modal.fail':    '✗ Payment failed',
+    'dev.modal.cancel':  'Cancel',
 
     // Payment errors
     'pay.error.generic':  'Something went wrong. Please try again or contact us.',

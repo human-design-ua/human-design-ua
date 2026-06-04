@@ -16,41 +16,46 @@ function showDevPaymentModal(quizData, orderId, amount) {
     display:flex; align-items:center; justify-content:center;
     z-index:9999; font-family:Inter,sans-serif;
   `;
+  const T = window.t || (k => k);
+  const planName = quizData.plan === 'full'
+    ? (window.t ? window.t('quiz.pricing.full.name')  : 'Full')
+    : (window.t ? window.t('quiz.pricing.basic.name') : 'Basic');
+
   modal.innerHTML = `
     <div style="background:#1A1440; border:1px solid #D4A830; border-radius:16px;
                 padding:2rem; max-width:420px; width:90%; text-align:center;">
       <div style="font-size:0.75rem; color:#D4A830; letter-spacing:0.1em;
                   text-transform:uppercase; margin-bottom:1rem;">
-        🛠 DEV MODE — Тестовий платіж
+        ${T('dev.modal.title')}
       </div>
       <div style="font-size:1.5rem; font-weight:600; color:#F0ECE8; margin-bottom:0.5rem;">
         ${amount} грн
       </div>
       <div style="font-size:0.9rem; color:#A090C0; margin-bottom:0.25rem;">
-        Тариф: <strong style="color:#F0ECE8">${quizData.plan === 'full' ? 'Повний' : 'Базовий'}</strong>
+        ${T('dev.modal.plan')} <strong style="color:#F0ECE8">${planName}</strong>
       </div>
-      <div style="font-size:0.85rem; color:#A090C0; margin-bottom:1.5rem;">
-        Email: ${quizData.email}
+      <div style="font-size:0.85rem; color:#A090C0; margin-bottom:0.25rem;">
+        ${T('dev.modal.email')} ${quizData.email}
       </div>
       <div style="font-size:0.8rem; color:#6B5F80; margin-bottom:1.5rem;">
-        Order ID: ${orderId}
+        ${T('dev.modal.order')} ${orderId}
       </div>
       <div style="display:flex; gap:0.75rem; justify-content:center;">
         <button onclick="devPaymentResult('success', '${orderId}')"
           style="background:#D4A830; color:#0D0B1E; border:none; border-radius:8px;
                  padding:0.75rem 1.5rem; font-weight:600; cursor:pointer; font-size:0.95rem;">
-          ✓ Оплата успішна
+          ${T('dev.modal.success')}
         </button>
         <button onclick="devPaymentResult('failure', '${orderId}')"
           style="background:transparent; color:#E05050; border:1px solid #E05050;
                  border-radius:8px; padding:0.75rem 1.5rem; cursor:pointer; font-size:0.95rem;">
-          ✗ Помилка оплати
+          ${T('dev.modal.fail')}
         </button>
       </div>
       <div style="margin-top:1rem;">
         <button onclick="document.getElementById('devPayModal').remove()"
           style="background:none; border:none; color:#6B5F80; cursor:pointer; font-size:0.8rem;">
-          Скасувати
+          ${T('dev.modal.cancel')}
         </button>
       </div>
     </div>

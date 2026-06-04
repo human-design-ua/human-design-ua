@@ -31,8 +31,13 @@ from generate_receipt import generate_receipt, PLAN_NAMES, PLAN_AMOUNTS
 load_dotenv(os.path.join(os.path.dirname(__file__), '..', '.env'))
 
 # ── Config ────────────────────────────────────────────────────
-GMAIL_USER     = 'humandesign.finance@gmail.com'
-GMAIL_PASSWORD = os.getenv('GMAIL_APP_PASSWORD', '')  # App Password з .env
+GMAIL_USER = 'humandesign.finance@gmail.com'
+
+# App Password (16 chars, no spaces) — DEV only, never commit to prod
+# Get it: myaccount.google.com → Security → App Passwords
+DEV_APP_PASSWORD = ''  # ← вставь сюда: 'xxxx xxxx xxxx xxxx'
+
+GMAIL_PASSWORD = DEV_APP_PASSWORD or os.getenv('GMAIL_APP_PASSWORD', '')
 SMTP_HOST      = 'smtp.gmail.com'
 SMTP_PORT      = 587
 
