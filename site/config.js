@@ -34,6 +34,8 @@
 
   function detectEnv() {
     var host = window.location.hostname;
+    // file:// protocol (opening HTML directly) → always dev
+    if (!host || host === '') return 'dev';
     if (DEV_HOSTS.indexOf(host) !== -1) return 'dev';
     for (var i = 0; i < DEV_PATTERNS.length; i++) {
       if (host.indexOf(DEV_PATTERNS[i]) !== -1) return 'dev';

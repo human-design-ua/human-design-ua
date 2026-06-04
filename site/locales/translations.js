@@ -226,6 +226,12 @@ var HD_TRANSLATIONS = {
     'cta.btn':    'Почати безкоштовний квіз',
     'cta.note':   '399 грн · безпечна оплата · миттєва доставка на email',
 
+    // Payment errors
+    'pay.error.generic':  'Сталася помилка. Спробуй ще раз або напиши нам.',
+    'pay.error.server':   'Помилка сервера. Спробуй за кілька хвилин.',
+    'pay.error.network':  'Немає зʼєднання. Перевір інтернет і спробуй знову.',
+    'pay.processing':     'Обробляємо...',
+
     // Footer
     'footer.brand':   'Дизайн Людини',
     'footer.privacy': 'Конфіденційність',
@@ -506,6 +512,12 @@ var HD_TRANSLATIONS = {
     'cta.btn':    'Начать бесплатный квиз',
     'cta.note':   '399 грн · безопасная оплата · мгновенная доставка на email',
 
+    // Payment errors
+    'pay.error.generic':  'Произошла ошибка. Попробуй ещё раз или напиши нам.',
+    'pay.error.server':   'Ошибка сервера. Попробуй через несколько минут.',
+    'pay.error.network':  'Нет соединения. Проверь интернет и попробуй снова.',
+    'pay.processing':     'Обрабатываем...',
+
     'footer.brand':   'Дизайн Человека',
     'footer.privacy': 'Конфиденциальность',
     'footer.terms':   'Публичная оферта',
@@ -781,6 +793,12 @@ var HD_TRANSLATIONS = {
     'cta.text':   'Answer 9 questions and get your personalised reading in 10 minutes.',
     'cta.btn':    'Start the free quiz',
     'cta.note':   '399 UAH · secure payment · instant email delivery',
+
+    // Payment errors
+    'pay.error.generic':  'Something went wrong. Please try again or contact us.',
+    'pay.error.server':   'Server error. Please try again in a few minutes.',
+    'pay.error.network':  'No connection. Check your internet and try again.',
+    'pay.processing':     'Processing...',
 
     'footer.brand':   'Human Design',
     'footer.privacy': 'Privacy Policy',

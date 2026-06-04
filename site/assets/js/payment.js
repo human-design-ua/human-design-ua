@@ -134,7 +134,7 @@ async function initiatePayment(quizData) {
   } catch (err) {
     console.error('Payment init error:', err);
     setLoading(btn, false);
-    showPaymentError('Сталася помилка. Спробуй ще раз або напиши нам.');
+    showPaymentError(window.t ? window.t('pay.error.generic') : 'Сталася помилка. Спробуй ще раз або напиши нам.');
   }
 }
 
@@ -195,7 +195,7 @@ async function initiateUpsell(userId) {
   } catch (err) {
     console.error('Upsell payment error:', err);
     setLoading(btn, false);
-    showPaymentError('Сталася помилка. Спробуй ще раз.');
+    showPaymentError(window.t ? window.t('pay.error.generic') : 'Сталася помилка. Спробуй ще раз.');
   }
 }
 
@@ -206,7 +206,7 @@ function setLoading(btn, loading) {
   btn.disabled = loading;
   if (loading) {
     btn.dataset.originalText = btn.textContent;
-    btn.textContent = 'Обробляємо...';
+    btn.textContent = window.t ? window.t('pay.processing') : 'Обробляємо...';
   } else {
     btn.textContent = btn.dataset.originalText || btn.textContent;
   }
