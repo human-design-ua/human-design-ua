@@ -1012,6 +1012,19 @@ details[open] .faq-question::after { transform: rotate(45deg); }
 
 .plan-features li { font-size: 0.85rem; color: var(--text-muted); }
 
+.plan-gift {
+  margin-top: 0.6rem !important;
+  padding: 0.6rem 0.75rem !important;
+  background: rgba(212, 168, 48, 0.1) !important;
+  border: 1px solid rgba(212, 168, 48, 0.3) !important;
+  border-radius: 8px !important;
+  color: var(--gold) !important;
+  font-size: 0.88rem !important;
+  font-weight: 500 !important;
+  line-height: 1.4 !important;
+  list-style: none !important;
+}
+
 .quiz-nav-buttons {
   display: flex;
   gap: 1rem;
@@ -1160,6 +1173,50 @@ details[open] .faq-question::after { transform: rotate(45deg); }
 }
 
 @keyframes spin { to { transform: rotate(360deg); } }
+
+/* ============================================================
+   PRICING — Glowing gift box
+============================================================ */
+.pricing-gift-box {
+  list-style: none !important;
+  margin-top: 0.75rem;
+  padding: 0.85rem 1rem !important;
+  border-radius: 10px;
+  border: 1px solid rgba(212, 168, 48, 0.4);
+  background: rgba(212, 168, 48, 0.07);
+  animation: giftGlow 2.5s ease-in-out infinite;
+}
+
+@keyframes giftGlow {
+  0%, 100% {
+    box-shadow: 0 0 8px rgba(212,168,48,0.2), inset 0 0 8px rgba(212,168,48,0.05);
+    border-color: rgba(212,168,48,0.4);
+  }
+  50% {
+    box-shadow: 0 0 22px rgba(212,168,48,0.45), inset 0 0 14px rgba(212,168,48,0.12);
+    border-color: rgba(212,168,48,0.8);
+  }
+}
+
+.gift-badge {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--gold);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 0.5rem;
+}
+
+.gift-item {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  padding: 0.2rem 0;
+}
+
+.gift-item--main {
+  color: var(--gold);
+  font-weight: 500;
+}
 
 /* ============================================================
    BODYGRAPH CENTER PULSE ANIMATION
@@ -1445,7 +1502,23 @@ details[open] .faq-question::after { transform: rotate(45deg); }
 }
 
 [data-theme="light"] .bodygraph {
-  filter: drop-shadow(0 0 30px rgba(112, 71, 196, 0.12));
+  filter: drop-shadow(0 0 30px rgba(112, 71, 196, 0.2));
+}
+
+/* Bodygraph text — visible on light theme with outline */
+[data-theme="light"] .bodygraph text {
+  fill: #1A1040 !important;
+  stroke: #ffffff !important;
+  stroke-width: 2.5px !important;
+  paint-order: stroke fill !important;
+  opacity: 1 !important;
+}
+
+/* Bodygraph shapes — stronger border on light theme */
+[data-theme="light"] .bodygraph polygon,
+[data-theme="light"] .bodygraph ellipse,
+[data-theme="light"] .bodygraph rect {
+  stroke-width: 2px !important;
 }
 
 [data-theme="light"] .btn-gold { color: #FFFFFF; }

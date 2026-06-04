@@ -18,10 +18,10 @@ var HD_TRANSLATIONS = {
 
     // Hero
     'hero.badge':       '✦ Персональна розшифровка бодіграфа',
-    'hero.title':       'Твій Дизайн Людини —<br><em>путівна карта<br>до себе справжньої</em>',
+    'hero.title':       'Дизайн Людини —<br><em>енергетична карта особистості</em>',
     'hero.subtitle':    'Персональна розшифровка твого енергетичного поля на основі дати, часу та місця народження. Приділи 10 хвилин — і отримай карту свого призначення.',
     'hero.cta.btn':     'Отримати розшифровку',
-    'hero.cta.note':    'від 399 грн · 10 хвилин на опитування',
+    'hero.cta.note':    'Розраховуємо Дизайн Людини менш ніж за 10 хвилин',
     'hero.stat1.label': 'розшифровок',
     'hero.stat2.label': 'середня оцінка',
     'hero.stat3.label': 'хвилин очікування',
@@ -58,7 +58,7 @@ var HD_TRANSLATIONS = {
     'about.sci8.text':  '64 гексаграми І-Цзін збігаються за структурою з 64 кодонами генетичного коду людини. Через гексаграми описуються конкретні якості та теми, активні саме в твоїй карті.',
 
     // Hero tagline
-    'hero.tagline':     'Дизайн Людини — шлях до своєї істини',
+    'hero.tagline':     '',
 
     // Pain points
     'pain.badge':       '✦ Що вирішує',
@@ -223,7 +223,7 @@ var HD_TRANSLATIONS = {
     'quiz.s1.placeholder':  'Наприклад: Олена',
     'quiz.s1.error':        "Введи, будь ласка, своє ім'я",
     'quiz.s2.question':     'На яку пошту надіслати розшифровку?',
-    'quiz.s2.hint':         'Готову розшифровку ми надішлемо саме сюди впродовж 10 хвилин після оплати.',
+    'quiz.s2.hint':         'Розшифровку твого Дизайну Людини надішлемо саме сюди впродовж 10 хвилин.',
     'quiz.s2.label':        'Email-адреса',
     'quiz.s2.error':        'Введи коректну email-адресу',
     'quiz.s3.question':     'Коли ти народилася?',
@@ -258,7 +258,7 @@ var HD_TRANSLATIONS = {
     'quiz.s8.error':        'Обери один варіант',
 
     // Quiz — pricing
-    'quiz.pricing.label':       'Майже готово!',
+    'quiz.pricing.label':       'Залишилось зовсім небагато! 🌟 Оберіть тариф',
     'quiz.pricing.question':    'Обери свій рівень розшифровки',
     'quiz.pricing.hint':        'Розшифровка буде персональною — складена саме для тебе на основі твоїх даних.',
     'quiz.pricing.basic.name':  'Базовий',
@@ -275,6 +275,7 @@ var HD_TRANSLATIONS = {
     'quiz.pricing.full.f3':     '✓ Інкарнаційний хрест',
     'quiz.pricing.full.f4':     '✓ Аналіз стосунків',
     'quiz.pricing.full.f5':     '✓ Персональний план 90 днів',
+    'quiz.pricing.full.gift':   '🎁 Плюс подарунок: особистий план на 90 днів з рекомендаціями для вашого Дизайну Людини',
     'quiz.pricing.full.vol':    '— ~50 сторінок',
     'quiz.pricing.plan.error':  'Обери тариф',
     'quiz.pricing.consent':     'Я погоджуюся з ',
@@ -296,10 +297,10 @@ var HD_TRANSLATIONS = {
     'nav.theme.light':  'Включить тёмную тему',
 
     'hero.badge':       '✦ Персональная расшифровка бодиграфа',
-    'hero.title':       'Твой Дизайн Человека —<br><em>путеводная карта<br>к себе настоящей</em>',
+    'hero.title':       'Дизайн Человека —<br><em>энергетическая карта личности</em>',
     'hero.subtitle':    'Персональная расшифровка твоего энергетического поля на основе даты, времени и места рождения. Удели 10 минут — и получи карту своего предназначения.',
     'hero.cta.btn':     'Получить расшифровку',
-    'hero.cta.note':    'от 399 грн · 10 минут на опросник',
+    'hero.cta.note':    'Рассчитываем Дизайн Человека менее чем за 10 минут',
     'hero.stat1.label': 'расшифровок',
     'hero.stat2.label': 'средняя оценка',
     'hero.stat3.label': 'минут ожидания',
@@ -334,7 +335,7 @@ var HD_TRANSLATIONS = {
     'about.sci8.title': 'Книга Перемен И-Цзин и гексаграммы',
     'about.sci8.text':  '64 гексаграммы И-Цзин совпадают по структуре с 64 кодонами генетического кода человека. Через гексаграммы описываются конкретные качества и темы, активные именно в твоей карте.',
 
-    'hero.tagline':     'Дизайн Человека — путь к своей истине',
+    'hero.tagline':     '',
     'pain.badge':       '✦ Что решает',
     'pain.title':       'Что даёт <em>Дизайн Человека</em>',
     'pain.1.title':     'В чём моё предназначение?',
@@ -479,7 +480,7 @@ var HD_TRANSLATIONS = {
     'quiz.s1.placeholder':  'Например: Елена',
     'quiz.s1.error':        'Введи, пожалуйста, своё имя',
     'quiz.s2.question':     'На какую почту отправить расшифровку?',
-    'quiz.s2.hint':         'Готовую расшифровку мы отправим именно сюда в течение 10 минут после оплаты.',
+    'quiz.s2.hint':         'Расшифровку твоего Дизайна Человека отправим именно сюда в течение 10 минут.',
     'quiz.s2.label':        'Email-адрес',
     'quiz.s2.error':        'Введи корректный email-адрес',
     'quiz.s3.question':     'Когда ты родилась?',
@@ -513,7 +514,7 @@ var HD_TRANSLATIONS = {
     'quiz.s8.opt3':         'Уже практикую — хочу глубже',
     'quiz.s8.error':        'Выбери один вариант',
 
-    'quiz.pricing.label':       'Почти готово!',
+    'quiz.pricing.label':       'Осталось совсем немного! 🌟 Выберите тариф',
     'quiz.pricing.question':    'Выбери свой уровень расшифровки',
     'quiz.pricing.hint':        'Расшифровка будет персональной — составлена именно для тебя на основе твоих данных.',
     'quiz.pricing.basic.name':  'Базовый',
@@ -530,6 +531,7 @@ var HD_TRANSLATIONS = {
     'quiz.pricing.full.f3':     '✓ Инкарнационный крест',
     'quiz.pricing.full.f4':     '✓ Анализ отношений',
     'quiz.pricing.full.f5':     '✓ Личный план 90 дней',
+    'quiz.pricing.full.gift':   '🎁 Плюс подарок: личный план на 90 дней с рекомендациями для вашего Дизайна Человека',
     'quiz.pricing.full.vol':    '— ~50 страниц',
     'quiz.pricing.plan.error':  'Выбери тариф',
     'quiz.pricing.consent':     'Я соглашаюсь с ',
@@ -551,10 +553,10 @@ var HD_TRANSLATIONS = {
     'nav.theme.light':  'Switch to dark theme',
 
     'hero.badge':       '✦ Personal Bodygraph Reading',
-    'hero.title':       'Your Human Design —<br><em>a guiding map<br>to your true self</em>',
+    'hero.title':       'Human Design —<br><em>your personal energy map</em>',
     'hero.subtitle':    'A personal reading of your energy field based on your birth date, time and place. Spend 10 minutes — and receive the map of your purpose.',
     'hero.cta.btn':     'Get my reading',
-    'hero.cta.note':    'from 399 UAH · ready in 10 minutes',
+    'hero.cta.note':    'Your Human Design calculated in under 10 minutes',
     'hero.stat1.label': 'readings delivered',
     'hero.stat2.label': 'average rating',
     'hero.stat3.label': 'minutes to wait',
@@ -589,7 +591,7 @@ var HD_TRANSLATIONS = {
     'about.sci8.title': 'I Ching & hexagrams',
     'about.sci8.text':  'The 64 hexagrams of the I Ching match in structure the 64 codons of the human genetic code. Through hexagrams, specific qualities and themes active in your chart are described.',
 
-    'hero.tagline':     'Human Design — your path to your truth',
+    'hero.tagline':     '',
     'pain.badge':       '✦ What it solves',
     'pain.title':       'What <em>Human Design</em> gives you',
     'pain.1.title':     'What is my purpose?',
@@ -734,7 +736,7 @@ var HD_TRANSLATIONS = {
     'quiz.s1.placeholder':  'E.g. Elena',
     'quiz.s1.error':        'Please enter your name',
     'quiz.s2.question':     'Where should we send your reading?',
-    'quiz.s2.hint':         'We\'ll send your personalised reading here within 10 minutes of payment.',
+    'quiz.s2.hint':         'We\'ll send your Human Design reading here within 10 minutes.',
     'quiz.s2.label':        'Email address',
     'quiz.s2.error':        'Please enter a valid email address',
     'quiz.s3.question':     'When were you born?',
@@ -768,7 +770,7 @@ var HD_TRANSLATIONS = {
     'quiz.s8.opt3':         'Already practicing — want to go deeper',
     'quiz.s8.error':        'Please select one option',
 
-    'quiz.pricing.label':       'Almost there!',
+    'quiz.pricing.label':       'Almost done! 🌟 Choose your plan',
     'quiz.pricing.question':    'Choose your reading level',
     'quiz.pricing.hint':        'Your reading will be personalised — created specifically for you based on your data.',
     'quiz.pricing.basic.name':  'Basic',
@@ -785,6 +787,7 @@ var HD_TRANSLATIONS = {
     'quiz.pricing.full.f3':     '✓ Incarnation cross',
     'quiz.pricing.full.f4':     '✓ Relationship analysis',
     'quiz.pricing.full.f5':     '✓ Personal 90-day plan',
+    'quiz.pricing.full.gift':   '🎁 Bonus gift: personal 90-day plan with recommendations for your Human Design',
     'quiz.pricing.full.vol':    '— ~50 pages',
     'quiz.pricing.plan.error':  'Please choose a plan',
     'quiz.pricing.consent':     'I agree to the ',

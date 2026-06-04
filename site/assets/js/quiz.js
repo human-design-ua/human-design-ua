@@ -2,7 +2,7 @@
 
 const quizData = {};
 let currentStep = 1;
-const totalSteps = 8;
+const totalSteps = 7;
 
 // ── Restore from localStorage ──────────────────────────────
 (function restoreProgress() {
@@ -142,9 +142,7 @@ function validateStep(stepNum) {
     case 7:
       if (!quizData.challenge) { showError('challengeError'); valid = false; }
       break;
-    case 8:
-      if (!quizData.hdKnowledge) { showError('hdKnowledgeError'); valid = false; }
-      break;
+    // step 8 removed
   }
   return valid;
 }
