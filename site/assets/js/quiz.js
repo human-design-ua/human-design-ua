@@ -182,7 +182,26 @@ function hideError(id) {
 
 // ── Submit payment ─────────────────────────────────────────
 function submitPayment() {
-  if (!validatePricing()) return;
+  // DEV: auto-select basic plan and consent if not done
+  if (window.HD_ENV === 'dev') {
+    if (!quizData.plan) {
+      selectPlan('basic');
+      console.log('[DEV] Auto-selected basic plan');
+    }
+    const consent = document.getElementById('consent');
+    if (consent && !consent.checked) {
+      consent.checked = true;
+      console.log('[DEV] Auto-checked consent');
+    }
+  }
+
+  if (!validatePricing()) {
+    console.warn('[DEV] validatePricing failed:', {
+      plan: quizData.plan,
+      consent: document.getElementById('consent')?.checked
+    });
+    return;
+  }
   if (typeof initiatePayment === 'function') {
     initiatePayment(quizData);
   } else {
