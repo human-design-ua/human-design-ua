@@ -20,6 +20,7 @@ import argparse
 import os
 import smtplib
 from datetime import datetime
+from email.header import Header
 from email.mime.application import MIMEApplication
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -35,9 +36,11 @@ GMAIL_USER = 'humandesign.finance@gmail.com'
 
 # App Password (16 chars, no spaces) — DEV only, never commit to prod
 # Get it: myaccount.google.com → Security → App Passwords
-DEV_APP_PASSWORD = ''  # ← вставь сюда: 'xxxx xxxx xxxx xxxx'
+DEV_APP_PASSWORD = 'ohqw npmh jtlh gzuq'  # ← вставь сюда: 'xxxx xxxx xxxx xxxx'
 
-GMAIL_PASSWORD = DEV_APP_PASSWORD or os.getenv('GMAIL_APP_PASSWORD', '')
+# Strip all spaces (including non-breaking \xa0 copied from Google UI)
+_raw = DEV_APP_PASSWORD or os.getenv('GMAIL_APP_PASSWORD', '')
+GMAIL_PASSWORD = _raw.replace('\xa0', '').replace(' ', '')
 SMTP_HOST      = 'smtp.gmail.com'
 SMTP_PORT      = 587
 
@@ -88,13 +91,14 @@ def send_receipt_email(order_data: dict, pdf_path: str) -> bool:
 
     # Build message
     msg = MIMEMultipart()
-    msg['From']    = f'Human Design UA <{GMAIL_USER}>'
-    msg['To']      = to_email
-    msg['Subject'] = f'✦ Чек про оплату — {plan_name}'
+    msg['From']     = f'Human Design UA <{GMAIL_USER}>'
+    msg['To']       = to_email
+    msg['Subject']  = Header(f'Chek pro oplatu - {plan_name}', 'utf-8')
     msg['Reply-To'] = GMAIL_USER
 
-    # Body
-    msg.attach(MIMEText(build_email_body(order_data), 'plain', 'utf-8'))
+    # Body — strip any non-breaking spaces to avoid encoding issues
+    body = build_email_body(order_data).replace('\xa0', ' ')
+    msg.attach(MIMEText(body, 'plain', 'utf-8'))
 
     # Attach PDF
     if os.path.exists(pdf_path):
@@ -110,11 +114,18 @@ def send_receipt_email(order_data: dict, pdf_path: str) -> bool:
 
     # Send via Gmail SMTP
     try:
-        with smtplib.SMTP(SMTP_HOST, SMTP_PORT) as server:
-            server.ehlo()
+        with smtplib.SMTP(SMTP_HOST, SMTP_PORT, local_hostname='localhost') as server:
+            server.ehlo('localhost')
             server.starttls()
+            server.ehlo('localhost')
             server.login(GMAIL_USER, GMAIL_PASSWORD)
-            server.sendmail(GMAIL_USER, to_email, msg.as_string())
+            # Use as_bytes() to avoid Python 3.9 ascii encoding issues
+            server.sendmail(
+                GMAIL_USER,
+                [to_email],
+                msg.as_bytes(),
+                mail_options=['BODY=8BITMIME'],
+            )
 
         print(f'✅ Receipt sent to {to_email}')
         return True
