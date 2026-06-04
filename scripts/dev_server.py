@@ -26,8 +26,12 @@ from urllib.parse import urlparse
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from generate_receipt import generate_receipt
 from send_receipt import send_receipt_email
+from dev_db import init_db, save_order, get_orders, get_stats
 
 PORT = 4000
+
+# Init DB
+init_db()
 
 
 class DevHandler(BaseHTTPRequestHandler):
@@ -50,6 +54,10 @@ class DevHandler(BaseHTTPRequestHandler):
         path = urlparse(self.path).path
         if path == '/health':
             self._json(200, {'status': 'ok', 'env': 'dev', 'port': PORT})
+        elif path == '/admin/orders':
+            self._json(200, {'orders': get_orders()})
+        elif path == '/admin/stats':
+            self._json(200, get_stats())
         else:
             self._json(404, {'error': 'Not found'})
 
@@ -102,6 +110,9 @@ class DevHandler(BaseHTTPRequestHandler):
             return
 
         try:
+            # Save to DB
+            save_order(order_data)
+
             # Step 1: Generate PDF
             print('\n📄 Generating PDF receipt...')
             pdf_path = generate_receipt(order_data)

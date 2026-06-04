@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin — Human Design UA</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:     #0D0B1E;
+      --card:   #1A1440;
+      --card2:  #120F35;
+      --gold:   #D4A830;
+      --purple: #9B6EE0;
+      --green:  #4CAF7D;
+      --red:    #E05050;
+      --text:   #F0ECE8;
+      --muted:  #A090C0;
+      --dim:    #6B5F80;
+      --border: rgba(212,168,48,0.15);
+    }
+    body { background: var(--bg); color: var(--text); font-family: Inter, system-ui, sans-serif;
+           font-size: 14px; line-height: 1.5; }
+
+    /* ── Header ── */
+    .header { background: var(--card2); border-bottom: 1px solid var(--border);
+               padding: 1rem 1.5rem; display: flex; align-items: center;
+               justify-content: space-between; position: sticky; top: 0; z-index: 10; }
+    .logo { color: var(--gold); font-size: 1rem; font-weight: 700; display: flex;
+            align-items: center; gap: 0.5rem; }
+    .dev-badge { background: rgba(155,110,224,0.2); color: var(--purple);
+                 padding: 0.2rem 0.6rem; border-radius: 4px; font-size: 0.7rem;
+                 text-transform: uppercase; letter-spacing: 0.08em; }
+    .refresh-btn { background: var(--card); border: 1px solid var(--border); color: var(--muted);
+                   padding: 0.4rem 0.8rem; border-radius: 6px; cursor: pointer; font-size: 0.8rem; }
+    .refresh-btn:hover { color: var(--gold); border-color: var(--gold); }
+
+    /* ── Layout ── */
+    .container { max-width: 1400px; margin: 0 auto; padding: 1.5rem; }
+
+    /* ── Stats ── */
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+                  gap: 1rem; margin-bottom: 1.5rem; }
+    .stat-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+                 padding: 1.25rem; }
+    .stat-label { font-size: 0.72rem; color: var(--muted); text-transform: uppercase;
+                  letter-spacing: 0.06em; margin-bottom: 0.4rem; }
+    .stat-value { font-size: 1.6rem; font-weight: 700; color: var(--gold); }
+    .stat-sub   { font-size: 0.75rem; color: var(--dim); margin-top: 0.2rem; }
+
+    /* ── Filters ── */
+    .filters { display: flex; gap: 0.75rem; margin-bottom: 1rem; flex-wrap: wrap;
+               align-items: center; }
+    .filter-btn { background: var(--card); border: 1px solid var(--border);
+                  color: var(--muted); padding: 0.35rem 0.85rem; border-radius: 20px;
+                  cursor: pointer; font-size: 0.8rem; transition: all .2s; }
+    .filter-btn.active, .filter-btn:hover { border-color: var(--gold); color: var(--gold); }
+    .search { flex: 1; min-width: 200px; background: var(--card); border: 1px solid var(--border);
+              color: var(--text); padding: 0.4rem 0.8rem; border-radius: 8px; font-size: 0.85rem;
+              outline: none; }
+    .search:focus { border-color: var(--purple); }
+    .search::placeholder { color: var(--dim); }
+
+    /* ── Table ── */
+    .table-wrap { background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+                  overflow: hidden; }
+    table { width: 100%; border-collapse: collapse; }
+    thead { background: var(--card2); }
+    th { padding: 0.75rem 1rem; text-align: left; font-size: 0.72rem; color: var(--muted);
+         text-transform: uppercase; letter-spacing: 0.06em; white-space: nowrap; }
+    td { padding: 0.75rem 1rem; border-top: 1px solid rgba(255,255,255,0.04);
+         font-size: 0.82rem; vertical-align: middle; }
+    tr:hover td { background: rgba(155,110,224,0.05); }
+
+    .badge { display: inline-block; padding: 0.2rem 0.55rem; border-radius: 4px;
+             font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; }
+    .badge-full  { background: rgba(212,168,48,.15); color: var(--gold); }
+    .badge-basic { background: rgba(155,110,224,.15); color: var(--purple); }
+    .badge-paid  { background: rgba(76,175,125,.15); color: var(--green); }
+    .badge-ua    { background: rgba(212,168,48,.1); color: var(--gold); }
+    .badge-ru    { background: rgba(224,80,80,.1); color: #E08080; }
+    .badge-en    { background: rgba(70,160,220,.1); color: #70A8E0; }
+
+    .email { color: var(--purple); }
+    .amount { color: var(--gold); font-weight: 600; }
+    .muted  { color: var(--dim); }
+
+    /* ── Detail modal ── */
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.8);
+                     z-index: 100; align-items: center; justify-content: center; }
+    .modal-overlay.open { display: flex; }
+    .modal { background: var(--card); border: 1px solid var(--border); border-radius: 16px;
+             padding: 1.5rem; max-width: 520px; width: 90%; max-height: 80vh; overflow-y: auto; }
+    .modal h3 { color: var(--gold); margin-bottom: 1rem; }
+    .modal-row { display: flex; gap: 0.5rem; padding: 0.4rem 0;
+                 border-bottom: 1px solid rgba(255,255,255,0.04); }
+    .modal-label { color: var(--muted); min-width: 150px; font-size: 0.8rem; }
+    .modal-val   { color: var(--text); font-size: 0.82rem; word-break: break-all; }
+    .modal-close { float: right; background: none; border: none; color: var(--dim);
+                   cursor: pointer; font-size: 1.2rem; }
+
+    /* ── Empty ── */
+    .empty { text-align: center; padding: 3rem; color: var(--dim); }
+    .empty-icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
+
+    /* ── Connection error ── */
+    .conn-error { background: rgba(224,80,80,.1); border: 1px solid rgba(224,80,80,.3);
+                  color: #E09090; border-radius: 10px; padding: 1rem 1.5rem;
+                  margin-bottom: 1.5rem; display: none; }
+    .conn-error code { font-size: 0.85rem; background: rgba(0,0,0,.3); padding: 0.2rem 0.4rem;
+                       border-radius: 4px; }
+  </style>
+</head>
+<body>
+
+<header class="header">
+  <div class="logo">
+    ✦ Human Design UA
+    <span class="dev-badge">DEV</span>
+  </div>
+  <div style="display:flex;gap:0.75rem;align-items:center;">
+    <span id="lastUpdate" style="color:var(--dim);font-size:0.75rem;"></span>
+    <button class="refresh-btn" onclick="loadData()">⟳ Оновити</button>
+  </div>
+</header>
+
+<div class="container">
+
+  <div class="conn-error" id="connError">
+    ⚠️ Не вдалося підключитись до dev сервера. Запусти:
+    <code>python3 scripts/dev_server.py</code>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-grid" id="statsGrid">
+    <div class="stat-card"><div class="stat-label">Всього замовлень</div><div class="stat-value" id="sTotal">—</div></div>
+    <div class="stat-card"><div class="stat-label">Дохід (UAH)</div><div class="stat-value" id="sRevenue">—</div></div>
+    <div class="stat-card"><div class="stat-label">Базових</div><div class="stat-value" id="sBasic">—</div><div class="stat-sub">399 грн</div></div>
+    <div class="stat-card"><div class="stat-label">Повних</div><div class="stat-value" id="sFull">—</div><div class="stat-sub">799 грн</div></div>
+    <div class="stat-card"><div class="stat-label">Апсейл</div><div class="stat-value" id="sUpsell">—</div></div>
+    <div class="stat-card"><div class="stat-label">Середній чек</div><div class="stat-value" id="sAvg">—</div></div>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters">
+    <input class="search" id="searchInput" placeholder="🔍 Пошук по email, імені, місту..." oninput="renderTable()">
+    <button class="filter-btn active" onclick="setFilter('all',this)">Всі</button>
+    <button class="filter-btn" onclick="setFilter('basic',this)">Базовий</button>
+    <button class="filter-btn" onclick="setFilter('full',this)">Повний</button>
+    <button class="filter-btn" onclick="setFilter('ua',this)">UA</button>
+    <button class="filter-btn" onclick="setFilter('ru',this)">RU</button>
+    <button class="filter-btn" onclick="setFilter('en',this)">EN</button>
+  </div>
+
+  <!-- Table -->
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Дата</th>
+          <th>Email</th>
+          <th>Ім'я</th>
+          <th>Тариф</th>
+          <th>Сума</th>
+          <th>Місце нар.</th>
+          <th>Тип ДЛ</th>
+          <th>Мова</th>
+          <th>UTM</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+    <div class="empty" id="emptyState" style="display:none;">
+      <div class="empty-icon">📭</div>
+      Немає замовлень
+    </div>
+  </div>
+</div>
+
+<!-- Detail Modal -->
+<div class="modal-overlay" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal" id="modalContent"></div>
+</div>
+
+<script>
+let allOrders = [];
+let currentFilter = 'all';
+
+async function loadData() {
+  try {
+    const [ordersRes, statsRes] = await Promise.all([
+      fetch('http://localhost:4000/admin/orders'),
+      fetch('http://localhost:4000/admin/stats'),
+    ]);
+    if (!ordersRes.ok) throw new Error();
+
+    const { orders } = await ordersRes.json();
+    const stats = await statsRes.json();
+
+    document.getElementById('connError').style.display = 'none';
+    allOrders = orders;
+    renderStats(stats);
+    renderTable();
+    document.getElementById('lastUpdate').textContent =
+      'Оновлено: ' + new Date().toLocaleTimeString('uk');
+  } catch {
+    document.getElementById('connError').style.display = 'block';
+  }
+}
+
+function renderStats(s) {
+  document.getElementById('sTotal').textContent   = s.total_orders || 0;
+  document.getElementById('sRevenue').textContent = (s.revenue || 0).toLocaleString('uk') + ' ₴';
+  document.getElementById('sBasic').textContent   = s.basic_count || 0;
+  document.getElementById('sFull').textContent    = s.full_count  || 0;
+  document.getElementById('sUpsell').textContent  = s.upsells     || 0;
+  document.getElementById('sAvg').textContent     = Math.round(s.avg_order || 0) + ' ₴';
+}
+
+function setFilter(f, btn) {
+  currentFilter = f;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderTable();
+}
+
+function renderTable() {
+  const q   = document.getElementById('searchInput').value.toLowerCase();
+  const tbody = document.getElementById('tableBody');
+  const empty = document.getElementById('emptyState');
+
+  let rows = allOrders.filter(o => {
+    if (currentFilter === 'basic' && o.plan !== 'basic') return false;
+    if (currentFilter === 'full'  && o.plan !== 'full')  return false;
+    if (currentFilter === 'ua'    && o.locale !== 'ua')  return false;
+    if (currentFilter === 'ru'    && o.locale !== 'ru')  return false;
+    if (currentFilter === 'en'    && o.locale !== 'en')  return false;
+    if (q) {
+      const hay = (o.email+o.name+o.birth_place+o.hd_type).toLowerCase();
+      if (!hay.includes(q)) return false;
+    }
+    return true;
+  });
+
+  if (!rows.length) {
+    tbody.innerHTML = '';
+    empty.style.display = 'block';
+    return;
+  }
+  empty.style.display = 'none';
+
+  tbody.innerHTML = rows.map((o, i) => `
+    <tr onclick="showDetail('${o.id}')" style="cursor:pointer;">
+      <td class="muted">${i+1}</td>
+      <td class="muted">${formatDate(o.paid_at || o.created_at)}</td>
+      <td class="email">${o.email}</td>
+      <td>${o.name || '—'}</td>
+      <td><span class="badge badge-${o.plan}">${o.plan === 'full' ? 'Повний' : 'Базовий'}</span></td>
+      <td class="amount">${o.amount_paid} ₴</td>
+      <td class="muted">${o.birth_place || '—'}</td>
+      <td>${o.hd_type || '—'}</td>
+      <td><span class="badge badge-${o.locale||'ua'}">${(o.locale||'ua').toUpperCase()}</span></td>
+      <td class="muted">${o.utm_source || '—'}</td>
+      <td><span style="color:var(--purple)">→</span></td>
+    </tr>
+  `).join('');
+}
+
+function showDetail(id) {
+  const o = allOrders.find(x => x.id === id);
+  if (!o) return;
+
+  const rows = [
+    ['ID',              o.id],
+    ['Email',           o.email],
+    ["Ім'я",            o.name || '—'],
+    ['Тариф',           o.plan === 'full' ? 'Повний (799 ₴)' : 'Базовий (399 ₴)'],
+    ['Сума оплати',     o.amount_paid + ' ₴'],
+    ['Дата оплати',     o.paid_at || '—'],
+    ['Дата нар.',       o.birth_date || '—'],
+    ['Час нар.',        o.birth_time || '—'],
+    ['Місце нар.',      o.birth_place || '—'],
+    ['Сфера інтересу',  o.life_area || '—'],
+    ['Тип ДЛ',         o.hd_type || '—'],
+    ['Авторитет',       o.hd_authority || '—'],
+    ['Профіль',         o.hd_profile || '—'],
+    ['Мова',            (o.locale || 'ua').toUpperCase()],
+    ['Order ID',        o.liqpay_order_id || '—'],
+    ['UTM source',      o.utm_source || '—'],
+    ['UTM campaign',    o.utm_campaign || '—'],
+    ['Статус',          o.status],
+    ['Email надіслано', o.email_sent_at || '—'],
+    ['Середовище',      o.env || 'dev'],
+  ];
+
+  document.getElementById('modalContent').innerHTML = `
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <h3>✦ ${o.email}</h3>
+    ${rows.map(([l,v]) => `
+      <div class="modal-row">
+        <span class="modal-label">${l}</span>
+        <span class="modal-val">${v}</span>
+      </div>
+    `).join('')}
+  `;
+  document.getElementById('modal').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('modal').classList.remove('open');
+}
+
+function formatDate(dt) {
+  if (!dt) return '—';
+  return dt.replace('T',' ').slice(0,16);
+}
+
+// Auto-refresh every 30s
+loadData();
+setInterval(loadData, 30000);
+</script>
+</body>
+</html>
