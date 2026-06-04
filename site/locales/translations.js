@@ -58,7 +58,18 @@ var HD_TRANSLATIONS = {
     'about.sci8.text':  '64 гексаграми І-Цзін збігаються за структурою з 64 кодонами генетичного коду людини. Через гексаграми описуються конкретні якості та теми, активні саме в твоїй карті.',
 
     // Hero tagline
-    'hero.tagline':     '',
+    'hero.tagline':     'Дизайн Людини — це енергетична карта особистості',
+
+    // Bodygraph centers (full names)
+    'bg.head':    'ГОЛОВА',
+    'bg.ajna':    'АДЖНА',
+    'bg.throat':  'ГОРЛО',
+    'bg.g':       'САМІСТЬ',
+    'bg.will':    'ВОЛЯ',
+    'bg.sp':      'СОНЯЧНЕ СПЛ.',
+    'bg.sacral':  'САКРАЛЬНИЙ',
+    'bg.spleen':  'СЕЛЕЗІНКА',
+    'bg.root':    'КОРІНЬ',
 
     // Pain points
     'pain.badge':       '✦ Що вирішує',
@@ -78,12 +89,19 @@ var HD_TRANSLATIONS = {
 
     // Cosmos / quote
     'cosmos.quote':     '«Кожна людська істота є унікальним потоком свідомості. Коли ти живеш у злагоді зі своєю природою — ти не просто щаслива. Ти стаєш тим, ким задумана Всесвітом.»',
-    'cosmos.author':    '— Ра Уру Ху, засновник системи Дизайну Людини',
+    'cosmos.author':    '— натхненно вченнями Ра Уру Ху, засновника Дизайну Людини',
 
     // Sciences section header
     'sciences.badge':   '✦ Наукова основа',
     'sciences.title':   'Синтез класичних наук<br><em>та давньої космології</em>',
-    'sciences.lead':    'Ра Уру Ху, засновник системи, отримав знання про Дизайн Людини у 1987 році — у вигляді цілісної системи, яка поєднала знання з кількох наукових і духовних традицій. Квантова фізика пояснює, як нейтрино впливають на ДНК; астрологія і астрономія — як положення планет формує нашу карту; генетика — чому ми реагуємо саме так; а езотеричні системи — як ця карта вписана у велику структуру Всесвіту.',
+    'sciences.lead':    'Дизайн Людини — це інтегративна система самопізнання, яка пояснює природу людини через синтез стародавніх знань і сучасних наук. Вона дає відповідь на питання: як ти влаштована, як приймати рішення і чому твоя природа саме така. Ра Уру Ху, засновник системи, отримав знання про Дизайн Людини у 1987 році — у вигляді цілісної системи, яка поєднала знання з кількох наукових і духовних традицій. Квантова фізика пояснює, як нейтрино впливають на ДНК; астрологія і астрономія — як положення планет формує нашу карту; генетика — чому ми реагуємо саме так; а езотеричні системи — як ця карта вписана у велику структуру Всесвіту.',
+
+
+    // Urgency gift boxes
+    'gift.timer':      '⏰ При оплаті протягом 15 хвилин отримай безкоштовний подарунок:',
+    'gift.basic.item1': '✓ Практичні рекомендації за твоїми результатами',
+    'gift.full.item1': '✓ Практики декондиціювання',
+    'gift.full.item2': '✓ Персональний план на 90 днів',
 
     // Pricing start
     'pricing.start.badge': '✦ З чого почати',
@@ -143,6 +161,7 @@ var HD_TRANSLATIONS = {
     'pricing.lead':         'Обидва варіанти персональні — складаються на основі твоїх даних, не шаблони.',
     'pricing.basic.name':   'Базовий',
     'pricing.basic.desc':   'Ідеально для знайомства з Дизайном Людини',
+    'pricing.basic.bodygraph': '✓ Розшифровка бодіграфу',
     'pricing.basic.f1':     '✓ Твій тип та стратегія',
     'pricing.basic.f2':     '✓ Авторитет прийняття рішень',
     'pricing.basic.f3':     '✓ Профіль — твоя роль у житті',
@@ -156,6 +175,7 @@ var HD_TRANSLATIONS = {
     'pricing.full.popular': 'Найпопулярніший',
     'pricing.full.name':    'Повний',
     'pricing.full.desc':    'Глибоке занурення у всі аспекти твого дизайну',
+    'pricing.full.bodygraph':  '✓ Розшифровка бодіграфу',
     'pricing.full.f1':      '✓ Все з базового тарифу',
     'pricing.full.f2':      '✓ Детальний аналіз усіх центрів',
     'pricing.full.f3':      '✓ Ключові канали та гексаграми',
@@ -194,7 +214,7 @@ var HD_TRANSLATIONS = {
     'faq.q3':     'Чим базовий тариф відрізняється від повного?',
     'faq.a3':     'Базовий (399 грн) — це ~20 сторінок з ключовими аспектами: тип, авторитет, профіль, основні центри та практики. Повний (799 грн) — це ~50 сторінок, що включають канали, гексаграми, інкарнаційний хрест, аналіз стосунків та план на 90 днів.',
     'faq.q4':     'А що якщо я не знаю точний час народження?',
-    'faq.a4':     'Введи приблизний час або вкажи "невідомо". Ми зможемо розрахувати тип, авторитет та профіль з достатньою точністю. Деякі аспекти будуть позначені як орієнтовні.',
+    'faq.a4':     'Введи приблизний час або вкажи «невідомо». Ми зможемо розрахувати твій профіль з достатньою точністю.',
     'faq.q5':     'Чи можна замовити розшифровку в подарунок?',
     'faq.a5':     'Так! Пройди квіз, вкажи дані людини та свою email-адресу — або email отримувача. Ми надішлемо розшифровку прямо на потрібну скриньку.',
     'faq.q6':     'Як приймається оплата?',
@@ -275,7 +295,7 @@ var HD_TRANSLATIONS = {
     'quiz.pricing.full.f3':     '✓ Інкарнаційний хрест',
     'quiz.pricing.full.f4':     '✓ Аналіз стосунків',
     'quiz.pricing.full.f5':     '✓ Персональний план 90 днів',
-    'quiz.pricing.full.gift':   '🎁 Плюс подарунок: особистий план на 90 днів з рекомендаціями для вашого Дизайну Людини',
+    'quiz.pricing.full.gift':   '🎁 При оплаті протягом 15 хвилин — безкоштовний подарунок: Практики декондиціювання та Персональний план на 90 днів',
     'quiz.pricing.full.vol':    '— ~50 сторінок',
     'quiz.pricing.plan.error':  'Обери тариф',
     'quiz.pricing.consent':     'Я погоджуюся з ',
@@ -335,7 +355,18 @@ var HD_TRANSLATIONS = {
     'about.sci8.title': 'Книга Перемен И-Цзин и гексаграммы',
     'about.sci8.text':  '64 гексаграммы И-Цзин совпадают по структуре с 64 кодонами генетического кода человека. Через гексаграммы описываются конкретные качества и темы, активные именно в твоей карте.',
 
-    'hero.tagline':     '',
+    'hero.tagline':     'Дизайн Человека — это энергетическая карта личности',
+
+    // Bodygraph centers (full names)
+    'bg.head':    'ГОЛОВА',
+    'bg.ajna':    'АДЖНА',
+    'bg.throat':  'ГОРЛО',
+    'bg.g':       'САМОСТЬ',
+    'bg.will':    'ВОЛЯ',
+    'bg.sp':      'СОЛНЕЧНОЕ СПЛ.',
+    'bg.sacral':  'САКРАЛЬНЫЙ',
+    'bg.spleen':  'СЕЛЕЗЁНКА',
+    'bg.root':    'КОРЕНЬ',
     'pain.badge':       '✦ Что решает',
     'pain.title':       'Что даёт <em>Дизайн Человека</em>',
     'pain.1.title':     'В чём моё предназначение?',
@@ -351,10 +382,17 @@ var HD_TRANSLATIONS = {
     'pain.6.title':     'В чём кроется причина страха и сомнений?',
     'pain.6.text':      'Раскрой источник тревоги, неуверенности и повторяющихся кризисных паттернов — и получи конкретные инструменты для выхода из них.',
     'cosmos.quote':     '«Каждое человеческое существо — это уникальный поток сознания. Когда ты живёшь в согласии со своей природой — ты не просто счастлива. Ты становишься тем, кем задумана Вселенной.»',
-    'cosmos.author':    '— Ра Уру Ху, основатель системы Дизайна Человека',
+    'cosmos.author':    '— по мотивам учений Ра Уру Ху, основателя Дизайна Человека',
     'sciences.badge':   '✦ Научная основа',
     'sciences.title':   'Синтез классических наук<br><em>и древней космологии</em>',
-    'sciences.lead':    'Ра Уру Ху, основатель системы, получил знания о Дизайне Человека в 1987 году в виде целостной системы, объединившей несколько научных и духовных традиций. Квантовая физика объясняет, как нейтрино влияют на ДНК; астрология и астрономия — как положение планет формирует нашу карту; генетика — почему мы реагируем именно так; а эзотерические системы — как эта карта вписана в великую структуру Вселенной.',
+    'sciences.lead':    'Дизайн Человека — это интегративная система самопознания, объясняющая природу человека через синтез древних знаний и современных наук. Она отвечает на вопрос: как ты устроена, как принимать решения и почему твоя природа именно такая. Ра Уру Ху, основатель системы, получил знания о Дизайне Человека в 1987 году в виде целостной системы, объединившей несколько научных и духовных традиций. Квантовая физика объясняет, как нейтрино влияют на ДНК; астрология и астрономия — как положение планет формирует нашу карту; генетика — почему мы реагируем именно так; а эзотерические системы — как эта карта вписана в великую структуру Вселенной.',
+
+    // Urgency gift boxes
+    'gift.timer':      '⏰ При оплате в течение 15 минут получи бесплатный подарок:',
+    'gift.basic.item1': '✓ Практические рекомендации по твоим результатам',
+    'gift.full.item1': '✓ Практики декондиционирования',
+    'gift.full.item2': '✓ Личный план на 90 дней',
+
     'pricing.start.badge': '✦ С чего начать',
     'pricing.start.title': 'С чего начать',
     'pricing.basic.cta':   'Рассчитать базовый дизайн →',
@@ -407,6 +445,7 @@ var HD_TRANSLATIONS = {
     'pricing.lead':         'Оба варианта персональные — составляются на основе твоих данных, не шаблоны.',
     'pricing.basic.name':   'Базовый',
     'pricing.basic.desc':   'Идеально для знакомства с Дизайном Человека',
+    'pricing.basic.bodygraph': '✓ Расшифровка бодиграфа',
     'pricing.basic.f1':     '✓ Твой тип и стратегия',
     'pricing.basic.f2':     '✓ Авторитет принятия решений',
     'pricing.basic.f3':     '✓ Профиль — твоя роль в жизни',
@@ -420,6 +459,7 @@ var HD_TRANSLATIONS = {
     'pricing.full.popular': 'Самый популярный',
     'pricing.full.name':    'Полный',
     'pricing.full.desc':    'Глубокое погружение во все аспекты твоего дизайна',
+    'pricing.full.bodygraph':  '✓ Расшифровка бодиграфа',
     'pricing.full.f1':      '✓ Всё из базового тарифа',
     'pricing.full.f2':      '✓ Детальный анализ всех центров',
     'pricing.full.f3':      '✓ Ключевые каналы и гексаграммы',
@@ -455,7 +495,7 @@ var HD_TRANSLATIONS = {
     'faq.q3':     'Чем базовый тариф отличается от полного?',
     'faq.a3':     'Базовый (399 грн) — это ~20 страниц с ключевыми аспектами: тип, авторитет, профиль, основные центры и практики. Полный (799 грн) — ~50 страниц с каналами, гексаграммами, инкарнационным крестом, анализом отношений и планом на 90 дней.',
     'faq.q4':     'Что если я не знаю точное время рождения?',
-    'faq.a4':     'Введи приблизительное время или укажи "неизвестно". Мы сможем рассчитать тип, авторитет и профиль с достаточной точностью. Некоторые аспекты будут отмечены как ориентировочные.',
+    'faq.a4':     'Введи приблизительное время или укажи «неизвестно». Мы сможем рассчитать твой профиль с достаточной точностью.',
     'faq.q5':     'Можно заказать расшифровку в подарок?',
     'faq.a5':     'Да! Пройди квиз, укажи данные человека и свой email — или email получателя. Мы отправим расшифровку прямо на нужный ящик.',
     'faq.q6':     'Как принимается оплата?',
@@ -591,7 +631,18 @@ var HD_TRANSLATIONS = {
     'about.sci8.title': 'I Ching & hexagrams',
     'about.sci8.text':  'The 64 hexagrams of the I Ching match in structure the 64 codons of the human genetic code. Through hexagrams, specific qualities and themes active in your chart are described.',
 
-    'hero.tagline':     '',
+    'hero.tagline':     'Human Design — your personal energy map',
+
+    // Bodygraph centers (full names)
+    'bg.head':    'HEAD',
+    'bg.ajna':    'AJNA',
+    'bg.throat':  'THROAT',
+    'bg.g':       'G CENTER',
+    'bg.will':    'WILL',
+    'bg.sp':      'SOLAR PLEX.',
+    'bg.sacral':  'SACRAL',
+    'bg.spleen':  'SPLEEN',
+    'bg.root':    'ROOT',
     'pain.badge':       '✦ What it solves',
     'pain.title':       'What <em>Human Design</em> gives you',
     'pain.1.title':     'What is my purpose?',
@@ -607,10 +658,17 @@ var HD_TRANSLATIONS = {
     'pain.6.title':     'What is the root of my fears and doubts?',
     'pain.6.text':      'Uncover the source of anxiety, self-doubt, and recurring crisis patterns — and get concrete tools to move through them.',
     'cosmos.quote':     '"Every human being is a unique stream of consciousness. When you live in alignment with your nature — you are not just happy. You become what the Universe intended you to be."',
-    'cosmos.author':    '— Ra Uru Hu, founder of Human Design',
+    'cosmos.author':    '— inspired by the teachings of Ra Uru Hu, founder of Human Design',
     'sciences.badge':   '✦ Scientific foundation',
     'sciences.title':   'A synthesis of classical science<br><em>and ancient cosmology</em>',
-    'sciences.lead':    'Human Design is a unique puzzle — assembled from diverse elements into a single concept that is logically impeccable and practically valuable. In it, quantum physics, astronomy, genetics, chemistry and biology are synchronised in a remarkable way, along with the key tenets of esoteric teachings and theories about the cosmological structure of the world. This knowledge is detailed in the ancient Vedic scriptures, the I Ching Book of Changes, and the Torah.',
+    'sciences.lead':    'Human Design is an integrative self-knowledge system that explains human nature through the synthesis of ancient wisdom and modern science. It answers the question: how you are wired, how to make decisions, and why your nature is the way it is. Human Design is a unique puzzle — assembled from diverse elements into a single concept that is logically impeccable and practically valuable. In it, quantum physics, astronomy, genetics, chemistry and biology are synchronised in a remarkable way, along with the key tenets of esoteric teachings and theories about the cosmological structure of the world. This knowledge is detailed in the ancient Vedic scriptures, the I Ching Book of Changes, and the Torah.',
+
+    // Urgency gift boxes
+    'gift.timer':      '⏰ Pay within 15 minutes and get a free bonus:',
+    'gift.basic.item1': '✓ Practical recommendations based on your results',
+    'gift.full.item1': '✓ Deconditioning practices',
+    'gift.full.item2': '✓ Personal 90-day plan',
+
     'pricing.start.badge': '✦ Where to begin',
     'pricing.start.title': 'Where to begin',
     'pricing.basic.cta':   'Calculate Basic Design →',
@@ -663,6 +721,7 @@ var HD_TRANSLATIONS = {
     'pricing.lead':         'Both options are personalised — created from your data, not templates.',
     'pricing.basic.name':   'Basic',
     'pricing.basic.desc':   'Perfect for getting started with Human Design',
+    'pricing.basic.bodygraph': '✓ Bodygraph reading',
     'pricing.basic.f1':     '✓ Your type & strategy',
     'pricing.basic.f2':     '✓ Decision-making authority',
     'pricing.basic.f3':     '✓ Profile — your role in life',
@@ -676,6 +735,7 @@ var HD_TRANSLATIONS = {
     'pricing.full.popular': 'Most popular',
     'pricing.full.name':    'Full',
     'pricing.full.desc':    'Deep dive into all aspects of your design',
+    'pricing.full.bodygraph':  '✓ Bodygraph reading',
     'pricing.full.f1':      '✓ Everything in Basic',
     'pricing.full.f2':      '✓ Detailed analysis of all centres',
     'pricing.full.f3':      '✓ Key channels & hexagrams',
@@ -711,7 +771,7 @@ var HD_TRANSLATIONS = {
     'faq.q3':     'What\'s the difference between Basic and Full?',
     'faq.a3':     'Basic (399 UAH) is ~20 pages covering the key aspects: type, authority, profile, main centres and practices. Full (799 UAH) is ~50 pages including channels, hexagrams, incarnation cross, relationship analysis and a 90-day plan.',
     'faq.q4':     'What if I don\'t know my exact birth time?',
-    'faq.a4':     'Enter an approximate time or write "unknown". We can still calculate your type, authority and profile with sufficient accuracy. Some time-sensitive aspects will be marked as approximate.',
+    'faq.a4':     'Enter an approximate time or write "unknown". We can still calculate your profile with sufficient accuracy.',
     'faq.q5':     'Can I order a reading as a gift?',
     'faq.a5':     'Yes! Go through the quiz, enter the person\'s birth details and your email — or the recipient\'s email. We\'ll send the reading directly to the right inbox.',
     'faq.q6':     'How do I pay?',

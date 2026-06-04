@@ -188,31 +188,50 @@
       <p style="font-size:0.9rem; color:var(--text-dim); margin-bottom:1.5rem" data-i18n="quiz.pricing.hint">Розшифровка буде персональною — складена саме для тебе на основі твоїх даних.</p>
 
       <div class="plan-grid">
+        <!-- BASIC PLAN -->
         <div class="plan-card" id="planBasic" onclick="selectPlan('basic')">
           <div class="plan-name" data-i18n="quiz.pricing.basic.name">Базовий</div>
-          <div class="plan-price">399 <span style="font-size:1rem; color:var(--text-muted)">грн</span></div>
+          <div class="plan-price">
+            <span class="price-old" style="font-size:0.8rem; color:var(--text-dim); text-decoration:line-through; display:block; margin-bottom:2px">1&nbsp;999 грн</span>
+            399 <span style="font-size:1rem; color:var(--text-muted)">грн</span>
+          </div>
           <ul class="plan-features">
-            <li data-i18n="quiz.pricing.basic.f1">✓ Тип та стратегія</li>
-            <li data-i18n="quiz.pricing.basic.f2">✓ Авторитет рішень</li>
-            <li data-i18n="quiz.pricing.basic.f3">✓ Профіль (роль у житті)</li>
-            <li data-i18n="quiz.pricing.basic.f4">✓ Ключові центри</li>
-            <li data-i18n="quiz.pricing.basic.f5">✓ Практичні поради</li>
-            <li style="color:var(--text-dim); opacity:0.5" data-i18n="quiz.pricing.basic.vol">— ~20 сторінок</li>
+            <li data-i18n="pricing.basic.bodygraph">✓ Розшифровка бодіграфу</li>
+            <li data-i18n="pricing.basic.f1">✓ Твій тип та стратегія</li>
+            <li data-i18n="pricing.basic.f2">✓ Авторитет прийняття рішень</li>
+            <li data-i18n="pricing.basic.f3">✓ Профіль — твоя роль у житті</li>
+            <li data-i18n="pricing.basic.f4">✓ Ключові центри бодіграфу</li>
           </ul>
+          <div class="plan-gift-urgency">
+            <div class="gift-timer-label" data-i18n="gift.timer">⏰ При оплаті протягом 15 хвилин отримай безкоштовний подарунок:</div>
+            <div class="gift-urgency-text" data-i18n="gift.basic.item1">✓ Практичні рекомендації за твоїми результатами</div>
+          </div>
+          <div style="color:var(--text-dim); opacity:0.5; font-size:0.8rem; margin-top:0.5rem" data-i18n="quiz.pricing.basic.vol">— ~20 сторінок</div>
         </div>
+
+        <!-- FULL PLAN -->
         <div class="plan-card plan-card-featured" id="planFull" onclick="selectPlan('full')">
           <div class="plan-card-badge" data-i18n="quiz.pricing.full.badge">Популярний</div>
           <div class="plan-name" data-i18n="quiz.pricing.full.name">Повний</div>
-          <div class="plan-price">799 <span style="font-size:1rem; color:var(--text-muted)">грн</span></div>
+          <div class="plan-price">
+            <span class="price-old" style="font-size:0.8rem; color:var(--text-dim); text-decoration:line-through; display:block; margin-bottom:2px">3&nbsp;999 грн</span>
+            799 <span style="font-size:1rem; color:var(--text-muted)">грн</span>
+          </div>
           <ul class="plan-features">
-            <li data-i18n="quiz.pricing.full.f1">✓ Все з базового</li>
-            <li data-i18n="quiz.pricing.full.f2">✓ Канали та гексаграми</li>
-            <li data-i18n="quiz.pricing.full.f3">✓ Інкарнаційний хрест</li>
-            <li data-i18n="quiz.pricing.full.f4">✓ Аналіз стосунків</li>
-            <li data-i18n="quiz.pricing.full.f5">✓ Персональний план 90 днів</li>
-            <li class="plan-gift" data-i18n="quiz.pricing.full.gift">🎁 Плюс подарунок: особистий план на 90 днів з рекомендаціями для вашого Дизайну Людини</li>
-            <li style="color:var(--text-dim); opacity:0.7" data-i18n="quiz.pricing.full.vol">— ~50 сторінок</li>
+            <li data-i18n="pricing.full.bodygraph">✓ Розшифровка бодіграфу</li>
+            <li data-i18n="pricing.full.f1">✓ Все з базового тарифу</li>
+            <li data-i18n="pricing.full.f2">✓ Детальний аналіз усіх центрів</li>
+            <li data-i18n="pricing.full.f3">✓ Ключові канали та гексаграми</li>
+            <li data-i18n="pricing.full.f4">✓ Інкарнаційний хрест</li>
+            <li data-i18n="pricing.full.f5">✓ Аналіз стосунків та партнерства</li>
+            <li data-i18n="pricing.full.f6">✓ Тип визначення бодіграфу</li>
           </ul>
+          <div class="plan-gift-urgency plan-gift-urgency--full">
+            <div class="gift-timer-label" data-i18n="gift.timer">⏰ При оплаті протягом 15 хвилин отримай безкоштовний подарунок:</div>
+            <div class="gift-urgency-text" data-i18n="gift.full.item1">✓ Практики декондиціювання</div>
+            <div class="gift-urgency-text" data-i18n="gift.full.item2">✓ Персональний план на 90 днів</div>
+          </div>
+          <div style="color:var(--text-dim); opacity:0.7; font-size:0.8rem; margin-top:0.5rem" data-i18n="quiz.pricing.full.vol">— ~50 сторінок</div>
         </div>
       </div>
 
