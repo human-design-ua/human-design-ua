@@ -1807,6 +1807,51 @@ details[open] .faq-question::after { transform: rotate(45deg); }
 }
 
 /* ============================================================
+   BODYGRAPH BENEFITS SECTION
+============================================================ */
+.bodygraph-benefits {
+  padding: clamp(4rem, 10vw, 8rem) 0;
+}
+.benefits-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+.benefit-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  transition: border-color .2s, transform .2s;
+}
+.benefit-card:hover {
+  border-color: var(--gold);
+  transform: translateY(-4px);
+}
+.benefit-icon {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+.benefit-name {
+  font-family: var(--font-serif);
+  font-size: 1.3rem;
+  color: var(--gold);
+  margin-bottom: 0.5rem;
+}
+.benefit-subtitle {
+  font-size: 0.95rem;
+  color: var(--text);
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  line-height: 1.4;
+}
+.benefit-desc {
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  line-height: 1.65;
+}
+
+/* ============================================================
    LIGHT THEME
 ============================================================ */
 [data-theme="light"] {
