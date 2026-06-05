@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Калькулятор прибутку — Human Design UA</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg:     #0D0B1E;
+    --card:   #1A1440;
+    --card2:  #120F35;
+    --orange: #D26A0A;
+    --amber:  #C38C0F;
+    --gold:   #D4A830;
+    --green:  #4CAF7D;
+    --red:    #E05050;
+    --text:   #F0ECE8;
+    --muted:  #A090C0;
+    --dim:    #6B5F80;
+    --border: rgba(212,168,48,0.2);
+  }
+  body { background: var(--bg); color: var(--text); font-family: Inter, system-ui, sans-serif;
+         font-size: 14px; padding: 1.5rem; }
+  h1 { font-size: 1.4rem; color: var(--gold); margin-bottom: 0.3rem; }
+  .sub { color: var(--muted); font-size: 0.82rem; margin-bottom: 2rem; }
+
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+  @media(max-width:700px){ .grid { grid-template-columns: 1fr; } }
+
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 1.25rem; }
+  .card h3 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: .07em;
+             color: var(--amber); margin-bottom: 1rem; }
+
+  .slider-row { margin-bottom: 1rem; }
+  .slider-label { display: flex; justify-content: space-between; align-items: center;
+                  margin-bottom: 0.3rem; font-size: 0.82rem; color: var(--muted); }
+  .slider-val { color: var(--text); font-weight: 700; font-size: 0.9rem;
+                background: var(--card2); padding: 0.15rem 0.5rem; border-radius: 5px;
+                min-width: 70px; text-align: center; }
+  input[type=range] {
+    -webkit-appearance: none; width: 100%; height: 5px;
+    border-radius: 3px; background: var(--dim); outline: none; cursor: pointer;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%;
+    background: var(--gold); cursor: pointer;
+  }
+
+  /* Results */
+  .results { background: var(--card2); border: 1px solid var(--border); border-radius: 14px;
+             padding: 1.5rem; margin-top: 1.25rem; }
+  .results h3 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: .07em;
+                color: var(--amber); margin-bottom: 1.25rem; }
+  .res-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem; }
+  .res-item { background: var(--card); border-radius: 10px; padding: 1rem; text-align: center; }
+  .res-label { font-size: 0.72rem; color: var(--muted); text-transform: uppercase;
+               letter-spacing: .05em; margin-bottom: 0.4rem; }
+  .res-value { font-size: 1.4rem; font-weight: 700; }
+  .green  { color: var(--green); }
+  .red    { color: var(--red); }
+  .orange { color: var(--orange); }
+  .gold   { color: var(--gold); }
+  .white  { color: var(--text); }
+
+  /* Breakdown table */
+  .breakdown { margin-top: 1.25rem; }
+  .breakdown h3 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: .07em;
+                  color: var(--amber); margin-bottom: 0.75rem; }
+  .brow { display: flex; justify-content: space-between; padding: 0.45rem 0;
+          border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.83rem; }
+  .brow:last-child { border-bottom: none; }
+  .brow .bl { color: var(--muted); }
+  .brow .br { font-weight: 600; }
+  .brow.total { border-top: 1px solid var(--border); margin-top: 0.3rem;
+                padding-top: 0.6rem; font-size: 0.95rem; }
+  .brow.total .bl { color: var(--text); }
+
+  /* Warning */
+  .warn { background: rgba(212,168,48,0.08); border: 1px solid rgba(212,168,48,0.3);
+          border-radius: 10px; padding: 0.75rem 1rem; font-size: 0.8rem;
+          color: var(--gold); margin-top: 1rem; }
+
+  /* ROAS bar */
+  .roas-bar-wrap { margin-top: 1.25rem; }
+  .roas-bar-wrap h3 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: .07em;
+                      color: var(--amber); margin-bottom: 0.75rem; }
+  .roas-bar-bg { background: var(--dim); border-radius: 6px; height: 20px; overflow: hidden; }
+  .roas-bar-fill { height: 100%; border-radius: 6px; transition: width .3s; min-width: 4px; }
+  .roas-labels { display: flex; justify-content: space-between; font-size: 0.72rem;
+                 color: var(--muted); margin-top: 0.3rem; }
+</style>
+</head>
+<body>
+
+<h1>✦ Калькулятор прибутку</h1>
+<p class="sub">Human Design UA · ФОП Група 3, 5% · LiqPay 1.5% · Claude API</p>
+
+<div class="grid">
+
+  <!-- LEFT: Реклама та продажі -->
+  <div class="card">
+    <h3>🎯 Реклама та продажі</h3>
+
+    <div class="slider-row">
+      <div class="slider-label">
+        <span>Ціна 1 ліда (CPL)</span>
+        <span class="slider-val" id="v_cpl">$2.00</span>
+      </div>
+      <input type="range" id="s_cpl" min="50" max="500" step="5" value="83"
+             oninput="update()">
+    </div>
+
+    <div class="slider-row">
+      <div class="slider-label">
+        <span>Конверсія ліда → покупка</span>
+        <span class="slider-val" id="v_conv">20%</span>
+      </div>
+      <input type="range" id="s_conv" min="2" max="60" step="1" value="20"
+             oninput="update()">
+    </div>
+
+    <div class="slider-row">
+      <div class="slider-label">
+        <span>Продажів на місяць</span>
+        <span class="slider-val" id="v_sales">100</span>
+      </div>
+      <input type="range" id="s_sales" min="1" max="500" step="1" value="100"
+             oninput="update()">
+    </div>
+
+    <div class="slider-row">
+      <div class="slider-label">
+        <span>Частка повного тарифу</span>
+        <span class="slider-val" id="v_full_pct">30%</span>
+      </div>
+      <input type="range" id="s_full_pct" min="0" max="100" step="5" value="30"
+             oninput="update()">
+    </div>
+  </div>
+
+  <!-- RIGHT: Ціни та витрати -->
+  <div class="card">
+    <h3>💰 Ціни та фіксовані витрати</h3>
+
+    <div class="slider-row">
+      <div class="slider-label">
+        <span>Ціна базового тарифу</span>
+        <span class="slider-val" id="v_p_basic">399 грн</span>
+      </div>
+      <input type="range" id="s_p_basic" min="199" max="999" step="50" value="399"
+             oninput="update()">
+    </div>
+
+    <div class="slider-row">
+      <div class="slider-label">
+        <span>Ціна повного тарифу</span>
+        <span class="slider-val" id="v_p_full">799 грн</span>
+      </div>
+      <input type="range" id="s_p_full" min="399" max="2999" step="50" value="799"
+             oninput="update()">
+    </div>
+
+    <div class="slider-row">
+      <div class="slider-label">
+        <span>ЄСВ (фіксовано)</span>
+        <span class="slider-val" id="v_esv">1 760 грн</span>
+      </div>
+      <input type="range" id="s_esv" min="1500" max="3000" step="100" value="1760"
+             oninput="update()">
+    </div>
+
+    <div class="slider-row">
+      <div class="slider-label">
+        <span>Курс USD/UAH</span>
+        <span class="slider-val" id="v_usd">41.5 грн</span>
+      </div>
+      <input type="range" id="s_usd" min="35" max="55" step="0.5" value="41.5"
+             oninput="update()">
+    </div>
+  </div>
+</div>
+
+<!-- RESULTS -->
+<div class="results">
+  <h3>📊 Результати за місяць</h3>
+  <div class="res-grid">
+    <div class="res-item">
+      <div class="res-label">Виручка</div>
+      <div class="res-value white" id="r_revenue">—</div>
+    </div>
+    <div class="res-item">
+      <div class="res-label">Витрати реклама</div>
+      <div class="res-value orange" id="r_ads">—</div>
+    </div>
+    <div class="res-item">
+      <div class="res-label">Податки+ЄСВ</div>
+      <div class="res-value orange" id="r_tax">—</div>
+    </div>
+    <div class="res-item">
+      <div class="res-label">Сервіси (LiqPay+API)</div>
+      <div class="res-value orange" id="r_services">—</div>
+    </div>
+    <div class="res-item">
+      <div class="res-label">Чистий прибуток</div>
+      <div class="res-value" id="r_profit">—</div>
+    </div>
+    <div class="res-item">
+      <div class="res-label">Рентабельність</div>
+      <div class="res-value" id="r_margin">—</div>
+    </div>
+  </div>
+</div>
+
+<!-- BREAKDOWN -->
+<div class="card breakdown" style="margin-top:1.25rem">
+  <h3>🔢 Деталізація</h3>
+  <div class="brow"><span class="bl">Лідів потрібно (місяць)</span><span class="br" id="b_leads">—</span></div>
+  <div class="brow"><span class="bl">Середній чек</span><span class="br" id="b_avg_check">—</span></div>
+  <div class="brow"><span class="bl">CPA (вартість покупця)</span><span class="br" id="b_cpa">—</span></div>
+  <div class="brow"><span class="bl">LiqPay 1.5%</span><span class="br" id="b_liqpay">—</span></div>
+  <div class="brow"><span class="bl">Claude API</span><span class="br" id="b_claude">—</span></div>
+  <div class="brow"><span class="bl">Make.com ~$10</span><span class="br" id="b_make">—</span></div>
+  <div class="brow"><span class="bl">Єдиний податок 5% (від обороту!)</span><span class="br" id="b_tax5">—</span></div>
+  <div class="brow"><span class="bl">ЄСВ (фіксовано)</span><span class="br" id="b_esv">—</span></div>
+  <div class="brow total"><span class="bl">💵 Прибуток до вирахування ЄСВ</span><span class="br" id="b_before_esv">—</span></div>
+  <div class="brow total"><span class="bl">✦ Чистий прибуток</span><span class="br" id="b_net">—</span></div>
+</div>
+
+<!-- ROAS -->
+<div class="card roas-bar-wrap" style="margin-top:1.25rem">
+  <h3>📈 ROAS — повернення на рекламу</h3>
+  <div class="roas-bar-bg">
+    <div class="roas-bar-fill" id="roas_bar" style="background:var(--green);width:0%"></div>
+  </div>
+  <div class="roas-labels">
+    <span>0x</span><span>2x (беззбитковість)</span><span>5x</span><span>10x+</span>
+  </div>
+  <div style="text-align:center;margin-top:.75rem;font-size:1rem;font-weight:700;" id="roas_val">—</div>
+</div>
+
+<div class="warn">
+  ⚠️ 5% єдиного податку рахується від <strong>обороту (виручки)</strong>, а не від прибутку.
+  Навіть якщо ти в збитку — податок від виручки сплачується. Зверніться до ліцензованого бухгалтера.
+</div>
+
+<script>
+const USD_DEFAULT = 41.5;
+
+function fmt(n, suffix='грн') {
+  if (isNaN(n)) return '—';
+  const s = Math.abs(Math.round(n)).toLocaleString('uk-UA');
+  const sign = n < 0 ? '-' : '';
+  return `${sign}${s} ${suffix}`;
+}
+function fmtPct(n) {
+  if (isNaN(n)) return '—';
+  return (n >= 0 ? '+' : '') + n.toFixed(1) + '%';
+}
+
+function update() {
+  const usd    = parseFloat(document.getElementById('s_usd').value);
+  const cpl_h  = parseFloat(document.getElementById('s_cpl').value);  // UAH
+  const conv   = parseFloat(document.getElementById('s_conv').value) / 100;
+  const sales  = parseInt(document.getElementById('s_sales').value);
+  const fpct   = parseFloat(document.getElementById('s_full_pct').value) / 100;
+  const pb     = parseFloat(document.getElementById('s_p_basic').value);
+  const pf     = parseFloat(document.getElementById('s_p_full').value);
+  const esv    = parseFloat(document.getElementById('s_esv').value);
+
+  // Update display values
+  document.getElementById('v_cpl').textContent      = '$' + (cpl_h / usd).toFixed(2);
+  document.getElementById('v_conv').textContent     = Math.round(conv*100) + '%';
+  document.getElementById('v_sales').textContent    = sales;
+  document.getElementById('v_full_pct').textContent = Math.round(fpct*100) + '%';
+  document.getElementById('v_p_basic').textContent  = pb + ' грн';
+  document.getElementById('v_p_full').textContent   = pf + ' грн';
+  document.getElementById('v_esv').textContent      = esv.toLocaleString('uk-UA') + ' грн';
+  document.getElementById('v_usd').textContent      = usd + ' грн';
+
+  // Sales split
+  const n_full  = Math.round(sales * fpct);
+  const n_basic = sales - n_full;
+
+  // Revenue
+  const revenue = n_basic * pb + n_full * pf;
+  const avg_check = revenue / sales;
+
+  // Leads needed
+  const leads_needed = Math.round(sales / conv);
+
+  // Costs
+  const ads_cost    = leads_needed * cpl_h;
+  const cpa         = leads_needed > 0 ? ads_cost / sales : 0;
+  const liqpay_cost = revenue * 0.015;
+  const claude_cost = n_basic * 0.70 + n_full * 1.70;
+  const make_cost   = 10 * usd;
+  const tax_5       = revenue * 0.05;
+
+  const total_costs = ads_cost + liqpay_cost + claude_cost + make_cost + tax_5 + esv;
+  const profit      = revenue - total_costs;
+  const margin      = revenue > 0 ? (profit / revenue) * 100 : 0;
+
+  // ROAS
+  const roas = ads_cost > 0 ? revenue / ads_cost : 0;
+  const roasPct = Math.min((roas / 10) * 100, 100);
+
+  // Fill results
+  document.getElementById('r_revenue').textContent  = fmt(revenue);
+  document.getElementById('r_ads').textContent      = '-' + fmt(ads_cost);
+  document.getElementById('r_tax').textContent      = '-' + fmt(tax_5 + esv);
+  document.getElementById('r_services').textContent = '-' + fmt(liqpay_cost + claude_cost + make_cost);
+
+  const profitEl = document.getElementById('r_profit');
+  profitEl.textContent = fmt(profit);
+  profitEl.className   = 'res-value ' + (profit >= 0 ? 'green' : 'red');
+
+  const marginEl = document.getElementById('r_margin');
+  marginEl.textContent = fmtPct(margin);
+  marginEl.className   = 'res-value ' + (margin >= 0 ? 'green' : 'red');
+
+  // Breakdown
+  document.getElementById('b_leads').textContent     = leads_needed.toLocaleString('uk-UA') + ' лідів';
+  document.getElementById('b_avg_check').textContent = fmt(avg_check);
+  document.getElementById('b_cpa').textContent       = fmt(cpa);
+  document.getElementById('b_liqpay').textContent    = '-' + fmt(liqpay_cost);
+  document.getElementById('b_claude').textContent    = '-' + fmt(claude_cost);
+  document.getElementById('b_make').textContent      = '-' + fmt(make_cost);
+  document.getElementById('b_tax5').textContent      = '-' + fmt(tax_5);
+  document.getElementById('b_esv').textContent       = '-' + fmt(esv);
+
+  const before_esv = revenue - ads_cost - liqpay_cost - claude_cost - make_cost - tax_5;
+  const beEl = document.getElementById('b_before_esv');
+  beEl.textContent = (before_esv >= 0 ? '+' : '') + fmt(before_esv);
+  beEl.style.color = before_esv >= 0 ? 'var(--green)' : 'var(--red)';
+
+  const netEl = document.getElementById('b_net');
+  netEl.textContent = (profit >= 0 ? '+' : '') + fmt(profit);
+  netEl.style.color = profit >= 0 ? 'var(--green)' : 'var(--red)';
+
+  // ROAS bar
+  const bar = document.getElementById('roas_bar');
+  bar.style.width = roasPct + '%';
+  bar.style.background = roas < 2 ? 'var(--red)' : roas < 3 ? 'var(--orange)' : 'var(--green)';
+  document.getElementById('roas_val').textContent =
+    'ROAS = ' + roas.toFixed(2) + 'x  ' + (roas < 2 ? '❌ збиток' : roas < 3 ? '⚠️ майже беззбитково' : '✅ прибутково');
+}
+
+update();
+</script>
+</body>
+</html>
