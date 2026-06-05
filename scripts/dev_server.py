@@ -127,21 +127,27 @@ class DevHandler(BaseHTTPRequestHandler):
 
             # Step 3: Generate reading + send after 90s delay
             def send_reading_delayed(od):
-                import time
-                delay = 90  # 1.5 min
-                print(f'\n⏳ Reading will be sent in {delay}s...')
+                import time, traceback as tb
+                delay = 60  # 1 min delay before sending reading
+                print(f'\n⏳ [{od.get("order_id")}] Reading will be sent in {delay}s...')
                 time.sleep(delay)
-                print(f'\n📖 Generating reading PDF...')
+                print(f'\n📖 [{od.get("order_id")}] Generating reading PDF with Claude AI...')
                 try:
                     rpath = generate_reading_with_ai(od)
-                    print(f'✅ Reading generated: {rpath}')
-                    send_reading_email(od, rpath)
+                    print(f'✅ [{od.get("order_id")}] Reading generated: {rpath}')
+                    ok = send_reading_email(od, rpath)
+                    if ok:
+                        print(f'✅ [{od.get("order_id")}] Reading email sent to {od.get("email")}')
+                    else:
+                        print(f'❌ [{od.get("order_id")}] Reading email FAILED (check Gmail password)')
                 except Exception as e:
-                    print(f'❌ Reading send failed: {e}')
+                    print(f'❌ [{od.get("order_id")}] Reading failed: {e}')
+                    tb.print_exc()
 
-            t = threading.Thread(target=send_reading_delayed, args=(order_data,), daemon=True)
+            # daemon=False so thread survives even if main thread is idle
+            t = threading.Thread(target=send_reading_delayed, args=(order_data,), daemon=False)
             t.start()
-            print(f'🕐 Reading will be sent in ~90 seconds...')
+            print(f'🕐 Reading will be sent in ~60 seconds to {order_data["email"]}...')
 
             if sent:
                 print(f'\n✅ DEV flow complete!')
