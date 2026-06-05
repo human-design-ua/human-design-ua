@@ -233,6 +233,14 @@ var HD_TRANSLATIONS = {
     'pricing.full.volume':  '~50 сторінок · PDF на пошту',
     'pricing.full.cta':     'Обрати повний',
 
+
+    // Order bump
+    'bump.badge':    '⚡ СПЕЦІАЛЬНА ПРОПОЗИЦІЯ — тільки зараз',
+    'bump.title':    'Додати ПОВНУ розшифровку лише +400 грн',
+    'bump.subtitle': 'Замість 799 грн — ти вже платиш 399, доплати ще 400 і отримай всі 10 розділів',
+    'bump.items':    'Планети та вузли · Інкарнаційний хрест · Автоматичні реакції · Самодостатність · Розбір каналів',
+    'bump.checkbox': 'Так, хочу повну розшифровку за +400 грн',
+
     // Pricing timer
     'pricing.timer.label': 'Ціна діє ще:',
     'pricing.timer.end':   'Ціна підвищиться',
@@ -596,6 +604,14 @@ var HD_TRANSLATIONS = {
     'pricing.full.f10': '✓ <strong>Самодостаточность</strong><br><span class="feature-sub">Насколько ты самодостаточна и нужны ли тебе другие люди</span>',
     'pricing.full.volume':  '~50 страниц · PDF на почту',
     'pricing.full.cta':     'Выбрать полный',
+
+
+    // Order bump
+    'bump.badge':    '⚡ СПЕЦИАЛЬНОЕ ПРЕДЛОЖЕНИЕ — только сейчас',
+    'bump.title':    'Добавить ПОЛНУЮ расшифровку всего +400 грн',
+    'bump.subtitle': 'Вместо 799 грн — ты уже платишь 399, доплати ещё 400 и получи все 10 разделов',
+    'bump.items':    'Планеты и узлы · Инкарнационный крест · Автоматические реакции · Самодостаточность · Разбор каналов',
+    'bump.checkbox': 'Да, хочу полную расшифровку за +400 грн',
 
     'pricing.timer.label': 'Цена действует ещё:',
     'pricing.timer.end':   'Цена повысится',
@@ -976,6 +992,14 @@ var HD_TRANSLATIONS = {
     'pricing.full.f10': '✓ <strong>Self-sufficiency</strong><br><span class="feature-sub">How self-sufficient you are and whether you need others</span>',
     'pricing.full.volume':  '~50 pages · PDF by email',
     'pricing.full.cta':     'Choose Full',
+
+
+    // Order bump
+    'bump.badge':    '⚡ SPECIAL OFFER — today only',
+    'bump.title':    'Add FULL reading for only +400 UAH',
+    'bump.subtitle': 'Instead of 799 UAH — you are already paying 399, add 400 more and get all 10 sections',
+    'bump.items':    'Planets & nodes · Incarnation cross · Automatic reactions · Self-sufficiency · Channel analysis',
+    'bump.checkbox': 'Yes, I want the full reading for +400 UAH',
 
     'pricing.timer.label': 'Price valid for:',
     'pricing.timer.end':   'Price will increase',

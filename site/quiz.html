@@ -187,34 +187,46 @@
       <h2 class="step-question" data-i18n="quiz.pricing.question">Обери свій рівень розшифровки</h2>
       <p style="font-size:0.9rem; color:var(--text-dim); margin-bottom:1.5rem" data-i18n="quiz.pricing.hint">Розшифровка буде персональною — складена саме для тебе на основі твоїх даних.</p>
 
-      <!-- SINGLE OFFER: Full plan only -->
+      <!-- BASIC OFFER + ORDER BUMP -->
       <div class="plan-grid plan-grid--single">
-        <div class="plan-card plan-card-featured plan-card--solo" id="planFull" onclick="selectPlan('full')">
-          <div class="plan-card-badge" data-i18n="quiz.pricing.full.badge">⭐ Обирають 87% клієнток</div>
-          <div class="plan-name" data-i18n="quiz.full.name">Повна розшифровка</div>
+        <div class="plan-card plan-card-featured plan-card--solo" id="planBasic" onclick="selectPlan('basic')">
+          <div class="plan-card-badge">⭐ <span data-i18n="pricing.basic.name">Базова розшифровка</span></div>
+          <div class="plan-name" data-i18n="pricing.basic.name">Базова розшифровка</div>
           <div class="plan-price">
-            <span class="price-old" style="font-size:0.85rem;color:var(--text-dim);text-decoration:line-through;display:block;margin-bottom:3px">3&nbsp;999 грн</span>
-            799 <span style="font-size:1rem;color:var(--text-muted)">грн</span>
+            <span style="font-size:0.85rem;color:var(--text-dim);text-decoration:line-through;display:block;margin-bottom:3px">1&nbsp;999 грн</span>
+            <span id="quizPriceDisplay">399</span> <span style="font-size:1rem;color:var(--text-muted)">грн</span>
           </div>
           <ul class="plan-features">
-            <li data-i18n="pricing.full.bodygraph">✓ Розшифровка бодіграфу</li>
-            <li data-i18n="quiz.full.f1">✓ Тип, стратегія, авторитет, профіль</li>
-            <li data-i18n="pricing.full.f2">✓ Детальний аналіз усіх 9 центрів</li>
-            <li data-i18n="pricing.full.f3">✓ Ключові канали та гексаграми</li>
-            <li data-i18n="pricing.full.f4">✓ Інкарнаційний хрест</li>
-            <li data-i18n="pricing.full.f5">✓ Аналіз стосунків та партнерства</li>
-            <li data-i18n="pricing.full.f6">✓ Тип визначення бодіграфу</li>
+            <li data-i18n-html="pricing.basic.f1">✓ Твій Тип та особливості</li>
+            <li data-i18n-html="pricing.basic.f2">✓ Авторитет</li>
+            <li data-i18n-html="pricing.basic.f3">✓ Стратегія</li>
+            <li data-i18n-html="pricing.basic.f4">✓ Профіль</li>
+            <li data-i18n-html="pricing.basic.f5">✓ Ключові центри</li>
           </ul>
-          <div class="plan-gift-urgency plan-gift-urgency--full">
-            <div class="gift-timer-label" data-i18n="gift.timer">⏰ При оплаті протягом 15 хвилин отримай безкоштовний подарунок:</div>
-            <div class="gift-urgency-text" data-i18n="gift.full.item1">✓ Практики декондиціювання</div>
-            <div class="gift-urgency-text" data-i18n="gift.full.item2">✓ Персональний план на 90 днів</div>
-          </div>
-          <div style="color:var(--text-dim);opacity:0.7;font-size:0.8rem;margin-top:0.5rem" data-i18n="quiz.full.vol">~50 сторінок · PDF на пошту</div>
+          <div style="color:var(--text-dim);opacity:0.6;font-size:0.8rem;margin-top:0.5rem" data-i18n="quiz.pricing.basic.vol">— ~20 сторінок</div>
         </div>
       </div>
 
-      <div class="form-error" id="planError" style="margin-bottom:1rem" data-i18n="quiz.pricing.plan.error">Обери тариф</div>
+      <!-- ORDER BUMP -->
+      <div class="order-bump" id="orderBump">
+        <label class="order-bump__label" for="bumpCheckbox">
+          <div class="order-bump__badge" data-i18n="bump.badge">⚡ СПЕЦІАЛЬНА ПРОПОЗИЦІЯ — тільки зараз</div>
+          <div class="order-bump__inner">
+            <input type="checkbox" id="bumpCheckbox" class="order-bump__checkbox" onchange="toggleOrderBump(this.checked)">
+            <div class="order-bump__content">
+              <div class="order-bump__title" data-i18n="bump.title">Додати ПОВНУ розшифровку лише +400 грн</div>
+              <div class="order-bump__subtitle" data-i18n="bump.subtitle">Замість 799 грн — ти вже платиш 399, доплати ще 400 і отримай всі 10 розділів</div>
+              <div class="order-bump__items" data-i18n="bump.items">Планети та вузли · Інкарнаційний хрест · Автоматичні реакції · Самодостатність · Розбір каналів</div>
+            </div>
+          </div>
+          <div class="order-bump__cta">
+            <input type="checkbox" style="display:none" aria-hidden="true">
+            <span data-i18n="bump.checkbox">Так, хочу повну розшифровку за +400 грн</span>
+          </div>
+        </label>
+      </div>
+
+            <div class="form-error" id="planError" style="margin-bottom:1rem" data-i18n="quiz.pricing.plan.error">Обери тариф</div>
 
       <div class="consent-row">
         <input type="checkbox" id="consent" name="consent">
@@ -228,8 +240,8 @@
 
       <div class="form-error" id="consentError" style="margin-bottom:1rem" data-i18n="quiz.pricing.consent.err">Необхідно погодитися з умовами</div>
 
-      <button class="btn btn-gold btn-lg btn-block" id="payBtn" onclick="submitPayment()" data-i18n="quiz.pricing.paybtn">
-        Оплатити та отримати розшифровку →
+      <button class="btn btn-gold btn-lg btn-block" id="payBtn" onclick="submitPayment()">
+        <span id="payBtnText" data-i18n="quiz.pricing.paybtn">Оплатити та отримати розшифровку →</span>
       </button>
 
       <p style="font-size:0.75rem; color:var(--text-dim); text-align:center; margin-top:0.75rem" data-i18n="quiz.pricing.security">

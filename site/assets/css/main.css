@@ -1986,3 +1986,79 @@ details[open] .faq-question::after { transform: rotate(45deg); }
 @media (max-width: 400px) {
   .lang-switcher { display: none; }
 }
+
+/* ============================================================
+   ORDER BUMP
+============================================================ */
+.order-bump {
+  margin: 1.25rem 0;
+  border: 2px dashed rgba(212,168,48,0.5);
+  border-radius: 14px;
+  overflow: hidden;
+  transition: border-color .25s, box-shadow .25s;
+  cursor: pointer;
+}
+.order-bump:hover,
+.order-bump--active {
+  border-color: var(--gold);
+  box-shadow: 0 0 20px rgba(212,168,48,0.2);
+}
+.order-bump--active {
+  background: rgba(212,168,48,0.06);
+}
+.order-bump__label {
+  display: block;
+  padding: 1rem 1.25rem;
+  cursor: pointer;
+}
+.order-bump__badge {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--gold);
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  margin-bottom: .6rem;
+}
+.order-bump__inner {
+  display: flex;
+  gap: .9rem;
+  align-items: flex-start;
+  margin-bottom: .75rem;
+}
+.order-bump__checkbox {
+  width: 20px;
+  height: 20px;
+  min-width: 20px;
+  margin-top: 2px;
+  accent-color: var(--gold);
+  cursor: pointer;
+}
+.order-bump__title {
+  font-size: .95rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: .3rem;
+}
+.order-bump__subtitle {
+  font-size: .78rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin-bottom: .4rem;
+}
+.order-bump__items {
+  font-size: .72rem;
+  color: var(--gold);
+  opacity: .8;
+}
+.order-bump__cta {
+  font-size: .82rem;
+  font-weight: 600;
+  color: var(--gold);
+  padding: .5rem .75rem;
+  background: rgba(212,168,48,0.08);
+  border-radius: 8px;
+  border: 1px solid rgba(212,168,48,0.25);
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+}

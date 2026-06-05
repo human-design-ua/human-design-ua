@@ -70,9 +70,9 @@ function showStep(stepId, stepNum) {
 
 function goToPricing() {
   showStep('stepPricing', totalSteps);
-  // Auto-select full plan (single offer)
+  // Auto-select basic plan by default (order bump upgrades to full)
   if (!quizData.plan) {
-    selectPlan('full');
+    selectPlan('basic');
   }
   if (typeof trackEvent === 'function') trackEvent('quiz_completed', quizData);
   // Push history state so browser back / iOS swipe triggers popstate
@@ -251,6 +251,29 @@ document.addEventListener('keydown', (e) => {
 if (typeof trackEvent === 'function') trackEvent('page_view', { page: 'quiz' });
 
 
+
+// ── Order Bump ─────────────────────────────────────────────
+function toggleOrderBump(checked) {
+  const display = document.getElementById('quizPriceDisplay');
+  const payBtn  = document.getElementById('payBtn');
+  const bump    = document.getElementById('orderBump');
+
+  if (checked) {
+    // Upgrade to full
+    selectPlan('full');
+    if (display) display.textContent = '799';
+    if (bump) bump.classList.add('order-bump--active');
+    if (payBtn) payBtn.style.background = 'linear-gradient(135deg,#D4A830,#E8C55A)';
+  } else {
+    // Stay basic
+    selectPlan('basic');
+    if (display) display.textContent = '399';
+    if (bump) bump.classList.remove('order-bump--active');
+    if (payBtn) payBtn.style.background = '';
+  }
+}
+
+// Auto-select basic when pricing step shown
 // ── Wire pricing back button after DOM ready ─────────────
 (function initPricingBack() {
   function wire() {
