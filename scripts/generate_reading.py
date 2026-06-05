@@ -710,26 +710,40 @@ class HumanDesignPDF(FPDF):
         self.set_y(box_y + bh + 4)
 
     def _big_value_box(self, label, value):
-        """Large centered value box with amber border."""
+        """Large centered value box — auto-sizes font for long values."""
+        # Dynamic font size: shorter text = bigger font
+        vlen = len(value)
+        if vlen <= 25:
+            fsize, box_h, text_y_offset = 20, 30, 13
+        elif vlen <= 45:
+            fsize, box_h, text_y_offset = 15, 32, 14
+        elif vlen <= 70:
+            fsize, box_h, text_y_offset = 12, 34, 15
+        else:
+            fsize, box_h, text_y_offset = 10, 38, 13
+
         box_y = self.get_y()
-        bh = 30
+        # Background
         self.set_fill_color(18, 12, 6)
-        self.rect(self._lm(), box_y, self._w(), bh, "F")
+        self.rect(self._lm(), box_y, self._w(), box_h, "F")
+        # Border
         self.set_draw_color(*AMBER)
         self.set_line_width(0.7)
-        self.rect(self._lm(), box_y, self._w(), bh)
+        self.rect(self._lm(), box_y, self._w(), box_h)
         # Top amber bar
         self.set_fill_color(*AMBER)
         self.rect(self._lm(), box_y, self._w(), 4, "F")
+        # Label
         self.set_xy(self._lm(), box_y + 6)
         self.set_font("DejaVu", "", 8)
         self.set_text_color(*DIM)
         self.cell(self._w(), 5, label, align="C")
-        self.set_xy(self._lm(), box_y + 13)
-        self.set_font("DejaVuBold", "", 20)
+        # Value — use multi_cell for wrapping
+        self.set_xy(self._lm(), box_y + text_y_offset)
+        self.set_font("DejaVuBold", "", fsize)
         self.set_text_color(*ORANGE_L)
-        self.cell(self._w(), 14, value, align="C")
-        self.set_y(box_y + bh + 5)
+        self.multi_cell(self._w(), fsize * 0.55, value, align="C")
+        self.set_y(box_y + box_h + 5)
 
     def _bullet(self, text, num=None):
         """Bullet point or numbered item."""
