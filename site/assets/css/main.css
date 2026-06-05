@@ -1511,17 +1511,39 @@ details[open] .faq-question::after { transform: rotate(45deg); }
 
 /* Basic plan — visually de-emphasized */
 .pricing-card--muted {
-  opacity: 0.75;
-  transform: scale(0.97);
+  opacity: 0.70;
+  transform: scale(0.96);
   transition: opacity .2s, transform .2s;
+  filter: saturate(0.6);
 }
 .pricing-card--muted:hover {
-  opacity: 0.9;
-  transform: scale(0.99);
+  opacity: 0.85;
+  transform: scale(0.98);
+  filter: saturate(0.8);
 }
 .pricing-card--muted .pricing-badge {
   color: var(--text-dim) !important;
   border-color: var(--border) !important;
+}
+
+/* Missing features (❌ list) */
+.feature-missing {
+  color: var(--text-dim) !important;
+  opacity: 0.55;
+  font-size: 0.82rem;
+  text-decoration: line-through;
+  text-decoration-color: rgba(224,80,80,0.4);
+}
+.plan-features .feature-missing {
+  color: var(--dim) !important;
+  opacity: 0.5;
+  text-decoration: line-through;
+}
+
+/* Muted CTA button for basic */
+.pricing-btn--muted {
+  opacity: 0.6;
+  font-size: 0.9rem;
 }
 
 /* ============================================================
