@@ -75,7 +75,21 @@ function goToPricing() {
     selectPlan('full');
   }
   if (typeof trackEvent === 'function') trackEvent('quiz_completed', quizData);
+  // Push history state so browser back / iOS swipe triggers popstate
+  history.pushState({ hd_pricing: true }, '', '#pricing');
 }
+
+// Intercept browser back button & iOS swipe-back
+window.addEventListener('popstate', function(e) {
+  var pricingStep = document.getElementById('stepPricing');
+  var isOnPricing = pricingStep && pricingStep.classList.contains('active');
+  if (isOnPricing) {
+    // Show downsell instead of navigating away
+    showDownsell();
+    // Push state again to keep the page from navigating
+    history.pushState({ hd_pricing: true }, '', '#pricing');
+  }
+});
 
 function updateProgress(step) {
   const pct = Math.round((step / totalSteps) * 100);
@@ -235,3 +249,59 @@ document.addEventListener('keydown', (e) => {
 
 // ── Init ─────────────────────────────────────────────────
 if (typeof trackEvent === 'function') trackEvent('page_view', { page: 'quiz' });
+
+
+// ── Wire pricing back button after DOM ready ─────────────
+(function initPricingBack() {
+  function wire() {
+    var btn = document.getElementById('pricingBackBtn');
+    if (btn) {
+      btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        var m = document.getElementById('downsellModal');
+        if (m) {
+          m.style.cssText = m.style.cssText.replace('display:none','display:flex');
+          m.style.display = 'flex';
+          document.body.style.overflow = 'hidden';
+        }
+      });
+    }
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', wire);
+  } else {
+    wire();
+  }
+})();
+// ── Downsell modal ─────────────────────────────────────────
+function showDownsell() {
+  const m = document.getElementById('downsellModal');
+  if (!m) return;
+  m.style.cssText = 'display:flex!important;position:fixed;inset:0;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.85);z-index:99999;align-items:center;justify-content:center;';
+  document.body.style.overflow = 'hidden';
+}
+
+function closeDownsell() {
+  const m = document.getElementById('downsellModal');
+  if (!m) return;
+  m.style.cssText = 'display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:99999;align-items:center;justify-content:center;';
+  document.body.style.overflow = '';
+  // Push state again so next back will trigger downsell again
+  history.pushState({ hd_pricing: true }, '', '#pricing');
+}
+
+function selectDownsellBasic() {
+  closeDownsell();
+  selectPlan('basic');
+  const consent = document.getElementById('consent');
+  if (consent && !consent.checked) consent.checked = true;
+  // Small delay then submit
+  setTimeout(() => submitPayment(), 200);
+}
+
+// Close modal on backdrop click
+document.addEventListener('click', function(e) {
+  const modal = document.getElementById('downsellModal');
+  if (modal && e.target === modal) closeDownsell();
+});

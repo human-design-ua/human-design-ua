@@ -237,23 +237,15 @@
       </p>
 
       <div class="quiz-nav-buttons" style="margin-top:1rem">
-        <button class="btn-back" onclick="showDownsell()" data-i18n="quiz.btn.back">← Назад</button>
+        <button class="btn-back" id="pricingBackBtn"
+          onclick="var m=document.getElementById('downsellModal');console.log('[DOWNSELL]',m?'modal found':'NOT FOUND');if(m){m.style.cssText='display:flex!important;position:fixed;inset:0;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.85);z-index:99999;align-items:center;justify-content:center;';document.body.style.overflow='hidden';}else{alert('downsell modal not found in DOM');}return false;" 
+          data-i18n="quiz.btn.back">← Назад</button>
         <div></div>
       </div>
     </div>
 
   </div>
-</main>
-
-<script src="assets/js/analytics.js"></script>
-<script src="assets/js/i18n.js"></script>
-<script src="assets/js/quiz.js"></script>
-<script src="assets/js/payment.js"></script>
-
-
-<!-- DOWNSELL MODAL -->
-<div id="downsellModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);
-  z-index:9999;display:none;align-items:center;justify-content:center;font-family:Inter,sans-serif;">
+<div id="downsellModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:9999;align-items:center;justify-content:center;font-family:Inter,sans-serif;">
   <div style="background:var(--bg-card,#1A1440);border:1px solid var(--gold,#D4A830);
     border-radius:18px;padding:2rem;max-width:420px;width:92%;position:relative;">
 
@@ -301,28 +293,18 @@
     </button>
   </div>
 </div>
+</main>
 
-<script>
-function showDownsell() {
-  const m = document.getElementById('downsellModal');
-  m.style.display = 'flex';
-}
-function closeDownsell() {
-  document.getElementById('downsellModal').style.display = 'none';
-}
-function selectDownsellBasic() {
-  document.getElementById('downsellModal').style.display = 'none';
-  selectPlan('basic');
-  // Auto-check consent if needed
-  const consent = document.getElementById('consent');
-  if (consent && !consent.checked) consent.checked = true;
-  // Show pricing step
-  document.querySelectorAll('.quiz-step').forEach(s => s.classList.remove('active'));
-  document.getElementById('stepPricing').classList.add('active');
-  // Submit payment directly
-  setTimeout(() => submitPayment(), 300);
-}
-</script>
+<script src="assets/js/analytics.js"></script>
+<script src="assets/js/i18n.js"></script>
+<script src="assets/js/quiz.js"></script>
+<script src="assets/js/payment.js"></script>
+
+
+<!-- DOWNSELL MODAL -->
+
+
+
 
 </body>
 </html>
