@@ -271,10 +271,31 @@ def get_reading_content(order_data: dict) -> dict:
     name   = order_data.get("name", "")
     locale = order_data.get("locale", "ua")
 
+    # ── Calculate real HD params first ────────────────────────────────────────
+    hd_params = {}
+    try:
+        import hd_calculator
+        hd_params = hd_calculator.calculate_hd(
+            order_data.get('birth_date', ''),
+            order_data.get('birth_time', ''),
+            order_data.get('birth_place', ''),
+        )
+        log.info(f"HD calculated: {hd_params['hd_type']} / {hd_params['authority']} / {hd_params['profile']}")
+    except Exception as e:
+        log.warning(f"HD calculation failed: {e} — Claude will estimate")
+
     api_key = os.getenv("ANTHROPIC_API_KEY", "")
     if not api_key or api_key.startswith("sk-ant-api03-..."):
         log.warning("ANTHROPIC_API_KEY not set — using fallback content")
-        return FALLBACK_FULL.copy() if plan == "full" else FALLBACK_BASIC.copy()
+        fb = FALLBACK_FULL.copy() if plan == "full" else FALLBACK_BASIC.copy()
+        if hd_params:
+            fb['hd_type']   = hd_params['hd_type']
+            fb['strategy']  = hd_params['strategy']
+            fb['authority'] = hd_params['authority']
+            fb['profile']   = hd_params['profile']
+            fb['definition']= hd_params.get('definition', fb.get('definition', ''))
+            fb['_source']   = 'calculated'
+        return fb
 
     try:
         import anthropic
@@ -283,6 +304,23 @@ def get_reading_content(order_data: dict) -> dict:
         return FALLBACK_FULL.copy() if plan == "full" else FALLBACK_BASIC.copy()
 
     prompt = _build_prompt(order_data, plan)
+
+    # ── Inject calculated HD params into prompt ────────────────────────────────
+    if hd_params:
+        defined_str = ', '.join(hd_params.get('defined_centers', [])) or 'none'
+        calc_note = f"""
+РОЗРАХОВАНІ АСТРОЛОГІЧНІ ПАРАМЕТРИ (використовуй ТІЛЬКИ ці значення):
+- Тип: {hd_params['hd_type']}
+- Стратегія: {hd_params['strategy']}
+- Авторитет: {hd_params['authority']}
+- Профіль: {hd_params['profile']}
+- Визначення: {hd_params.get('definition', '')}
+- Активні центри: {defined_str}
+
+НЕ вигадуй ці значення — вони розраховані точно по планетарних позиціях.
+
+"""
+        prompt = calc_note + prompt
     # Haiku max context — need 8192 for complete JSON
     max_tokens = 8192
 
@@ -335,11 +373,30 @@ def get_reading_content(order_data: dict) -> dict:
                 recs.append(f"[Рекомендація {len(recs)+1}]")
             data["recommendations"] = recs[:10]
 
+        # ── Override with calculated HD params (authoritative) ─────────────────
+        if hd_params:
+            data['hd_type']    = hd_params['hd_type']
+            data['strategy']   = hd_params['strategy']
+            data['authority']  = hd_params['authority']
+            data['profile']    = hd_params['profile']
+            data['definition'] = hd_params.get('definition', data.get('definition', ''))
+            data['_source']    = 'calculated'
+            log.info(f"HD params overridden with calculated values: "
+                     f"{hd_params['hd_type']} / {hd_params['authority']} / {hd_params['profile']}")
+
         return data
 
     except Exception as e:
         log.error(f"Claude API failed: {e} — using fallback content")
-        return FALLBACK_FULL.copy() if plan == "full" else FALLBACK_BASIC.copy()
+        fb = FALLBACK_FULL.copy() if plan == "full" else FALLBACK_BASIC.copy()
+        if hd_params:
+            fb['hd_type']   = hd_params['hd_type']
+            fb['strategy']  = hd_params['strategy']
+            fb['authority'] = hd_params['authority']
+            fb['profile']   = hd_params['profile']
+            fb['definition']= hd_params.get('definition', fb.get('definition', ''))
+            fb['_source']   = 'calculated'
+        return fb
 
 
 # ─── CLI (standalone test) ────────────────────────────────────────────────────
