@@ -21,12 +21,14 @@ def _load_env():
     base = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     env_path = os.path.join(base, ".env")
     if os.path.exists(env_path):
-        with open(env_path) as f:
+        with open(env_path, encoding="utf-8") as f:
             for line in f:
                 line = line.strip()
                 if line and not line.startswith("#") and "=" in line:
                     k, _, v = line.partition("=")
-                    os.environ.setdefault(k.strip(), v.strip())
+                    k, v = k.strip(), v.strip()
+                    # Always override — env var from file takes priority
+                    os.environ[k] = v
 
 _load_env()
 
@@ -231,11 +233,15 @@ Respond ONLY with a valid JSON object (no markdown, no explanation):
 # ─── JSON extraction ──────────────────────────────────────────────────────────
 
 def _extract_json(text: str) -> dict:
-    """Parse JSON from Claude response, with regex fallback."""
+    """Parse JSON from Claude response, handles markdown code blocks."""
     text = text.strip()
-    # Strip markdown code fences
-    text = re.sub(r"^```(?:json)?\s*", "", text)
-    text = re.sub(r"\s*```$", "", text)
+
+    # Strip leading ```json or ``` fence
+    if text.startswith('```'):
+        text = re.sub(r'^```(?:json)?\s*\n?', '', text)
+    # Strip trailing ``` fence
+    if text.endswith('```'):
+        text = re.sub(r'\n?```$', '', text)
     text = text.strip()
 
     try:
@@ -243,8 +249,8 @@ def _extract_json(text: str) -> dict:
     except json.JSONDecodeError:
         pass
 
-    # Try to find JSON object with regex
-    m = re.search(r"\{[\s\S]+\}", text)
+    # Find first complete { ... } block
+    m = re.search(r'\{[\s\S]+\}', text)
     if m:
         try:
             return json.loads(m.group(0))
@@ -277,17 +283,32 @@ def get_reading_content(order_data: dict) -> dict:
         return FALLBACK_FULL.copy() if plan == "full" else FALLBACK_BASIC.copy()
 
     prompt = _build_prompt(order_data, plan)
-    max_tokens = 8000 if plan == "full" else 4000
+    # Haiku max context — need 8192 for complete JSON
+    max_tokens = 8192
 
     log.info(f"Calling Claude API for {name} ({plan} plan, locale={locale})...")
 
     try:
         client = anthropic.Anthropic(api_key=api_key)
 
+        # Use haiku — cheapest model, ~$0.004 per reading vs $0.24 for opus
+        # Prompt caching reduces cost by 90% on repeated system prompts
+        system_prompt = (
+            "Ти — експерт з Дизайну Людини з 15 роками практики. "
+            "Ти точно розраховуєш параметри бодіграфу та генеруєш глибокі, "
+            "персональні розшифровки. Відповідай ТІЛЬКИ валідним JSON без пояснень."
+        )
+
         message = client.messages.create(
-            model="claude-opus-4-8",
+            model="claude-haiku-4-5",
             max_tokens=max_tokens,
-            thinking={"type": "adaptive"},
+            system=[
+                {
+                    "type": "text",
+                    "text": system_prompt,
+                    "cache_control": {"type": "ephemeral"}  # кешуємо system prompt
+                }
+            ],
             messages=[
                 {"role": "user", "content": prompt}
             ],
