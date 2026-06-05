@@ -205,12 +205,12 @@ var HD_TRANSLATIONS = {
     'pricing.lead':         'Обидва варіанти персональні — складаються на основі твоїх даних, не шаблони.',
     'pricing.basic.name':   'Базовий',
     'pricing.basic.desc':   'Для знайомства з основами',
-    'pricing.basic.bodygraph': '✓ Персональний бодіграф — унікальний для тебе'
-    'pricing.basic.f1': '✓ Твій Тип — робота, розвиток, стосунки, сон'
-    'pricing.basic.f2': '✓ Авторитет — твій спосіб приймати вірні рішення'
-    'pricing.basic.f3': '✓ Стратегія — коли діяти, а коли чекати'
-    'pricing.basic.f4': '✓ Профіль — де ти на своєму місці і де зраджуєш себе'
-    'pricing.basic.f5': '✓ Ключові центри — де стала сила, де вразливість'
+    'pricing.basic.bodygraph': '✓ <strong>Персональний бодіграф</strong><br><span class="feature-sub">Унікальна карта — розрахована виключно для твоїх даних</span>'
+    'pricing.basic.f1': '✓ <strong>Твій Тип і його особливості</strong><br><span class="feature-sub">Робота, розвиток, стосунки, сон</span>'
+    'pricing.basic.f2': '✓ <strong>Авторитет</strong><br><span class="feature-sub">Дізнаєшся свій спосіб приймати вірні рішення</span>'
+    'pricing.basic.f3': '✓ <strong>Стратегія</strong><br><span class="feature-sub">Зрозумієш коли діяти, а коли чекати</span>'
+    'pricing.basic.f4': '✓ <strong>Профіль</strong><br><span class="feature-sub">Які ролі тобі легко даються і де ти зраджуєш себе</span>'
+    'pricing.basic.f5': '✓ <strong>9 Центрів — 9 сфер життя</strong><br><span class="feature-sub">Де ти справляєш вплив і де вразлива</span>'
     'pricing.basic.not1':   '— Детальний аналіз каналів',
     'pricing.basic.not2':   '— Інкарнаційний хрест',
     'pricing.basic.not3':   '— Аналіз стосунків',
@@ -219,13 +219,13 @@ var HD_TRANSLATIONS = {
     'pricing.full.popular': '⭐ Обирають 87% клієнток',
     'pricing.full.name':    'Повний',
     'pricing.full.desc':    'Повна карта твоєї природи — всі відповіді в одному PDF',
-    'pricing.full.bodygraph': '✓ Персональний бодіграф — унікальний для тебе'
-    'pricing.full.f1': '✓ Все з базового тарифу'
-    'pricing.full.f2': '✓ Всі 9 центрів — 9 сфер твого життя'
-    'pricing.full.f3': '✓ Канали та гексаграми — твої природні переваги'
-    'pricing.full.f4': '✓ Інкарнаційний хрест — глобальний сенс твого шляху'
-    'pricing.full.f5': '✓ Аналіз стосунків — кого до тебе тягне і де напруга'
-    'pricing.full.f6': '✓ Тип визначення — як ти наповнюєшся і адаптуєшся'
+    'pricing.full.bodygraph': '✓ <strong>Персональний бодіграф</strong><br><span class="feature-sub">Унікальна карта — розрахована виключно для твоїх даних</span>'
+    'pricing.full.f1': '✓ <strong>Всё з базового тарифу</strong>'
+    'pricing.full.f2': '✓ <strong>Всі 9 центрів детально</strong><br><span class="feature-sub">9 сфер твого життя — кожен описаний під твої дані</span>'
+    'pricing.full.f3': '✓ <strong>Канали та гексаграми</strong><br><span class="feature-sub">Твої природні переваги і де їх застосовувати</span>'
+    'pricing.full.f4': '✓ <strong>Інкарнаційний хрест</strong><br><span class="feature-sub">Глобальний сенс твого шляху і твій внесок у світ</span>'
+    'pricing.full.f5': '✓ <strong>Аналіз стосунків</strong><br><span class="feature-sub">Кого до тебе тягне і де виникає напруга</span>'
+    'pricing.full.f6': '✓ <strong>Тип визначення</strong><br><span class="feature-sub">Як ти наповнюєшся та адаптуєшся до інших</span>'
     'pricing.full.f7': '✓ Практики декондиціювання — звільнення від нав'язаних паттернів'
     'pricing.full.f8': '✓ Особистий план на 90 днів — конкретні кроки по твоєму дизайну'
     'pricing.full.volume':  '~50 сторінок · PDF на пошту',
@@ -567,12 +567,12 @@ var HD_TRANSLATIONS = {
     'pricing.lead':         'Оба варианта персональные — составляются на основе твоих данных, не шаблоны.',
     'pricing.basic.name':   'Базовый',
     'pricing.basic.desc':   'Для знакомства с основами',
-    'pricing.basic.bodygraph': '✓ Персональный бодиграф — уникальный для тебя'
-    'pricing.basic.f1': '✓ Твой Тип — работа, развитие, отношения, сон'
-    'pricing.basic.f2': '✓ Авторитет — твой способ принимать верные решения'
-    'pricing.basic.f3': '✓ Стратегия — когда действовать, а когда ждать'
-    'pricing.basic.f4': '✓ Профиль — где ты на своём месте и где предаёшь себя'
-    'pricing.basic.f5': '✓ Ключевые центры — где устойчивая сила, где уязвимость'
+    'pricing.basic.bodygraph': '✓ <strong>Персональный бодиграф</strong><br><span class="feature-sub">Уникальная карта — рассчитана исключительно для твоих данных</span>'
+    'pricing.basic.f1': '✓ <strong>Твой Тип и его особенности</strong><br><span class="feature-sub">Работа, развитие, отношения, сон</span>'
+    'pricing.basic.f2': '✓ <strong>Авторитет</strong><br><span class="feature-sub">Узнаешь свой способ принимать верные решения</span>'
+    'pricing.basic.f3': '✓ <strong>Стратегия</strong><br><span class="feature-sub">Поймёшь когда нужно действовать, а когда ждать</span>'
+    'pricing.basic.f4': '✓ <strong>Профиль</strong><br><span class="feature-sub">Какие роли тебе даются легко и где ты предаёшь себя</span>'
+    'pricing.basic.f5': '✓ <strong>9 Центров — 9 сфер жизни</strong><br><span class="feature-sub">Где ты оказываешь влияние и где уязвима</span>'
     'pricing.basic.not1':   '— Детальный анализ каналов',
     'pricing.basic.not2':   '— Инкарнационный крест',
     'pricing.basic.not3':   '— Анализ отношений',
@@ -581,13 +581,13 @@ var HD_TRANSLATIONS = {
     'pricing.full.popular': '⭐ Выбирают 87% клиенток',
     'pricing.full.name':    'Полный',
     'pricing.full.desc':    'Полная карта твоей природы — все ответы в одном PDF',
-    'pricing.full.bodygraph': '✓ Персональный бодиграф — уникальный для тебя'
-    'pricing.full.f1': '✓ Всё из базового тарифа'
-    'pricing.full.f2': '✓ Все 9 центров — 9 сфер твоей жизни'
-    'pricing.full.f3': '✓ Каналы и гексаграммы — твои природные преимущества'
-    'pricing.full.f4': '✓ Инкарнационный крест — глобальный смысл твоего пути'
-    'pricing.full.f5': '✓ Анализ отношений — кого к тебе тянет и где напряжение'
-    'pricing.full.f6': '✓ Тип определения — как ты наполняешься и адаптируешься'
+    'pricing.full.bodygraph': '✓ <strong>Персональный бодиграф</strong><br><span class="feature-sub">Уникальная карта — рассчитана исключительно для твоих данных</span>'
+    'pricing.full.f1': '✓ <strong>Всё из базового тарифа</strong>'
+    'pricing.full.f2': '✓ <strong>Все 9 центров детально</strong><br><span class="feature-sub">9 сфер твоей жизни — каждый описан под твои данные</span>'
+    'pricing.full.f3': '✓ <strong>Каналы и гексаграммы</strong><br><span class="feature-sub">Твои природные преимущества и где их применять</span>'
+    'pricing.full.f4': '✓ <strong>Инкарнационный крест</strong><br><span class="feature-sub">Глобальный смысл твоего пути и твой вклад в мир</span>'
+    'pricing.full.f5': '✓ <strong>Анализ отношений</strong><br><span class="feature-sub">Кого к тебе тянет и где возникает напряжение</span>'
+    'pricing.full.f6': '✓ <strong>Тип определения</strong><br><span class="feature-sub">Как ты наполняешься и адаптируешься к другим</span>'
     'pricing.full.f7': '✓ Практики декондиционирования — освобождение от чужих паттернов'
     'pricing.full.f8': '✓ Личный план на 90 дней — конкретные шаги по твоему дизайну'
     'pricing.full.volume':  '~50 страниц · PDF на почту',
@@ -945,12 +945,12 @@ var HD_TRANSLATIONS = {
     'pricing.lead':         'Both options are personalised — created from your data, not templates.',
     'pricing.basic.name':   'Basic',
     'pricing.basic.desc':   'For getting started with the basics',
-    'pricing.basic.bodygraph': '✓ Personal bodygraph — unique to you'
-    'pricing.basic.f1': '✓ Your Type — work, growth, relationships, sleep'
-    'pricing.basic.f2': '✓ Authority — your way to make decisions without doubt'
-    'pricing.basic.f3': '✓ Strategy — when to act and when to wait'
-    'pricing.basic.f4': '✓ Profile — where you belong and where you betray yourself'
-    'pricing.basic.f5': '✓ Key centres — where stable strength, where vulnerability'
+    'pricing.basic.bodygraph': '✓ <strong>Personal bodygraph</strong><br><span class="feature-sub">Unique map — calculated exclusively for your data</span>'
+    'pricing.basic.f1': '✓ <strong>Your Type & its traits</strong><br><span class="feature-sub">Work, growth, relationships, sleep</span>'
+    'pricing.basic.f2': '✓ <strong>Authority</strong><br><span class="feature-sub">Discover your way to make the right decisions</span>'
+    'pricing.basic.f3': '✓ <strong>Strategy</strong><br><span class="feature-sub">Know when to act and when to wait</span>'
+    'pricing.basic.f4': '✓ <strong>Profile</strong><br><span class="feature-sub">Which roles come naturally and where you betray yourself</span>'
+    'pricing.basic.f5': '✓ <strong>9 Centres — 9 life areas</strong><br><span class="feature-sub">Where you have stable strength and where you\'re vulnerable</span>'
     'pricing.basic.not1':   '— Detailed channel analysis',
     'pricing.basic.not2':   '— Incarnation cross',
     'pricing.basic.not3':   '— Relationship analysis',
@@ -959,13 +959,13 @@ var HD_TRANSLATIONS = {
     'pricing.full.popular': '⭐ 87% of clients choose this',
     'pricing.full.name':    'Full',
     'pricing.full.desc':    'Complete map of your nature — all answers in one PDF',
-    'pricing.full.bodygraph': '✓ Personal bodygraph — unique to you'
-    'pricing.full.f1': '✓ Everything from Basic'
-    'pricing.full.f2': '✓ All 9 centres — 9 areas of your life'
-    'pricing.full.f3': '✓ Channels & hexagrams — your natural advantages'
-    'pricing.full.f4': '✓ Incarnation cross — the global theme of your life'
-    'pricing.full.f5': '✓ Relationship analysis — who you attract and where friction arises'
-    'pricing.full.f6': '✓ Definition type — how you recharge and adapt'
+    'pricing.full.bodygraph': '✓ <strong>Personal bodygraph</strong><br><span class="feature-sub">Unique map — calculated exclusively for your data</span>'
+    'pricing.full.f1': '✓ <strong>Everything from Basic</strong>'
+    'pricing.full.f2': '✓ <strong>All 9 centres in detail</strong><br><span class="feature-sub">9 areas of your life — each described for your data</span>'
+    'pricing.full.f3': '✓ <strong>Channels & hexagrams</strong><br><span class="feature-sub">Your natural advantages and where to use them</span>'
+    'pricing.full.f4': '✓ <strong>Incarnation cross</strong><br><span class="feature-sub">The global theme of your path and your contribution</span>'
+    'pricing.full.f5': '✓ <strong>Relationship analysis</strong><br><span class="feature-sub">Who you attract and where tension arises</span>'
+    'pricing.full.f6': '✓ <strong>Definition type</strong><br><span class="feature-sub">How you recharge and adapt to others</span>'
     'pricing.full.f7': '✓ Deconditioning practices — release from imposed patterns'
     'pricing.full.f8': '✓ Personal 90-day plan — concrete steps for your design'
     'pricing.full.volume':  '~50 pages · PDF by email',
