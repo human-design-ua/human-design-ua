@@ -103,6 +103,29 @@ var HD_TRANSLATIONS = {
     'gift.full.item1': '✓ Практики декондиціювання',
     'gift.full.item2': '✓ Персональний план на 90 днів',
 
+
+    // Missing features in basic plan
+    'basic.not.centers':     '❌ Детальний аналіз всіх центрів',
+    'basic.not.cross':       '❌ Інкарнаційний хрест',
+    'basic.not.relations':   '❌ Аналіз стосунків та партнерства',
+    'basic.not.definition':  '❌ Тип визначення бодіграфу',
+    'basic.not.decondit':    '❌ Практики декондиціювання',
+    'basic.not.plan90':      '❌ Особистий план на 90 днів',
+
+    // Downsell modal
+    'downsell.exclaim':  '⚡ Зачекай!',
+    'downsell.title':    'Хочеш дізнатись свій тип та авторитет за зниженою ціною?',
+    'downsell.desc':     'Базова розшифровка включає ключові параметри твого Дизайну Людини. Менше деталей — але вже перший крок до розуміння себе.',
+    'downsell.label':    'Базова розшифровка:',
+    'downsell.vol':      '— ~20 сторінок PDF',
+    'downsell.cta':      'Отримати базову за 399 грн →',
+    'downsell.back':     'Повернутись до повної розшифровки',
+
+    // Quiz full plan (solo)
+    'quiz.full.name':    'Повна розшифровка',
+    'quiz.full.f1':      '✓ Тип, стратегія, авторитет, профіль',
+    'quiz.full.vol':     '~50 сторінок · PDF на пошту',
+
     // Pricing start
     'pricing.start.badge': '✦ З чого почати',
     'pricing.start.title': 'З чого почати',
@@ -422,6 +445,29 @@ var HD_TRANSLATIONS = {
     'gift.basic.item1': '✓ Практические рекомендации по твоим результатам',
     'gift.full.item1': '✓ Практики декондиционирования',
     'gift.full.item2': '✓ Личный план на 90 дней',
+
+
+    // Missing features in basic plan
+    'basic.not.centers':     '❌ Детальный анализ всех центров',
+    'basic.not.cross':       '❌ Инкарнационный крест',
+    'basic.not.relations':   '❌ Анализ отношений и партнёрства',
+    'basic.not.definition':  '❌ Тип определения бодиграфа',
+    'basic.not.decondit':    '❌ Практики декондиционирования',
+    'basic.not.plan90':      '❌ Личный план на 90 дней',
+
+    // Downsell modal
+    'downsell.exclaim':  '⚡ Подожди!',
+    'downsell.title':    'Хочешь узнать свой тип и авторитет по сниженной цене?',
+    'downsell.desc':     'Базовая расшифровка включает ключевые параметры твоего Дизайна Человека. Меньше деталей — но уже первый шаг к пониманию себя.',
+    'downsell.label':    'Базовая расшифровка:',
+    'downsell.vol':      '— ~20 страниц PDF',
+    'downsell.cta':      'Получить базовую за 399 грн →',
+    'downsell.back':     'Вернуться к полной расшифровке',
+
+    // Quiz full plan (solo)
+    'quiz.full.name':    'Полная расшифровка',
+    'quiz.full.f1':      '✓ Тип, стратегия, авторитет, профиль',
+    'quiz.full.vol':     '~50 страниц · PDF на почту',
 
     'pricing.start.badge': '✦ С чего начать',
     'pricing.start.title': 'С чего начать',
@@ -752,6 +798,29 @@ var HD_TRANSLATIONS = {
     'gift.basic.item1': '✓ Practical recommendations based on your results',
     'gift.full.item1': '✓ Deconditioning practices',
     'gift.full.item2': '✓ Personal 90-day plan',
+
+
+    // Missing features in basic plan
+    'basic.not.centers':     '❌ Detailed analysis of all centres',
+    'basic.not.cross':       '❌ Incarnation cross',
+    'basic.not.relations':   '❌ Relationship & partnership analysis',
+    'basic.not.definition':  '❌ Bodygraph definition type',
+    'basic.not.decondit':    '❌ Deconditioning practices',
+    'basic.not.plan90':      '❌ Personal 90-day plan',
+
+    // Downsell modal
+    'downsell.exclaim':  '⚡ Wait!',
+    'downsell.title':    'Want to discover your type and authority at a lower price?',
+    'downsell.desc':     'The Basic reading covers the key parameters of your Human Design. Less detail — but a great first step to understanding yourself.',
+    'downsell.label':    'Basic reading:',
+    'downsell.vol':      '— ~20 pages PDF',
+    'downsell.cta':      'Get Basic for 399 UAH →',
+    'downsell.back':     'Return to full reading',
+
+    // Quiz full plan (solo)
+    'quiz.full.name':    'Full Reading',
+    'quiz.full.f1':      '✓ Type, strategy, authority, profile',
+    'quiz.full.vol':     '~50 pages · PDF by email',
 
     'pricing.start.badge': '✦ Where to begin',
     'pricing.start.title': 'Where to begin',

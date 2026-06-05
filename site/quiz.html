@@ -191,14 +191,14 @@
       <div class="plan-grid plan-grid--single">
         <div class="plan-card plan-card-featured plan-card--solo" id="planFull" onclick="selectPlan('full')">
           <div class="plan-card-badge" data-i18n="quiz.pricing.full.badge">⭐ Обирають 87% клієнток</div>
-          <div class="plan-name" data-i18n="quiz.pricing.full.name">Повна розшифровка</div>
+          <div class="plan-name" data-i18n="quiz.full.name">Повна розшифровка</div>
           <div class="plan-price">
             <span class="price-old" style="font-size:0.85rem;color:var(--text-dim);text-decoration:line-through;display:block;margin-bottom:3px">3&nbsp;999 грн</span>
             799 <span style="font-size:1rem;color:var(--text-muted)">грн</span>
           </div>
           <ul class="plan-features">
             <li data-i18n="pricing.full.bodygraph">✓ Розшифровка бодіграфу</li>
-            <li data-i18n="pricing.full.f1">✓ Тип, стратегія, авторитет, профіль</li>
+            <li data-i18n="quiz.full.f1">✓ Тип, стратегія, авторитет, профіль</li>
             <li data-i18n="pricing.full.f2">✓ Детальний аналіз усіх 9 центрів</li>
             <li data-i18n="pricing.full.f3">✓ Ключові канали та гексаграми</li>
             <li data-i18n="pricing.full.f4">✓ Інкарнаційний хрест</li>
@@ -210,7 +210,7 @@
             <div class="gift-urgency-text" data-i18n="gift.full.item1">✓ Практики декондиціювання</div>
             <div class="gift-urgency-text" data-i18n="gift.full.item2">✓ Персональний план на 90 днів</div>
           </div>
-          <div style="color:var(--text-dim);opacity:0.7;font-size:0.8rem;margin-top:0.5rem">~50 сторінок · PDF на пошту</div>
+          <div style="color:var(--text-dim);opacity:0.7;font-size:0.8rem;margin-top:0.5rem" data-i18n="quiz.full.vol">~50 сторінок · PDF на пошту</div>
         </div>
       </div>
 
@@ -261,19 +261,18 @@
       background:none;border:none;color:var(--muted,#A090C0);cursor:pointer;font-size:1.3rem;">✕</button>
 
     <div style="font-size:0.72rem;color:var(--gold,#D4A830);text-transform:uppercase;
-      letter-spacing:.1em;margin-bottom:.75rem;">⚡ Зачекай!</div>
+      letter-spacing:.1em;margin-bottom:.75rem;" data-i18n="downsell.exclaim">⚡ Зачекай!</div>
 
     <div style="font-size:1.15rem;font-weight:700;color:#F0ECE8;margin-bottom:.5rem;line-height:1.3;">
-      Хочеш дізнатись свій тип та авторитет<br>за зниженою ціною?
+      <span data-i18n="downsell.title">Хочеш дізнатись свій тип та авторитет за зниженою ціною?</span>
     </div>
     <div style="font-size:0.85rem;color:#A090C0;margin-bottom:1.25rem;">
-      Базова розшифровка включає ключові параметри твого Дизайну Людини.
-      Менше деталей — але вже перший крок до розуміння себе.
+      <span data-i18n="downsell.desc">Базова розшифровка включає ключові параметри твого Дизайну Людини. Менше деталей — але вже перший крок до розуміння себе.</span>
     </div>
 
     <div style="background:rgba(212,168,48,0.08);border:1px solid rgba(212,168,48,0.3);
       border-radius:10px;padding:1rem;margin-bottom:1.25rem;">
-      <div style="font-size:0.72rem;color:var(--muted,#A090C0);margin-bottom:.35rem;">Базова розшифровка:</div>
+      <div style="font-size:0.72rem;color:var(--muted,#A090C0);margin-bottom:.35rem;" data-i18n="downsell.label">Базова розшифровка:</div>
       <div style="display:flex;align-items:center;gap:.75rem;">
         <div>
           <span style="font-size:0.82rem;color:var(--dim,#6B5F80);text-decoration:line-through;">1 999 грн</span>
@@ -285,7 +284,7 @@
         <li>✓ Авторитет прийняття рішень</li>
         <li>✓ Профіль — твоя роль у житті</li>
         <li>✓ Ключові центри бодіграфу</li>
-        <li style="color:var(--dim,#6B5F80);opacity:.6;">— ~20 сторінок PDF</li>
+        <li style="color:var(--dim,#6B5F80);opacity:.6;" data-i18n="downsell.vol">— ~20 сторінок PDF</li>
       </ul>
     </div>
 
@@ -293,12 +292,12 @@
       style="width:100%;background:transparent;border:1.5px solid var(--gold,#D4A830);
         color:var(--gold,#D4A830);border-radius:10px;padding:.85rem;font-size:.95rem;
         font-weight:600;cursor:pointer;margin-bottom:.6rem;">
-      Отримати базову за 399 грн →
+      <span data-i18n="downsell.cta">Отримати базову за 399 грн →</span>
     </button>
     <button onclick="closeDownsell()"
       style="width:100%;background:none;border:none;color:var(--dim,#6B5F80);
         font-size:.8rem;cursor:pointer;padding:.4rem;">
-      Повернутись до повної розшифровки
+      <span data-i18n="downsell.back">Повернутись до повної розшифровки</span>
     </button>
   </div>
 </div>
