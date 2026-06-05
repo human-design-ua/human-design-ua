@@ -70,6 +70,10 @@ function showStep(stepId, stepNum) {
 
 function goToPricing() {
   showStep('stepPricing', totalSteps);
+  // Auto-select full plan (single offer)
+  if (!quizData.plan) {
+    selectPlan('full');
+  }
   if (typeof trackEvent === 'function') trackEvent('quiz_completed', quizData);
 }
 
@@ -112,8 +116,10 @@ function selectOption(field, value, el) {
 function selectPlan(plan) {
   quizData.plan = plan;
   localStorage.setItem('hd_plan', plan);
-  document.getElementById('planBasic').classList.toggle('selected', plan === 'basic');
-  document.getElementById('planFull').classList.toggle('selected', plan === 'full');
+  const basic = document.getElementById('planBasic');
+  const full  = document.getElementById('planFull');
+  if (basic) basic.classList.toggle('selected', plan === 'basic');
+  if (full)  full.classList.toggle('selected', plan === 'full');
   hideError('planError');
 }
 

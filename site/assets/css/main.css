@@ -1546,6 +1546,14 @@ details[open] .faq-question::after { transform: rotate(45deg); }
   font-size: 0.9rem;
 }
 
+/* Single plan layout */
+.plan-grid--single { justify-content: center; }
+.plan-card--solo {
+  max-width: 480px;
+  width: 100%;
+  margin: 0 auto;
+}
+
 /* ============================================================
    REVIEWS GRID — 8 cards (2 rows × 4 or 2 rows × 3)
 ============================================================ */
