@@ -70,9 +70,9 @@ function showStep(stepId, stepNum) {
 
 function goToPricing() {
   showStep('stepPricing', totalSteps);
-  // Auto-select basic plan by default (order bump upgrades to full)
+  // Auto-select full plan (primary offer)
   if (!quizData.plan) {
-    selectPlan('basic');
+    selectPlan('full');
   }
   if (typeof trackEvent === 'function') trackEvent('quiz_completed', quizData);
   // Push history state so browser back / iOS swipe triggers popstate
@@ -314,13 +314,38 @@ function closeDownsell() {
   history.pushState({ hd_pricing: true }, '', '#pricing');
 }
 
-function selectDownsellBasic() {
+// Downsell bump toggle
+function toggleDownsellBump() {
+  const check = document.getElementById('downsellBumpCheck');
+  const bump  = document.getElementById('downsellBump');
+  const cta   = document.getElementById('downsellCTA');
+  if (!check || !cta) return;
+  check.checked = !check.checked;
+  if (check.checked) {
+    bump.style.borderColor  = 'rgba(212,168,48,0.9)';
+    bump.style.background   = 'rgba(212,168,48,0.08)';
+    cta.textContent = 'Отримати повну розшифровку за 799 грн →';
+    cta.style.background = 'linear-gradient(135deg,#D4A830,#E8C55A)';
+  } else {
+    bump.style.borderColor  = 'rgba(212,168,48,0.5)';
+    bump.style.background   = 'transparent';
+    cta.textContent = 'Отримати базову за 399 грн →';
+    cta.style.background = 'var(--gold,#D4A830)';
+  }
+}
+
+function submitDownsell() {
+  const check = document.getElementById('downsellBumpCheck');
+  const isFull = check && check.checked;
   closeDownsell();
-  selectPlan('basic');
+  selectPlan(isFull ? 'full' : 'basic');
   const consent = document.getElementById('consent');
   if (consent && !consent.checked) consent.checked = true;
-  // Small delay then submit
   setTimeout(() => submitPayment(), 200);
+}
+
+function selectDownsellBasic() {
+  submitDownsell(); // backward compat
 }
 
 // Close modal on backdrop click
