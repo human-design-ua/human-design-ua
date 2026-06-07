@@ -47,7 +47,15 @@ function nextStep(stepNum) {
 
   const nextNum = stepNum + 1;
   if (nextNum > totalSteps) {
-    goToPricing();
+    var tarotEl = document.getElementById('stepTarot');
+    if (tarotEl && !quizData.tarotCard) {
+      document.querySelectorAll('.quiz-step').forEach(function(s){s.classList.remove('active');});
+      tarotEl.classList.add('active');
+      updateProgress(totalSteps);
+      window.scrollTo({top:0,behavior:'smooth'});
+    } else {
+      goToPricing();
+    }
     return;
   }
   showStep('step' + nextNum, nextNum);
@@ -77,6 +85,20 @@ function showStep(stepId, stepNum) {
   currentStep = stepNum || currentStep;
   updateProgress(currentStep);
   window.scrollTo({ top: 0, behavior: 'smooth' });
+  // Almost-there encouragement
+  var almostEl = document.getElementById('progressAlmost');
+  if (almostEl) {
+    if (stepNum && stepNum >= Math.ceil(totalSteps * 0.6)) {
+      almostEl.classList.add('show');
+    } else {
+      almostEl.classList.remove('show');
+    }
+  }
+  // Viewers count on pricing
+  if (stepId === 'stepPricing') {
+    var vc = document.getElementById('viewersCount');
+    if (vc) vc.textContent = 500 + Math.floor(150 * 0.7);
+  }
 }
 
 function goToPricing() {
@@ -235,6 +257,16 @@ function selectOption(field, value, el) {
   el.classList.add('selected');
   quizData[field] = value;
   hideError(field + 'Error');
+  var toastMap = {
+    career: 'valid.career', relationships: 'valid.relationships',
+    energy: 'valid.energy', self: 'valid.self',
+    decisions: 'valid.decisions', fatigue: 'valid.fatigue',
+    purpose: 'valid.purpose', people: 'valid.people'
+  };
+  if (toastMap[value] && window.t) {
+    var msg = window.t(toastMap[value]);
+    setTimeout(function() { showToast('<strong>' + msg + '</strong>'); }, 300);
+  }
   saveProgress();
   // Auto-advance on choice steps
   var choiceSteps = {lifeArea: 6, challenge: 7};
@@ -269,12 +301,8 @@ function validateStep(stepNum) {
       break;
     case 4:
       if (!getVal('birthTime')) {
-        // Allow skip — use 12:00 as default
-        var timeInput = document.getElementById('birthTime');
-        if (timeInput) timeInput.value = '12:00';
-        // Show note
-        var skipNote = document.getElementById('birthTimeSkipNote');
-        if (skipNote) skipNote.style.display = 'block';
+        var ti = document.getElementById('birthTime');
+        if (ti) ti.value = '12:00';
       }
       break;
     case 5:
@@ -477,3 +505,47 @@ document.addEventListener('click', function(e) {
   const modal = document.getElementById('downsellModal');
   if (modal && e.target === modal) closeDownsell();
 });
+
+// ── Entry screen ───────────────────────────────────────────
+function startQuiz() {
+  var s0 = document.getElementById('step0');
+  if (s0) s0.classList.remove('active');
+  showStep('step1', 1);
+}
+
+// ── Animated entry counter ─────────────────────────────────
+(function() {
+  var el = document.getElementById('entryCounter');
+  if (!el) return;
+  var base = 620;
+  el.textContent = base;
+  setInterval(function() {
+    var delta = [0, 0, 1, -1, 0, 1][base % 6] || 0;
+    base = Math.max(500, Math.min(1200, base + delta));
+    el.textContent = base;
+  }, 4000);
+})();
+
+// ── Toast notification ─────────────────────────────────────
+function showToast(msg, duration) {
+  duration = duration || 3200;
+  var t = document.getElementById('quizToast');
+  if (!t) return;
+  t.innerHTML = msg;
+  t.classList.add('show');
+  setTimeout(function() { t.classList.remove('show'); }, duration);
+}
+
+// ── Tarot card selection ───────────────────────────────────
+function selectTarot(el, card) {
+  document.querySelectorAll('.tarot-card').forEach(function(c) { c.classList.remove('selected'); });
+  el.classList.add('selected');
+  quizData.tarotCard = card;
+  var result = document.getElementById('tarotResult');
+  if (result) result.classList.add('show');
+  setTimeout(function() {
+    var tarotStep = document.getElementById('stepTarot');
+    if (tarotStep) tarotStep.classList.remove('active');
+    goToPricing();
+  }, 1600);
+}

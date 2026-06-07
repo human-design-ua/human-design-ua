@@ -12,35 +12,28 @@
 </head>
 <body>
 
-<div class="success-page">
-  <div class="success-card">
-    <div class="success-icon">✦</div>
-    <h1>Дякуємо!<br><em>Оплата успішна</em></h1>
-    <p>Твоя персональна розшифровка вже готується. Ми надішлемо її на пошту:</p>
-    <p class="success-email" id="successEmail">твою email-адресу</p>
-    <p style="font-size:0.9rem;">впродовж <strong style="color:var(--gold)">5–10 хвилин</strong>.</p>
-
-    <div style="background: var(--bg); border: 1px solid var(--border-card); border-radius: 10px; padding: 1.25rem; margin: 2rem 0; text-align: left;">
-      <p style="font-size:0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;"><strong style="color:var(--text)">Що далі:</strong></p>
-      <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.5rem;">
-        <li style="font-size:0.85rem; color: var(--text-muted);">📧 Перевір папку "Вхідні" та "Спам"</li>
-        <li style="font-size:0.85rem; color: var(--text-muted);">⏳ Якщо через 15 хв нічого — напиши нам</li>
-        <li style="font-size:0.85rem; color: var(--text-muted);">🌙 Читай у спокійній обстановці</li>
-      </ul>
+<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:2rem;background:var(--bg,#0D0B1E);">
+  <canvas id="confettiCanvas" style="position:fixed;inset:0;pointer-events:none;z-index:999;"></canvas>
+  <div style="max-width:480px;width:100%;">
+    <div id="successIcon" style="font-size:3rem;margin-bottom:1.5rem;animation:successPulse 1.5s ease-in-out infinite;">✦</div>
+    <h1 id="successTitle" style="font-family:Georgia,serif;font-size:clamp(1.3rem,4vw,2rem);color:#F0ECE8;margin-bottom:.75rem;line-height:1.3;"></h1>
+    <p id="successSubtitle" style="font-size:.9rem;color:#A090C0;margin-bottom:1.5rem;"></p>
+    <div style="max-width:300px;margin:0 auto 1rem;">
+      <div style="background:rgba(212,168,48,.15);border-radius:100px;height:8px;overflow:hidden;">
+        <div id="genFill" style="height:100%;background:linear-gradient(90deg,#D4A830,#E8C55A);border-radius:100px;width:0%;transition:width .5s ease;"></div>
+      </div>
     </div>
-
-    <a href="index.html" class="btn btn-outline">← На головну</a>
+    <p id="genText" style="font-size:.8rem;color:#6B5F80;margin-bottom:1.5rem;"></p>
+    <p id="etaText" style="font-size:.85rem;color:#A090C0;"></p>
   </div>
 </div>
 
+<style>
+@keyframes successPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.15)}}
+</style>
+
 <script src="assets/js/analytics.js"></script>
 <script>
-  // Show email from localStorage if available
-  const savedEmail = localStorage.getItem('hd_email');
-  if (savedEmail) {
-    document.getElementById('successEmail').textContent = savedEmail;
-  }
-
   // Fire GA4 & Pixel purchase event
   const savedPlan = localStorage.getItem('hd_plan');
   const amount = savedPlan === 'full' ? 799 : 399;
@@ -50,6 +43,82 @@
   if (typeof fbq !== 'undefined') {
     fbq('track', 'Purchase', { currency: 'UAH', value: amount });
   }
+</script>
+<script>
+(function(){
+  // Get name
+  var name = '';
+  try {
+    var d = JSON.parse(localStorage.getItem('hd_quiz_data') || '{}');
+    name = d.name || localStorage.getItem('hd_name') || '';
+  } catch(e){}
+
+  // Set title
+  var title = document.getElementById('successTitle');
+  var sub = document.getElementById('successSubtitle');
+  if (title) title.textContent = (name ? name + ', ' : '') + 'твоя карта генерується!';
+  if (sub)   sub.textContent = 'Персональний розрахунок Дизайну Людини розпочато';
+
+  // Animate progress
+  var fill = document.getElementById('genFill');
+  var genText = document.getElementById('genText');
+  var etaText = document.getElementById('etaText');
+  var gates = 0;
+  var total = 64;
+
+  if (etaText) etaText.textContent = 'Розшифровка надійде на пошту через ~8 хвилин';
+
+  var interval = setInterval(function(){
+    gates += Math.floor(3 + 3);
+    if (gates > total) gates = total;
+    var pct = (gates / total * 100);
+    if (fill) fill.style.width = pct + '%';
+    if (genText) genText.textContent = 'Розраховуємо ' + gates + ' з ' + total + ' воріт...';
+    if (gates >= total) {
+      clearInterval(interval);
+      if (genText) genText.textContent = '✓ Розрахунок завершено!';
+      if (etaText) etaText.textContent = 'Розшифровка вже надіслана — перевір пошту ✦';
+      launchConfetti();
+    }
+  }, 400);
+
+  // Simple confetti
+  function launchConfetti() {
+    var canvas = document.getElementById('confettiCanvas');
+    if (!canvas) return;
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    var ctx = canvas.getContext('2d');
+    var particles = [];
+    var colors = ['#D4A830','#9B6EE0','#E8C55A','#F0ECE8','#4CAF7D'];
+    for (var i = 0; i < 80; i++) {
+      particles.push({
+        x: canvas.width * (i / 80),
+        y: -10 - i * 3,
+        vx: (i % 5 - 2) * 0.8,
+        vy: 2 + (i % 3),
+        color: colors[i % colors.length],
+        size: 5 + (i % 5),
+        rot: i * 20
+      });
+    }
+    var anim = setInterval(function(){
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      var alive = false;
+      particles.forEach(function(p){
+        p.x += p.vx; p.y += p.vy; p.rot += 3;
+        if (p.y < canvas.height) alive = true;
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.rot * Math.PI / 180);
+        ctx.fillStyle = p.color;
+        ctx.fillRect(-p.size/2, -p.size/2, p.size, p.size);
+        ctx.restore();
+      });
+      if (!alive) clearInterval(anim);
+    }, 16);
+  }
+})();
 </script>
 
 </body>

@@ -28,6 +28,7 @@
     <div class="quiz-progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="9" aria-valuenow="1">
       <div class="quiz-progress-fill" id="progressFill" style="width: 11%"></div>
     </div>
+    <div class="progress-almost" id="progressAlmost" data-i18n="progress.almost">Ти майже там!</div>
     <div style="display:flex; align-items:center; gap:0.5rem;">
       <div class="lang-switcher">
         <button class="lang-btn active" data-lang="ua" onclick="i18n.switch('ua')">UA</button>
@@ -46,8 +47,25 @@
 <main class="quiz-main">
   <div class="container">
 
+    <!-- STEP 0: Entry screen -->
+    <div class="quiz-step active" id="step0">
+  <div class="entry-screen">
+    <span class="entry-icon" aria-hidden="true">✦</span>
+    <div class="entry-loading" data-i18n="entry.loading">Система аналізує...</div>
+    <h1 class="entry-title" data-i18n="entry.title">Дізнайся, як ти насправді влаштована</h1>
+    <p class="entry-subtitle" data-i18n="entry.subtitle">Персональний розрахунок Дизайну Людини</p>
+    <p class="entry-hint" data-i18n="entry.hint">Відповідай чесно — система адаптується</p>
+    <button class="btn btn-gold btn-lg" onclick="startQuiz()">
+      <span data-i18n="entry.cta">Почати розрахунок →</span>
+    </button>
+    <p class="entry-counter">
+      <span id="entryCounter">847</span>&nbsp;<span data-i18n="entry.counter">жінок проходять зараз</span>
+    </p>
+  </div>
+</div>
+
     <!-- STEP 1: Name -->
-    <div class="quiz-step active" id="step1">
+    <div class="quiz-step" id="step1">
       <div class="step-label" data-i18n-template="quiz.step.label" data-i18n-var-n="1" data-i18n-var-total="7">Крок 1 з 9</div>
       <h2 class="step-question" data-i18n="quiz.s1.question">Як тебе звати?</h2>
       <div class="form-group">
@@ -189,6 +207,25 @@
     </div>
 
 
+    <!-- TAROT STEP -->
+    <div class="quiz-step" id="stepTarot">
+  <div class="step-label">✦ Останній крок</div>
+  <h2 class="step-question" data-i18n="tarot.title">Обери карту, яка резонує з тобою зараз</h2>
+  <p style="font-size:.85rem;color:var(--text-dim);margin-bottom:1.25rem" data-i18n="tarot.hint">Не думай — довіряй першому відчуттю</p>
+  <div class="tarot-grid" id="tarotGrid">
+    <div class="tarot-card" onclick="selectTarot(this,'sun')">🌟<span class="tarot-card-name">Сонце</span></div>
+    <div class="tarot-card" onclick="selectTarot(this,'moon')">🌙<span class="tarot-card-name">Місяць</span></div>
+    <div class="tarot-card" onclick="selectTarot(this,'star')">⭐<span class="tarot-card-name">Зірка</span></div>
+    <div class="tarot-card" onclick="selectTarot(this,'strength')">🦁<span class="tarot-card-name">Сила</span></div>
+    <div class="tarot-card" onclick="selectTarot(this,'wheel')">☯<span class="tarot-card-name">Колесо</span></div>
+  </div>
+  <div class="tarot-result" id="tarotResult" data-i18n="tarot.result">Твій вибір підтверджує рідкісну конфігурацію</div>
+  <div class="quiz-nav-buttons" style="margin-top:1rem;">
+    <button class="btn-back" onclick="showStep('step7',7)" data-i18n="quiz.btn.back">← Назад</button>
+    <div></div>
+  </div>
+</div>
+
     <!-- PROCESSING SCREEN -->
     <div class="quiz-step" id="processingScreen">
       <div class="processing-container">
@@ -260,6 +297,20 @@
           <div style="color:var(--text-dim);opacity:0.7;font-size:0.8rem;margin-top:0.5rem">~50 сторінок · PDF на пошту</div>
         </div>
       </div>
+
+      <div class="pricing-viewers">
+  <span id="viewersCount">623</span>&nbsp;<span data-i18n="pricing.viewers">жінок дивляться</span>
+</div>
+<div class="pricing-intrigue" data-i18n="pricing.intrigue">У твоєму бодиграфі знайдено рідкісну конфігурацію →</div>
+<div class="pricing-preview">
+  <div class="pricing-preview-label" data-i18n="pricing.preview_label">Фрагмент твоєї розшифровки:</div>
+  <div class="pricing-preview-text" data-i18n="pricing.preview_text">"Твій тип визначає унікальну стратегію..."</div>
+</div>
+<div class="pricing-vs">
+  <span class="bad" data-i18n="pricing.vs_astro">Консультація астролога: 1500 грн і 3 тижні</span>
+  <span class="good" data-i18n="pricing.vs_us">✓ Твоя розшифровка: від 399 грн за 10 хвилин</span>
+</div>
+<div class="pricing-trust" data-i18n="pricing.trust">Якщо не впізнаєш себе — напиши нам</div>
 
             <div class="form-error" id="planError" style="margin-bottom:1rem" data-i18n="quiz.pricing.plan.error">Обери тариф</div>
 
@@ -367,6 +418,7 @@
     </button>
   </div>
 </div>
+<div class="quiz-toast" id="quizToast"></div>
 </main>
 
 <script>
