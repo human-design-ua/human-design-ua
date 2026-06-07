@@ -105,11 +105,11 @@ var HD_TRANSLATIONS = {
 
 
     // Missing features in basic plan
-    'basic.not.centers': '❌ Планети та вузли'
-    'basic.not.cross': '❌ Інкарнаційний хрест'
-    'basic.not.relations': '❌ Розбір каналів'
-    'basic.not.definition': '❌ Автоматичні реакції'
-    'basic.not.decondit': '❌ Самодостатність'
+    'basic.not.centers': '❌ Планети та вузли',
+    'basic.not.cross': '❌ Інкарнаційний хрест',
+    'basic.not.relations': '❌ Розбір каналів',
+    'basic.not.definition': '❌ Автоматичні реакції',
+    'basic.not.decondit': '❌ Самодостатність',
     'basic.not.plan90':      '❌ Особистий план на 90 днів',
 
     // Downsell modal
@@ -205,12 +205,12 @@ var HD_TRANSLATIONS = {
     'pricing.lead':         'Обидва варіанти персональні — складаються на основі твоїх даних, не шаблони.',
     'pricing.basic.name':   'Базовий',
     'pricing.basic.desc':   'Для знайомства з основами',
-    'pricing.basic.bodygraph': '✓ <strong>Розшифровка бодіграфу</strong><br><span class="feature-sub">Персональна карта — розрахована виключно для твоїх даних</span>'
-    'pricing.basic.f1': '✓ <strong>Твій Тип та його особливості</strong><br><span class="feature-sub">Робота, розвиток, стосунки, сон</span>'
-    'pricing.basic.f2': '✓ <strong>Авторитет</strong><br><span class="feature-sub">Зрозумієш свій спосіб приймати вірні рішення</span>'
-    'pricing.basic.f3': '✓ <strong>Стратегія</strong><br><span class="feature-sub">Зрозумієш коли найкраще діяти, а коли чекати</span>'
-    'pricing.basic.f4': '✓ <strong>Профіль</strong><br><span class="feature-sub">Які ролі тобі легко даються і де ти на своєму місці</span>'
-    'pricing.basic.f5': '✓ <strong>Ключові центри</strong><br><span class="feature-sub">Де ти справляєш вплив і де вразлива</span>'
+    'pricing.basic.bodygraph': '✓ <strong>Розшифровка бодіграфу</strong><br><span class="feature-sub">Персональна карта — розрахована виключно для твоїх даних</span>',
+    'pricing.basic.f1': '✓ <strong>Твій Тип та його особливості</strong><br><span class="feature-sub">Робота, розвиток, стосунки, сон</span>',
+    'pricing.basic.f2': '✓ <strong>Авторитет</strong><br><span class="feature-sub">Зрозумієш свій спосіб приймати вірні рішення</span>',
+    'pricing.basic.f3': '✓ <strong>Стратегія</strong><br><span class="feature-sub">Зрозумієш коли найкраще діяти, а коли чекати</span>',
+    'pricing.basic.f4': '✓ <strong>Профіль</strong><br><span class="feature-sub">Які ролі тобі легко даються і де ти на своєму місці</span>',
+    'pricing.basic.f5': '✓ <strong>Ключові центри</strong><br><span class="feature-sub">Де ти справляєш вплив і де вразлива</span>',
     'pricing.basic.not1':   '— Детальний аналіз каналів',
     'pricing.basic.not2':   '— Інкарнаційний хрест',
     'pricing.basic.not3':   '— Аналіз стосунків',
@@ -219,15 +219,15 @@ var HD_TRANSLATIONS = {
     'pricing.full.popular': '⭐ Обирають 87% клієнток',
     'pricing.full.name':    'Повний',
     'pricing.full.desc':    'Повна карта твоєї природи — всі відповіді в одному PDF',
-    'pricing.full.bodygraph': '✓ <strong>Розшифровка бодіграфу</strong><br><span class="feature-sub">Персональна карта — розрахована виключно для твоїх даних</span>'
-    'pricing.full.f1': '✓ <strong>Твій Тип та його особливості</strong><br><span class="feature-sub">Робота, розвиток, стосунки, сон</span>'
-    'pricing.full.f2': '✓ <strong>Авторитет</strong><br><span class="feature-sub">Зрозумієш свій спосіб приймати вірні рішення</span>'
-    'pricing.full.f3': '✓ <strong>Стратегія</strong><br><span class="feature-sub">Зрозумієш коли найкраще діяти, а коли чекати</span>'
-    'pricing.full.f4': '✓ <strong>Профіль</strong><br><span class="feature-sub">Які ролі тобі легко даються, а де приймаєш нав\'язані рішення</span>'
-    'pricing.full.f5': '✓ <strong>9 Центрів — 9 сфер життя</strong><br><span class="feature-sub">Де ти справляєш вплив на оточуючих і де вразлива</span>'
-    'pricing.full.f6': '✓ <strong>Планети та вузли</strong><br><span class="feature-sub">Що стоїть за твоїм характером і куди веде тебе життя</span>'
-    'pricing.full.f7': '✓ <strong>Розбір каналів</strong><br><span class="feature-sub">Твої природні переваги — де і як їх використовувати</span>'
-    'pricing.full.f8': '✓ <strong>Автоматичні реакції</strong><br><span class="feature-sub">Що бачать у тобі інші, але ти не помічаєш — твої приховані козирі</span>'
+    'pricing.full.bodygraph': '✓ <strong>Розшифровка бодіграфу</strong><br><span class="feature-sub">Персональна карта — розрахована виключно для твоїх даних</span>',
+    'pricing.full.f1': '✓ <strong>Твій Тип та його особливості</strong><br><span class="feature-sub">Робота, розвиток, стосунки, сон</span>',
+    'pricing.full.f2': '✓ <strong>Авторитет</strong><br><span class="feature-sub">Зрозумієш свій спосіб приймати вірні рішення</span>',
+    'pricing.full.f3': '✓ <strong>Стратегія</strong><br><span class="feature-sub">Зрозумієш коли найкраще діяти, а коли чекати</span>',
+    'pricing.full.f4': '✓ <strong>Профіль</strong><br><span class="feature-sub">Які ролі тобі легко даються, а де приймаєш нав\'язані рішення</span>',
+    'pricing.full.f5': '✓ <strong>9 Центрів — 9 сфер життя</strong><br><span class="feature-sub">Де ти справляєш вплив на оточуючих і де вразлива</span>',
+    'pricing.full.f6': '✓ <strong>Планети та вузли</strong><br><span class="feature-sub">Що стоїть за твоїм характером і куди веде тебе життя</span>',
+    'pricing.full.f7': '✓ <strong>Розбір каналів</strong><br><span class="feature-sub">Твої природні переваги — де і як їх використовувати</span>',
+    'pricing.full.f8': '✓ <strong>Автоматичні реакції</strong><br><span class="feature-sub">Що бачать у тобі інші, але ти не помічаєш — твої приховані козирі</span>',
     'pricing.full.f9': '✓ <strong>Інкарнаційний хрест</strong><br><span class="feature-sub">Глобальний сенс твого життя і твій внесок у світ</span>',
     'pricing.full.f10': '✓ <strong>Самодостатність</strong><br><span class="feature-sub">Наскільки ти самодостатня і чи потрібні тобі інші люди</span>',
     'pricing.full.volume':  '~50 сторінок · PDF на пошту',
@@ -240,6 +240,23 @@ var HD_TRANSLATIONS = {
     'bump.subtitle': 'Замість 799 грн — ти вже платиш 399, доплати ще 400 і отримай всі 10 розділів',
     'bump.items':    'Планети та вузли · Інкарнаційний хрест · Автоматичні реакції · Самодостатність · Розбір каналів',
     'bump.checkbox': 'Так, хочу повну розшифровку за +400 грн',
+
+    // Processing screen
+    'processing.title':   'Розраховуємо твій бодиграф...',
+    'processing.step1':   'Аналізуємо дату народження...',
+    'processing.step2':   'Розраховуємо планетарні позиції...',
+    'processing.step3':   'Визначаємо активовані ворота...',
+    'processing.step4':   'Будуємо твій бодиграф...',
+    'processing.step5':   'Результат готовий!',
+
+    // Bridge screen
+    'bridge.badge':       '✦ Результат розрахунку',
+    'bridge.btn':         'Дізнатись повну розшифровку →',
+    'bridge.auto':        'Або зачекай — перехід автоматичний',
+    'bridge.teaser.title':'У твоїй повній розшифровці:',
+    'bridge.t1':          '✦ Чому твій тип дає результат без надзусиль',
+    'bridge.t2':          '✦ Як авторитет допомагає уникати помилок',
+    'bridge.t3':          '✦ Де ти на своєму місці — і де зраджуєш себе',
 
     // Pricing timer
     'pricing.timer.label': 'Ціна діє ще:',
@@ -330,8 +347,8 @@ var HD_TRANSLATIONS = {
     'quiz.s1.label':        "Ім'я",
     'quiz.s1.placeholder':  'Наприклад: Олена',
     'quiz.s1.error':        "Введи, будь ласка, своє ім'я",
-    'quiz.s2.question':     'На яку пошту надіслати розшифровку?',
-    'quiz.s2.hint':         'Розшифровку твого Дизайну Людини надішлемо саме сюди впродовж 10 хвилин.',
+    'quiz.s2.question':     'Майже готово! Куди надіслати твою розшифровку?',
+    'quiz.s2.hint':         'Розшифровка буде готова за ~8 хвилин після оплати і надійде саме сюди.',
     'quiz.s2.label':        'Email-адреса',
     'quiz.s2.error':        'Введи коректну email-адресу',
     'quiz.s3.question':     'Коли ти народилася?',
@@ -483,11 +500,11 @@ var HD_TRANSLATIONS = {
 
 
     // Missing features in basic plan
-    'basic.not.centers': '❌ Планеты и узлы'
-    'basic.not.cross': '❌ Инкарнационный крест'
-    'basic.not.relations': '❌ Разбор каналов'
-    'basic.not.definition': '❌ Автоматические реакции'
-    'basic.not.decondit': '❌ Самодостаточность'
+    'basic.not.centers': '❌ Планеты и узлы',
+    'basic.not.cross': '❌ Инкарнационный крест',
+    'basic.not.relations': '❌ Разбор каналов',
+    'basic.not.definition': '❌ Автоматические реакции',
+    'basic.not.decondit': '❌ Самодостаточность',
     'basic.not.plan90':      '❌ Личный план на 90 дней',
 
     // Downsell modal
@@ -577,12 +594,12 @@ var HD_TRANSLATIONS = {
     'pricing.lead':         'Оба варианта персональные — составляются на основе твоих данных, не шаблоны.',
     'pricing.basic.name':   'Базовый',
     'pricing.basic.desc':   'Для знакомства с основами',
-    'pricing.basic.bodygraph': '✓ <strong>Расшифровка бодиграфа</strong><br><span class="feature-sub">Персональная карта — рассчитана исключительно для твоих данных</span>'
-    'pricing.basic.f1': '✓ <strong>Твой Тип и его особенности</strong><br><span class="feature-sub">Работа, развитие, отношения, сон</span>'
-    'pricing.basic.f2': '✓ <strong>Авторитет</strong><br><span class="feature-sub">Узнаешь свой способ принимать верные решения</span>'
-    'pricing.basic.f3': '✓ <strong>Стратегия</strong><br><span class="feature-sub">Поймёшь когда лучше всего действовать, а когда ждать</span>'
-    'pricing.basic.f4': '✓ <strong>Профиль</strong><br><span class="feature-sub">Какие роли тебе легко даются и где ты на своём месте</span>'
-    'pricing.basic.f5': '✓ <strong>Ключевые центры</strong><br><span class="feature-sub">Где ты оказываешь влияние и где уязвима</span>'
+    'pricing.basic.bodygraph': '✓ <strong>Расшифровка бодиграфа</strong><br><span class="feature-sub">Персональная карта — рассчитана исключительно для твоих данных</span>',
+    'pricing.basic.f1': '✓ <strong>Твой Тип и его особенности</strong><br><span class="feature-sub">Работа, развитие, отношения, сон</span>',
+    'pricing.basic.f2': '✓ <strong>Авторитет</strong><br><span class="feature-sub">Узнаешь свой способ принимать верные решения</span>',
+    'pricing.basic.f3': '✓ <strong>Стратегия</strong><br><span class="feature-sub">Поймёшь когда лучше всего действовать, а когда ждать</span>',
+    'pricing.basic.f4': '✓ <strong>Профиль</strong><br><span class="feature-sub">Какие роли тебе легко даются и где ты на своём месте</span>',
+    'pricing.basic.f5': '✓ <strong>Ключевые центры</strong><br><span class="feature-sub">Где ты оказываешь влияние и где уязвима</span>',
     'pricing.basic.not1':   '— Детальный анализ каналов',
     'pricing.basic.not2':   '— Инкарнационный крест',
     'pricing.basic.not3':   '— Анализ отношений',
@@ -591,15 +608,15 @@ var HD_TRANSLATIONS = {
     'pricing.full.popular': '⭐ Выбирают 87% клиенток',
     'pricing.full.name':    'Полный',
     'pricing.full.desc':    'Полная карта твоей природы — все ответы в одном PDF',
-    'pricing.full.bodygraph': '✓ <strong>Расшифровка бодиграфа</strong><br><span class="feature-sub">Персональная карта — рассчитана исключительно для твоих данных</span>'
-    'pricing.full.f1': '✓ <strong>Твой Тип и его особенности</strong><br><span class="feature-sub">Работа, развитие, отношения, сон</span>'
-    'pricing.full.f2': '✓ <strong>Авторитет</strong><br><span class="feature-sub">Узнаешь свой способ принимать верные решения</span>'
-    'pricing.full.f3': '✓ <strong>Стратегия</strong><br><span class="feature-sub">Поймёшь когда лучше всего действовать, а когда ждать</span>'
-    'pricing.full.f4': '✓ <strong>Профиль</strong><br><span class="feature-sub">Какие роли тебе легко даются, а где принимаешь навязанные решения</span>'
-    'pricing.full.f5': '✓ <strong>9 Центров — 9 сфер жизни</strong><br><span class="feature-sub">Где ты оказываешь влияние на окружающих и где уязвима</span>'
-    'pricing.full.f6': '✓ <strong>Планеты и узлы</strong><br><span class="feature-sub">Что стоит за твоим характером и куда тебя ведёт жизнь</span>'
-    'pricing.full.f7': '✓ <strong>Разбор каналов</strong><br><span class="feature-sub">Твои природные преимущества — где и как их использовать</span>'
-    'pricing.full.f8': '✓ <strong>Автоматические реакции</strong><br><span class="feature-sub">Что видят в тебе другие, но ты не замечаешь — твои скрытые козыри</span>'
+    'pricing.full.bodygraph': '✓ <strong>Расшифровка бодиграфа</strong><br><span class="feature-sub">Персональная карта — рассчитана исключительно для твоих данных</span>',
+    'pricing.full.f1': '✓ <strong>Твой Тип и его особенности</strong><br><span class="feature-sub">Работа, развитие, отношения, сон</span>',
+    'pricing.full.f2': '✓ <strong>Авторитет</strong><br><span class="feature-sub">Узнаешь свой способ принимать верные решения</span>',
+    'pricing.full.f3': '✓ <strong>Стратегия</strong><br><span class="feature-sub">Поймёшь когда лучше всего действовать, а когда ждать</span>',
+    'pricing.full.f4': '✓ <strong>Профиль</strong><br><span class="feature-sub">Какие роли тебе легко даются, а где принимаешь навязанные решения</span>',
+    'pricing.full.f5': '✓ <strong>9 Центров — 9 сфер жизни</strong><br><span class="feature-sub">Где ты оказываешь влияние на окружающих и где уязвима</span>',
+    'pricing.full.f6': '✓ <strong>Планеты и узлы</strong><br><span class="feature-sub">Что стоит за твоим характером и куда тебя ведёт жизнь</span>',
+    'pricing.full.f7': '✓ <strong>Разбор каналов</strong><br><span class="feature-sub">Твои природные преимущества — где и как их использовать</span>',
+    'pricing.full.f8': '✓ <strong>Автоматические реакции</strong><br><span class="feature-sub">Что видят в тебе другие, но ты не замечаешь — твои скрытые козыри</span>',
     'pricing.full.f9': '✓ <strong>Инкарнационный крест</strong><br><span class="feature-sub">Глобальный смысл твоей жизни и твой вклад в мир</span>',
     'pricing.full.f10': '✓ <strong>Самодостаточность</strong><br><span class="feature-sub">Насколько ты самодостаточна и нужны ли тебе другие люди</span>',
     'pricing.full.volume':  '~50 страниц · PDF на почту',
@@ -612,6 +629,23 @@ var HD_TRANSLATIONS = {
     'bump.subtitle': 'Вместо 799 грн — ты уже платишь 399, доплати ещё 400 и получи все 10 разделов',
     'bump.items':    'Планеты и узлы · Инкарнационный крест · Автоматические реакции · Самодостаточность · Разбор каналов',
     'bump.checkbox': 'Да, хочу полную расшифровку за +400 грн',
+
+    // Processing screen
+    'processing.title':   'Рассчитываем твой бодиграф...',
+    'processing.step1':   'Анализируем дату рождения...',
+    'processing.step2':   'Рассчитываем позиции планет...',
+    'processing.step3':   'Определяем активированные ворота...',
+    'processing.step4':   'Строим твой бодиграф...',
+    'processing.step5':   'Результат готов!',
+
+    // Bridge screen
+    'bridge.badge':       '✦ Результат расчёта',
+    'bridge.btn':         'Узнать полную расшифровку →',
+    'bridge.auto':        'Или подожди — переход автоматический',
+    'bridge.teaser.title':'В твоей полной расшифровке:',
+    'bridge.t1':          '✦ Почему твой тип даёт результат без лишних усилий',
+    'bridge.t2':          '✦ Как авторитет помогает избегать ошибок',
+    'bridge.t3':          '✦ Где ты на своём месте — и где предаёшь себя',
 
     'pricing.timer.label': 'Цена действует ещё:',
     'pricing.timer.end':   'Цена повысится',
@@ -719,8 +753,8 @@ var HD_TRANSLATIONS = {
     'quiz.s1.label':        'Имя',
     'quiz.s1.placeholder':  'Например: Елена',
     'quiz.s1.error':        'Введи, пожалуйста, своё имя',
-    'quiz.s2.question':     'На какую почту отправить расшифровку?',
-    'quiz.s2.hint':         'Расшифровку твоего Дизайна Человека отправим именно сюда в течение 10 минут.',
+    'quiz.s2.question':     'Почти готово! Куда отправить твою расшифровку?',
+    'quiz.s2.hint':         'Расшифровка будет готова через ~8 минут после оплаты и придёт именно сюда.',
     'quiz.s2.label':        'Email-адрес',
     'quiz.s2.error':        'Введи корректный email-адрес',
     'quiz.s3.question':     'Когда ты родилась?',
@@ -871,11 +905,11 @@ var HD_TRANSLATIONS = {
 
 
     // Missing features in basic plan
-    'basic.not.centers': '❌ Planets & nodes'
-    'basic.not.cross': '❌ Incarnation cross'
-    'basic.not.relations': '❌ Channel analysis'
-    'basic.not.definition': '❌ Automatic reactions'
-    'basic.not.decondit': '❌ Self-sufficiency'
+    'basic.not.centers': '❌ Planets & nodes',
+    'basic.not.cross': '❌ Incarnation cross',
+    'basic.not.relations': '❌ Channel analysis',
+    'basic.not.definition': '❌ Automatic reactions',
+    'basic.not.decondit': '❌ Self-sufficiency',
     'basic.not.plan90':      '❌ Personal 90-day plan',
 
     // Downsell modal
@@ -965,12 +999,12 @@ var HD_TRANSLATIONS = {
     'pricing.lead':         'Both options are personalised — created from your data, not templates.',
     'pricing.basic.name':   'Basic',
     'pricing.basic.desc':   'For getting started with the basics',
-    'pricing.basic.bodygraph': '✓ <strong>Bodygraph reading</strong><br><span class="feature-sub">Personal map — calculated exclusively for your data</span>'
-    'pricing.basic.f1': '✓ <strong>Your Type & its traits</strong><br><span class="feature-sub">Work, growth, relationships, sleep</span>'
-    'pricing.basic.f2': '✓ <strong>Authority</strong><br><span class="feature-sub">Discover your way to make the right decisions</span>'
-    'pricing.basic.f3': '✓ <strong>Strategy</strong><br><span class="feature-sub">Know when to act and when to wait</span>'
-    'pricing.basic.f4': '✓ <strong>Profile</strong><br><span class="feature-sub">Which roles suit you naturally and where you belong</span>'
-    'pricing.basic.f5': '✓ <strong>Key centres</strong><br><span class="feature-sub">Where you have stable strength and where you are vulnerable</span>'
+    'pricing.basic.bodygraph': '✓ <strong>Bodygraph reading</strong><br><span class="feature-sub">Personal map — calculated exclusively for your data</span>',
+    'pricing.basic.f1': '✓ <strong>Your Type & its traits</strong><br><span class="feature-sub">Work, growth, relationships, sleep</span>',
+    'pricing.basic.f2': '✓ <strong>Authority</strong><br><span class="feature-sub">Discover your way to make the right decisions</span>',
+    'pricing.basic.f3': '✓ <strong>Strategy</strong><br><span class="feature-sub">Know when to act and when to wait</span>',
+    'pricing.basic.f4': '✓ <strong>Profile</strong><br><span class="feature-sub">Which roles suit you naturally and where you belong</span>',
+    'pricing.basic.f5': '✓ <strong>Key centres</strong><br><span class="feature-sub">Where you have stable strength and where you are vulnerable</span>',
     'pricing.basic.not1':   '— Detailed channel analysis',
     'pricing.basic.not2':   '— Incarnation cross',
     'pricing.basic.not3':   '— Relationship analysis',
@@ -979,15 +1013,15 @@ var HD_TRANSLATIONS = {
     'pricing.full.popular': '⭐ 87% of clients choose this',
     'pricing.full.name':    'Full',
     'pricing.full.desc':    'Complete map of your nature — all answers in one PDF',
-    'pricing.full.bodygraph': '✓ <strong>Bodygraph reading</strong><br><span class="feature-sub">Personal map — calculated exclusively for your data</span>'
-    'pricing.full.f1': '✓ <strong>Your Type & its traits</strong><br><span class="feature-sub">Work, growth, relationships, sleep</span>'
-    'pricing.full.f2': '✓ <strong>Authority</strong><br><span class="feature-sub">Discover your way to make the right decisions</span>'
-    'pricing.full.f3': '✓ <strong>Strategy</strong><br><span class="feature-sub">Know when to act and when to wait</span>'
-    'pricing.full.f4': '✓ <strong>Profile</strong><br><span class="feature-sub">Which roles suit you and where you follow imposed decisions</span>'
-    'pricing.full.f5': '✓ <strong>9 Centres — 9 life areas</strong><br><span class="feature-sub">Where you influence others and where you are vulnerable</span>'
-    'pricing.full.f6': '✓ <strong>Planets & nodes</strong><br><span class="feature-sub">What shapes your character and where life is leading you</span>'
-    'pricing.full.f7': '✓ <strong>Channel analysis</strong><br><span class="feature-sub">Your natural advantages — where and how to use them</span>'
-    'pricing.full.f8': '✓ <strong>Automatic reactions</strong><br><span class="feature-sub">What others see in you that you don\'t notice — your hidden strengths</span>'
+    'pricing.full.bodygraph': '✓ <strong>Bodygraph reading</strong><br><span class="feature-sub">Personal map — calculated exclusively for your data</span>',
+    'pricing.full.f1': '✓ <strong>Your Type & its traits</strong><br><span class="feature-sub">Work, growth, relationships, sleep</span>',
+    'pricing.full.f2': '✓ <strong>Authority</strong><br><span class="feature-sub">Discover your way to make the right decisions</span>',
+    'pricing.full.f3': '✓ <strong>Strategy</strong><br><span class="feature-sub">Know when to act and when to wait</span>',
+    'pricing.full.f4': '✓ <strong>Profile</strong><br><span class="feature-sub">Which roles suit you and where you follow imposed decisions</span>',
+    'pricing.full.f5': '✓ <strong>9 Centres — 9 life areas</strong><br><span class="feature-sub">Where you influence others and where you are vulnerable</span>',
+    'pricing.full.f6': '✓ <strong>Planets & nodes</strong><br><span class="feature-sub">What shapes your character and where life is leading you</span>',
+    'pricing.full.f7': '✓ <strong>Channel analysis</strong><br><span class="feature-sub">Your natural advantages — where and how to use them</span>',
+    'pricing.full.f8': '✓ <strong>Automatic reactions</strong><br><span class="feature-sub">What others see in you that you don\'t notice — your hidden strengths</span>',
     'pricing.full.f9': '✓ <strong>Incarnation cross</strong><br><span class="feature-sub">The global meaning of your life and your contribution to the world</span>',
     'pricing.full.f10': '✓ <strong>Self-sufficiency</strong><br><span class="feature-sub">How self-sufficient you are and whether you need others</span>',
     'pricing.full.volume':  '~50 pages · PDF by email',
@@ -1000,6 +1034,23 @@ var HD_TRANSLATIONS = {
     'bump.subtitle': 'Instead of 799 UAH — you are already paying 399, add 400 more and get all 10 sections',
     'bump.items':    'Planets & nodes · Incarnation cross · Automatic reactions · Self-sufficiency · Channel analysis',
     'bump.checkbox': 'Yes, I want the full reading for +400 UAH',
+
+    // Processing screen
+    'processing.title':   'Calculating your bodygraph...',
+    'processing.step1':   'Analysing birth date...',
+    'processing.step2':   'Calculating planetary positions...',
+    'processing.step3':   'Identifying activated gates...',
+    'processing.step4':   'Building your bodygraph...',
+    'processing.step5':   'Result ready!',
+
+    // Bridge screen
+    'bridge.badge':       '✦ Calculation result',
+    'bridge.btn':         'See my full reading →',
+    'bridge.auto':        'Or wait — automatic transition',
+    'bridge.teaser.title':'In your full reading:',
+    'bridge.t1':          '✦ Why your type achieves results without overeffort',
+    'bridge.t2':          '✦ How your authority helps you avoid mistakes',
+    'bridge.t3':          '✦ Where you belong — and where you betray yourself',
 
     'pricing.timer.label': 'Price valid for:',
     'pricing.timer.end':   'Price will increase',
@@ -1107,8 +1158,8 @@ var HD_TRANSLATIONS = {
     'quiz.s1.label':        'Name',
     'quiz.s1.placeholder':  'E.g. Elena',
     'quiz.s1.error':        'Please enter your name',
-    'quiz.s2.question':     'Where should we send your reading?',
-    'quiz.s2.hint':         'We\'ll send your Human Design reading here within 10 minutes.',
+    'quiz.s2.question':     'Almost there! Where should we send your reading?',
+    'quiz.s2.hint':         'Your reading will be ready in ~8 minutes after payment and sent right here.',
     'quiz.s2.label':        'Email address',
     'quiz.s2.error':        'Please enter a valid email address',
     'quiz.s3.question':     'When were you born?',

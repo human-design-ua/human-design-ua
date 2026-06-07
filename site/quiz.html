@@ -67,8 +67,8 @@
     <!-- STEP 2: Email -->
     <div class="quiz-step" id="step2">
       <div class="step-label" data-i18n-template="quiz.step.label" data-i18n-var-n="2" data-i18n-var-total="7">Крок 2 з 9</div>
-      <h2 class="step-question" data-i18n="quiz.s2.question">На яку пошту надіслати розшифровку?</h2>
-      <p style="font-size:0.9rem; color:var(--text-dim); margin-bottom:1.5rem" data-i18n="quiz.s2.hint">Готову розшифровку ми надішлемо саме сюди впродовж 10 хвилин після оплати.</p>
+      <h2 class="step-question" data-i18n="quiz.s2.question">Майже готово! Куди надіслати твою розшифровку?</h2>
+      <p style="font-size:0.9rem; color:var(--text-dim); margin-bottom:1.5rem" data-i18n="quiz.s2.hint">Розшифровка буде готова за ~8 хвилин після оплати і надійде саме сюди.</p>
       <div class="form-group">
         <label class="form-label" for="email" data-i18n="quiz.s2.label">Email-адреса</label>
         <input class="form-input" type="email" id="email" name="email" placeholder="your@email.com" autocomplete="email">
@@ -104,6 +104,14 @@
       <div class="form-group">
         <label class="form-label" for="birthTime" data-i18n="quiz.s4.label">Час народження</label>
         <input class="form-input" type="time" id="birthTime" name="birthTime">
+        <div style="margin-top:0.5rem;">
+          <button type="button" onclick="skipBirthTime()" class="btn-skip-time">
+            Не знаю точний час
+          </button>
+          <p id="birthTimeSkipNote" style="display:none;font-size:0.78rem;color:var(--text-dim);margin-top:0.3rem;">
+            Використаємо 12:00 — базовий розрахунок залишиться точним
+          </p>
+        </div>
         <div class="form-error" id="birthTimeError" data-i18n="quiz.s4.error">Вкажи час народження</div>
       </div>
       <div class="quiz-nav-buttons">
@@ -181,10 +189,51 @@
     </div>
 
 
+    <!-- PROCESSING SCREEN -->
+    <div class="quiz-step" id="processingScreen">
+      <div class="processing-container">
+        <div class="processing-stars" aria-hidden="true">✦ ✦ ✦</div>
+        <h2 class="processing-title">Розраховуємо твій бодиграф...</h2>
+        <div class="processing-bar-wrap">
+          <div class="processing-bar-bg">
+            <div class="processing-bar-fill" id="processingFill"></div>
+          </div>
+        </div>
+        <p class="processing-text" id="processingText">Аналізуємо дату народження...</p>
+      </div>
+    </div>
+
+    <!-- BRIDGE SCREEN -->
+    <div class="quiz-step" id="bridgeScreen">
+      <div class="bridge-container">
+        <div class="bridge-badge">✦ Результат розрахунку</div>
+        <h2 class="bridge-name" id="bridgeName">Твій тип визначено</h2>
+        <div class="bridge-type-box">
+          <div class="bridge-type-label">Твій Дизайн Людини:</div>
+          <div class="bridge-type-name" id="bridgeType">Генератор</div>
+        </div>
+        <p class="bridge-rarity" id="bridgePct">Лише 37% людей мають цей дизайн</p>
+        <p class="bridge-desc" id="bridgeDesc">Твоя сила — відгук і наполегливість.</p>
+        <div class="bridge-teaser">
+          <div class="bridge-teaser-title">У твоїй повній розшифровці:</div>
+          <ul class="bridge-teaser-list">
+            <li>✦ Чому твій тип дає результат без надзусиль</li>
+            <li>✦ Як твій авторитет допомагає уникати помилок</li>
+            <li>✦ Де ти на своєму місці — і де зраджуєш себе</li>
+          </ul>
+        </div>
+        <button class="btn btn-gold btn-lg" id="bridgeBtn">
+          Дізнатись повну розшифровку →
+        </button>
+        <p class="bridge-auto">Або зачекай — перехід автоматичний</p>
+      </div>
+    </div>
+
     <!-- PRICING STEP -->
     <div class="quiz-step" id="stepPricing">
       <div class="step-label" data-i18n="quiz.pricing.label">Майже готово!</div>
       <h2 class="step-question" data-i18n="quiz.pricing.question">Обери свій рівень розшифровки</h2>
+      <p id="pricingDynamicDesc" style="font-size:0.88rem;color:var(--gold);margin-bottom:1rem;font-style:italic;min-height:1.2rem;"></p>
       <p style="font-size:0.9rem; color:var(--text-dim); margin-bottom:1.5rem" data-i18n="quiz.pricing.hint">Розшифровка буде персональною — складена саме для тебе на основі твоїх даних.</p>
 
       <!-- FULL PLAN — main offer -->
@@ -320,6 +369,17 @@
 </div>
 </main>
 
+<script>
+function skipBirthTime() {
+  var t = document.getElementById('birthTime');
+  if (t) t.value = '12:00';
+  var n = document.getElementById('birthTimeSkipNote');
+  if (n) n.style.display = 'block';
+  var btn = document.querySelector('.btn-skip-time');
+  if (btn) btn.style.display = 'none';
+  setTimeout(function() { nextStep(4); }, 300);
+}
+</script>
 <script src="assets/js/analytics.js"></script>
 <script src="assets/js/i18n.js"></script>
 <script src="assets/js/quiz.js"></script>

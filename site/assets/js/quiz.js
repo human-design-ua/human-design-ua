@@ -63,20 +63,132 @@ function showStep(stepId, stepNum) {
   document.querySelectorAll('.quiz-step').forEach(s => s.classList.remove('active'));
   const target = document.getElementById(stepId);
   if (target) target.classList.add('active');
+  // Personalize headings with name
+  var name = quizData.name || '';
+  if (name && stepNum > 1) {
+    var heading = target && target.querySelector('.step-question');
+    if (heading && !heading.dataset.originalText) {
+      heading.dataset.originalText = heading.textContent;
+    }
+    if (heading && heading.dataset.originalText) {
+      heading.textContent = name + ', ' + heading.dataset.originalText.replace(/^[^,]+,\s*/, '').toLowerCase();
+    }
+  }
   currentStep = stepNum || currentStep;
   updateProgress(currentStep);
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function goToPricing() {
-  showStep('stepPricing', totalSteps);
-  // Auto-select full plan (primary offer)
-  if (!quizData.plan) {
-    selectPlan('full');
-  }
   if (typeof trackEvent === 'function') trackEvent('quiz_completed', quizData);
-  // Push history state so browser back / iOS swipe triggers popstate
-  history.pushState({ hd_pricing: true }, '', '#pricing');
+
+  // Step 1: Processing screen
+  showProcessingScreen(function() {
+    // Step 2: Bridge result screen
+    showBridgeScreen(function() {
+      // Step 3: Pricing
+      document.querySelectorAll('.quiz-step').forEach(function(s) { s.classList.remove('active'); });
+      var pricing = document.getElementById('stepPricing');
+      if (pricing) pricing.classList.add('active');
+      if (!quizData.plan) selectPlan('full');
+      updateProgress(totalSteps);
+      // Dynamic pricing subtitle
+      var subs = {
+        career_decisions: 'У твоїй карті: чому рішення в кар\'єрі даються так важко — і як твій тип це вирішує',
+        career_fatigue:   'Чому ти виснажуєшся на роботі — і де твій справжній джерело енергії',
+        career_purpose:   'Де твоє призначення насправді — і чому нинішній шлях може бути не твоїм',
+        career_people:    'Як твій тип взаємодіє в команді — і де твоя природна роль',
+        relationships_decisions: 'Як твій тип приймає рішення у стосунках — і чому інші не розуміють тебе',
+        relationships_fatigue:   'Чому стосунки виснажують — і які люди дають тобі енергію',
+        relationships_purpose:   'Яку роль ти граєш у стосунках — і де ти зраджуєш себе',
+        relationships_people:    'Чому тебе тягне до одних людей і відштовхує від інших — відповідь у карті',
+        energy_decisions:  'Як твій тип керує енергією — і чому стандартні поради не працюють',
+        energy_fatigue:    'Чому ти завжди втомлена — і що бодиграф каже про твій природний ритм',
+        energy_purpose:    'Де ти витрачаєш енергію на чуже — і як знайти своє',
+        energy_people:     'Які люди забирають твою енергію — і як захиститись без почуття провини',
+        self_decisions:    'Як твій тип приймає вірні рішення — і чому голос голови часто обманює',
+        self_fatigue:      'Чому ти не впізнаєш себе — і що твій дизайн каже про твою справжню природу',
+        self_purpose:      'Де ти справді на своєму місці — відповідь закодована в карті народження',
+        self_people:       'Як ти взаємодієш зі світом — і де втрачаєш себе заради інших',
+      };
+      var key = (quizData.lifeArea || 'career') + '_' + (quizData.challenge || 'decisions');
+      var pricingDesc = document.getElementById('pricingDynamicDesc');
+      if (pricingDesc) pricingDesc.textContent = subs[key] || subs['self_purpose'];
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      history.pushState({ hd_pricing: true }, '', '#pricing');
+    });
+  });
+}
+
+function showProcessingScreen(callback) {
+  var screen = document.getElementById('processingScreen');
+  if (!screen) { callback(); return; }
+
+  document.querySelectorAll('.quiz-step').forEach(function(s) { s.classList.remove('active'); });
+  screen.classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  var steps = [
+    'Аналізуємо дату народження...',
+    'Розраховуємо планетарні позиції...',
+    'Визначаємо активовані ворота...',
+    'Будуємо твій бодиграф...',
+    'Результат готовий!'
+  ];
+  var fill = document.getElementById('processingFill');
+  var text = document.getElementById('processingText');
+  var idx = 0;
+
+  var interval = setInterval(function() {
+    if (idx < steps.length) {
+      if (text) text.textContent = steps[idx];
+      if (fill) fill.style.width = ((idx + 1) / steps.length * 100) + '%';
+      idx++;
+    } else {
+      clearInterval(interval);
+      setTimeout(function() {
+        screen.classList.remove('active');
+        callback();
+      }, 400);
+    }
+  }, 500);
+}
+
+function showBridgeScreen(callback) {
+  var screen = document.getElementById('bridgeScreen');
+  if (!screen) { callback(); return; }
+
+  // Determine type based on birth month (simplified calculation)
+  var types = [
+    { type: 'Генератор', pct: '37', desc: 'Твоя сила — відгук і наполегливість.' },
+    { type: 'Маніфестуючий Генератор', pct: '33', desc: 'Швидкість і багатозадачність — твоя природа.' },
+    { type: 'Проектор', pct: '21', desc: 'Твій дар — бачити систему і людей наскрізь.' },
+    { type: 'Маніфестор', pct: '9', desc: 'Ти народжена ініціювати і змінювати світ.' },
+  ];
+  var bdate = quizData.birthDate || '';
+  var month = bdate ? parseInt(bdate.split('-')[1]) || 1 : 1;
+  var tidx = [0,0,0,1,1,1,2,2,2,3,0,1][month - 1] || 0;
+  var t = types[tidx];
+
+  var name = quizData.name || '';
+  var nameEl = document.getElementById('bridgeName');
+  var typeEl = document.getElementById('bridgeType');
+  var pctEl  = document.getElementById('bridgePct');
+  var descEl = document.getElementById('bridgeDesc');
+
+  if (nameEl) nameEl.textContent = name ? name + ', твій тип визначено' : 'Твій тип визначено';
+  if (typeEl) typeEl.textContent = t.type;
+  if (pctEl)  pctEl.textContent = 'Лише ' + t.pct + '% людей мають цей дизайн';
+  if (descEl) descEl.textContent = t.desc;
+
+  document.querySelectorAll('.quiz-step').forEach(function(s) { s.classList.remove('active'); });
+  screen.classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  // Auto-proceed after 3.5 sec OR on button click
+  var btn = document.getElementById('bridgeBtn');
+  if (btn) btn.onclick = function() { screen.classList.remove('active'); callback(); };
+  setTimeout(function() { screen.classList.remove('active'); callback(); }, 3500);
 }
 
 // Intercept browser back button & iOS swipe-back
@@ -124,6 +236,11 @@ function selectOption(field, value, el) {
   quizData[field] = value;
   hideError(field + 'Error');
   saveProgress();
+  // Auto-advance on choice steps
+  var choiceSteps = {lifeArea: 6, challenge: 7};
+  if (choiceSteps[field] !== undefined) {
+    setTimeout(function() { nextStep(choiceSteps[field]); }, 400);
+  }
 }
 
 // ── Plan selection ────────────────────────────────────────
@@ -151,7 +268,14 @@ function validateStep(stepNum) {
       if (!isValidBirthDate(getVal('birthDate'))) { showError('birthDateError'); valid = false; }
       break;
     case 4:
-      if (!getVal('birthTime')) { showError('birthTimeError'); valid = false; }
+      if (!getVal('birthTime')) {
+        // Allow skip — use 12:00 as default
+        var timeInput = document.getElementById('birthTime');
+        if (timeInput) timeInput.value = '12:00';
+        // Show note
+        var skipNote = document.getElementById('birthTimeSkipNote');
+        if (skipNote) skipNote.style.display = 'block';
+      }
       break;
     case 5:
       if (!getVal('birthPlace') || getVal('birthPlace').length < 2) { showError('birthPlaceError'); valid = false; }
