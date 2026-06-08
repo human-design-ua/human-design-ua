@@ -200,20 +200,42 @@ function showBridgeScreen(callback) {
   var pctEl  = document.getElementById('bridgePct');
   var descEl = document.getElementById('bridgeDesc');
 
-  if (nameEl) nameEl.textContent = name ? name + ', твій тип визначено' : 'Твій тип визначено';
+  var Tl = window.t || function(k,fb){return fb||k;};
+  var bridgeNameText = name
+    ? name + ', ' + (Tl('bridge.name_suffix') || 'твій тип визначено')
+    : (Tl('bridge.name_no_name') || 'Твій тип визначено');
+  if (nameEl) nameEl.textContent = bridgeNameText;
   if (typeEl) typeEl.textContent = t.type;
   var rarityTpl = (window.t && window.t('type.rarity')) || 'Лише {{pct}}% людей мають цей дизайн';
   if (pctEl)  pctEl.textContent = rarityTpl.replace('{{pct}}', t.pct);
   if (descEl) descEl.textContent = t.desc;
 
+  // Update teaser + button via i18n
+  var t1El = document.getElementById('bridgeT1');
+  var t2El = document.getElementById('bridgeT2');
+  var t3El = document.getElementById('bridgeT3');
+  var tTitleEl = document.getElementById('bridgeTeaserTitle');
+  var bridgeBtnEl2 = document.getElementById('bridgeBtn');
+  var bridgeAutoEl = document.getElementById('bridgeAutoText');
+  if (t1El) t1El.textContent = Tl('bridge.t1') || t1El.textContent;
+  if (t2El) t2El.textContent = Tl('bridge.t2') || t2El.textContent;
+  if (t3El) t3El.textContent = Tl('bridge.t3') || t3El.textContent;
+  if (tTitleEl) tTitleEl.textContent = Tl('bridge.teaser.title') || tTitleEl.textContent;
+  if (bridgeBtnEl2) bridgeBtnEl2.textContent = Tl('bridge.btn') || bridgeBtnEl2.textContent;
+  if (bridgeAutoEl) bridgeAutoEl.style.display = 'none';
+
   document.querySelectorAll('.quiz-step').forEach(function(s) { s.classList.remove('active'); });
   screen.classList.add('active');
   window.scrollTo({ top: 0, behavior: 'smooth' });
 
-  // Auto-proceed after 3.5 sec OR on button click
+  // Only button advances — no auto-timeout
   var btn = document.getElementById('bridgeBtn');
   if (btn) btn.onclick = function() { screen.classList.remove('active'); callback(); };
-  setTimeout(function() { screen.classList.remove('active'); callback(); }, 5500);
+
+  // Re-apply i18n so dynamic content matches selected language
+  if (window.i18n && window.i18n.apply) {
+    setTimeout(function() { window.i18n.apply(window.i18n.current()); }, 50);
+  }
 }
 
 // Intercept browser back button & iOS swipe-back

@@ -280,6 +280,8 @@ var HD_TRANSLATIONS = {
 
     // Bridge screen
     'bridge.badge':       '✦ Результат розрахунку',
+    'bridge.name_suffix': 'твій тип визначено',
+    'bridge.name_no_name': 'Твій тип визначено',
     'bridge.btn':         'Дізнатись повну розшифровку →',
     'bridge.auto':        'Або зачекай — перехід автоматичний',
     'bridge.teaser.title':'У твоїй повній розшифровці:',
