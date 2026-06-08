@@ -79,7 +79,7 @@ function showStep(stepId, stepNum) {
       heading.dataset.originalText = heading.textContent;
     }
     if (heading && heading.dataset.originalText) {
-      heading.textContent = name + ', ' + heading.dataset.originalText.replace(/^[^,]+,\s*/, '').toLowerCase();
+      heading.textContent = name + ', ' + heading.dataset.originalText;
     }
   }
   currentStep = stepNum || currentStep;
@@ -210,7 +210,7 @@ function showBridgeScreen(callback) {
   // Auto-proceed after 3.5 sec OR on button click
   var btn = document.getElementById('bridgeBtn');
   if (btn) btn.onclick = function() { screen.classList.remove('active'); callback(); };
-  setTimeout(function() { screen.classList.remove('active'); callback(); }, 3500);
+  setTimeout(function() { screen.classList.remove('active'); callback(); }, 5500);
 }
 
 // Intercept browser back button & iOS swipe-back
@@ -238,15 +238,15 @@ function updateProgress(step) {
 // ── Collect data from each step ───────────────────────────
 function collectStep(stepNum) {
   switch (stepNum) {
-    case 1: quizData.name      = document.getElementById('name')?.value.trim(); break;
-    case 2:
+    case 1: quizData.name       = document.getElementById('name')?.value.trim(); break;
+    case 2: quizData.birthDate  = document.getElementById('birthDate')?.value; break;
+    case 3: quizData.birthTime  = document.getElementById('birthTime')?.value || '12:00'; break;
+    case 4: quizData.birthPlace = document.getElementById('birthPlace')?.value.trim(); break;
+    case 7:
       quizData.email = document.getElementById('email')?.value.trim().toLowerCase();
       localStorage.setItem('hd_email', quizData.email);
       break;
-    case 3: quizData.birthDate  = document.getElementById('birthDate')?.value; break;
-    case 4: quizData.birthTime  = document.getElementById('birthTime')?.value; break;
-    case 5: quizData.birthPlace = document.getElementById('birthPlace')?.value.trim(); break;
-    // Steps 6-9 use selectOption()
+    // Steps 5-6 use selectOption()
   }
 }
 
@@ -294,25 +294,25 @@ function validateStep(stepNum) {
       if (!getVal('name')) { showError('nameError'); valid = false; }
       break;
     case 2:
-      if (!isValidEmail(getVal('email'))) { showError('emailError'); valid = false; }
-      break;
-    case 3:
       if (!isValidBirthDate(getVal('birthDate'))) { showError('birthDateError'); valid = false; }
       break;
-    case 4:
+    case 3:
       if (!getVal('birthTime')) {
         var ti = document.getElementById('birthTime');
         if (ti) ti.value = '12:00';
       }
       break;
-    case 5:
+    case 4:
       if (!getVal('birthPlace') || getVal('birthPlace').length < 2) { showError('birthPlaceError'); valid = false; }
       break;
-    case 6:
+    case 5:
       if (!quizData.lifeArea) { showError('lifeAreaError'); valid = false; }
       break;
-    case 7:
+    case 6:
       if (!quizData.challenge) { showError('challengeError'); valid = false; }
+      break;
+    case 7:
+      if (!isValidEmail(getVal('email'))) { showError('emailError'); valid = false; }
       break;
     // step 8 removed
   }
@@ -547,5 +547,5 @@ function selectTarot(el, card) {
     var tarotStep = document.getElementById('stepTarot');
     if (tarotStep) tarotStep.classList.remove('active');
     goToPricing();
-  }, 1600);
+  }, 2500);
 }
