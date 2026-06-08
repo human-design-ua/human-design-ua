@@ -786,202 +786,277 @@ def _cta_label_from_body(body_text):
 
 def _build_html(body_text, cta_url=None, cta_label=None):
     """
-    Gmail-safe HTML email template.
-    - No external images (Gmail blocks data:URI SVG)
-    - Pure table layout + inline styles
-    - Constellation header via Unicode + CSS
-    - Purple section boxes, gold CTA button
+    Gmail-safe HTML email template with dark/light mode support.
+    Sections (━━━ blocks) are parsed as: ━━━ HEADING ━━━ content block.
     """
 
-    # ── Constellation header (all inline, no images) ──────────
-    STARS = '&#10022;&nbsp;&nbsp;&#10022;&nbsp;&nbsp;&#10022;&nbsp;&nbsp;&#10022;&nbsp;&nbsp;&#10022;'
-    header_html = f"""
-<table width="100%" cellpadding="0" cellspacing="0" border="0"
-       style="background:#0D0B1E;">
-  <!-- Top gold line -->
-  <tr><td height="3" style="background:linear-gradient(90deg,#0D0B1E,#D4A830,#9B6EE0,#D4A830,#0D0B1E);font-size:0;line-height:0;">&nbsp;</td></tr>
-  <!-- Constellation dots row -->
-  <tr><td align="center" style="padding:22px 0 4px;font-size:13px;letter-spacing:8px;color:#2A2060;">
-    {STARS}
-  </td></tr>
-  <!-- HD Monogram -->
-  <tr><td align="center" style="padding:0 0 6px;">
-    <table cellpadding="0" cellspacing="0" border="0" style="display:inline-table;">
-      <tr>
-        <td style="background:#1A1440;border:1px solid #D4A830;border-radius:50%;
-                   width:64px;height:64px;text-align:center;vertical-align:middle;">
-          <span style="font-family:Georgia,serif;font-size:26px;font-weight:bold;
-                       color:#D4A830;letter-spacing:2px;line-height:64px;">HD</span>
-        </td>
-      </tr>
-    </table>
-  </td></tr>
-  <!-- Brand name -->
-  <tr><td align="center" style="padding:8px 0 4px;">
-    <span style="font-family:Georgia,'Times New Roman',serif;font-size:20px;
-                 letter-spacing:7px;color:#F0ECE8;text-transform:uppercase;">
-      Human Design UA
-    </span>
-  </td></tr>
-  <!-- Tagline -->
-  <tr><td align="center" style="padding:0 0 18px;">
-    <span style="font-family:Arial,sans-serif;font-size:10px;letter-spacing:3px;
-                 color:#9B6EE0;text-transform:uppercase;">
-      Персональний розрахунок бодиграфу
-    </span>
-  </td></tr>
-  <!-- Bottom gold line -->
-  <tr><td height="3" style="background:linear-gradient(90deg,#0D0B1E,#D4A830,#9B6EE0,#D4A830,#0D0B1E);font-size:0;line-height:0;">&nbsp;</td></tr>
-</table>"""
-
-    # ── Body lines → HTML ────────────────────────────────────
+    # ── Parse body into structured blocks ────────────────────
+    # A block is either a 'section' {heading, items[]} or a 'text' paragraph
+    blocks = []
     lines = body_text.replace('\xa0', ' ').strip().split('\n')
-    html_parts = []
-    in_section = False    # inside a ━━━ purple box
 
-    def close_section():
-        nonlocal in_section
-        if in_section:
-            html_parts.append(
-                '</td></tr></table>'
-            )
-            in_section = False
+    i = 0
+    while i < len(lines):
+        s = lines[i].strip()
 
-    for line in lines:
-        s = line.strip()
+        # Skip CTA lines and bare URLs
+        if s.startswith('→') or s.startswith('http://') or s.startswith('https://'):
+            i += 1
+            continue
 
+        # ━━━ → start of a section block
         if s.startswith('━'):
-            # Toggle section box: first ━━━ opens, second ━━━ closes
-            if not in_section:
-                html_parts.append(
-                    '<table width="100%" cellpadding="0" cellspacing="0" border="0" '
-                    'style="margin:18px 0 0;border-radius:8px;background:#1A1440;'
-                    'border:1px solid #2D2070;">'
-                    '<tr><td style="padding:16px 20px;">'
-                )
-                in_section = True
-            else:
-                close_section()
+            i += 1
+            # Next non-empty line is the section heading
+            heading = ''
+            while i < len(lines) and not lines[i].strip():
+                i += 1
+            if i < len(lines) and not lines[i].strip().startswith('━'):
+                heading = lines[i].strip()
+                i += 1
+            # Next ━━━ closes the heading — collect content after it
+            if i < len(lines) and lines[i].strip().startswith('━'):
+                i += 1  # skip closing ━━━ of heading
+            # Collect content lines until next ━━━ or end
+            content_lines = []
+            while i < len(lines):
+                cs = lines[i].strip()
+                if cs.startswith('━'):
+                    i += 1  # consume closing ━━━
+                    break
+                if not (cs.startswith('→') or cs.startswith('http')):
+                    content_lines.append(cs)
+                i += 1
+            blocks.append({'type': 'section', 'heading': heading, 'lines': content_lines})
             continue
 
-        if s.startswith('→') or (s.startswith('http://') or s.startswith('https://')):
-            # Skip — rendered as button below
-            continue
-
-        close_section()  # close any open section before normal text
-
-        if s == '':
-            html_parts.append('<div style="height:10px;font-size:0;line-height:0;">&nbsp;</div>')
-        elif s.startswith('✓'):
-            # Feature item — gold checkmark style
-            text = s[1:].strip()
-            html_parts.append(
-                f'<p style="margin:6px 0;padding:2px 0 2px 4px;'
-                f'font-family:Arial,sans-serif;font-size:14px;line-height:1.55;color:#E8C55A;">'
-                f'<span style="color:#D4A830;margin-right:6px;">✓</span>{text}</p>'
-            )
-        elif s.startswith('•'):
-            html_parts.append(
-                f'<p style="margin:4px 0 4px 14px;font-family:Arial,sans-serif;'
-                f'font-size:13px;color:#A090C0;line-height:1.5;">{s}</p>'
-            )
-        elif s.isupper() and len(s) > 8 and not s.startswith('✦'):
-            # Section heading (ALL CAPS text like "ПОЧЕМУ ОДНОГО ТИПА НЕДОСТАТОЧНО")
-            html_parts.append(
-                f'<p style="margin:14px 0 6px;font-family:Arial,sans-serif;font-size:11px;'
-                f'font-weight:bold;letter-spacing:2px;color:#9B6EE0;text-transform:uppercase;">'
-                f'{s}</p>'
-            )
+        # Regular text paragraph
+        if s:
+            blocks.append({'type': 'text', 'text': s})
         else:
-            color = '#C0B8D8' if s.startswith('—') or s.startswith('«') else '#D8D4E8'
-            html_parts.append(
-                f'<p style="margin:6px 0;font-family:Arial,sans-serif;font-size:15px;'
-                f'line-height:1.65;color:{color};">{s}</p>'
-            )
+            blocks.append({'type': 'spacer'})
+        i += 1
 
-    close_section()
+    # ── Render blocks → HTML ─────────────────────────────────
+    def render_line(s):
+        """Single line → styled HTML paragraph."""
+        if not s:
+            return '<div style="height:8px;line-height:0;font-size:0;">&nbsp;</div>'
+        if s.startswith('✓'):
+            text = s[1:].strip()
+            return (
+                f'<p style="margin:7px 0;font-family:Arial,sans-serif;font-size:14px;'
+                f'line-height:1.55;color:#E8C55A;" class="feat">'
+                f'<span style="color:#D4A830;font-weight:bold;margin-right:6px;">✓</span>'
+                f'<span style="color:#E8D090;">{text}</span></p>'
+            )
+        if s.startswith('•'):
+            return (
+                f'<p style="margin:4px 0 4px 18px;font-family:Arial,sans-serif;'
+                f'font-size:13px;line-height:1.5;color:#A090C0;" class="bullet">{s}</p>'
+            )
+        # Quote / attribution
+        if s.startswith('«') or s.startswith('—'):
+            return (
+                f'<p style="margin:6px 0 6px 12px;font-family:Arial,sans-serif;'
+                f'font-size:14px;line-height:1.6;color:#C0B8D8;font-style:italic;">{s}</p>'
+            )
+        return (
+            f'<p style="margin:7px 0;font-family:Arial,sans-serif;font-size:15px;'
+            f'line-height:1.65;color:#D8D4E8;" class="body-text">{s}</p>'
+        )
+
+    html_parts = []
+    for block in blocks:
+        if block['type'] == 'spacer':
+            html_parts.append('<div style="height:12px;line-height:0;font-size:0;">&nbsp;</div>')
+
+        elif block['type'] == 'text':
+            html_parts.append(render_line(block['text']))
+
+        elif block['type'] == 'section':
+            # Purple section box
+            inner = ''
+            if block['heading']:
+                inner += (
+                    f'<p style="margin:0 0 10px;font-family:Arial,sans-serif;font-size:11px;'
+                    f'font-weight:bold;letter-spacing:2.5px;color:#B090F0;'
+                    f'text-transform:uppercase;" class="sec-head">{block["heading"]}</p>'
+                )
+            for cl in block['lines']:
+                inner += render_line(cl)
+            html_parts.append(
+                f'<table width="100%" cellpadding="0" cellspacing="0" border="0" '
+                f'style="margin:16px 0;border-radius:8px;background-color:#1A1440;'
+                f'border:1px solid #3D2A80;" class="sec-box">'
+                f'<tr><td style="padding:16px 20px;">{inner}</td></tr></table>'
+            )
 
     # ── CTA button ───────────────────────────────────────────
     if not cta_label:
-        cta_label = _cta_label_from_body(body_text) or 'Перейти →'
-    # Clean arrow prefix from label
-    cta_label = cta_label.lstrip('→ ').rstrip(':')
+        cta_label = _cta_label_from_body(body_text) or 'Перейти'
+    cta_label = cta_label.lstrip('→ ').rstrip(':').strip()
 
     cta_html = ''
     if cta_url:
         cta_html = f"""
-<table width="100%" cellpadding="0" cellspacing="0" border="0"
-       style="margin:28px 0 16px;">
+<table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:28px 0 8px;">
   <tr><td align="center">
     <table cellpadding="0" cellspacing="0" border="0">
       <tr>
-        <td style="background:#7B4FCC;border-radius:8px;border:1px solid #9B6EE0;">
+        <td style="background-color:#7B4FCC;border-radius:8px;
+                   border:1px solid #9B6EE0;mso-padding-alt:14px 36px;">
           <a href="{cta_url}"
              style="display:block;padding:14px 36px;font-family:Arial,sans-serif;
-                    font-size:15px;font-weight:bold;color:#FFFFFF;text-decoration:none;
-                    letter-spacing:0.5px;text-align:center;white-space:nowrap;">
-            {cta_label} &rarr;
+                    font-size:16px;font-weight:bold;color:#FFFFFF !important;
+                    text-decoration:none;letter-spacing:0.5px;
+                    text-align:center;white-space:nowrap;">
+            {cta_label} &#8594;
           </a>
         </td>
       </tr>
     </table>
-    <p style="margin:10px 0 0;font-family:Arial,sans-serif;font-size:11px;color:#4A3F6B;">
-      Або скопіюй посилання: <span style="color:#7B4FCC;">{cta_url}</span>
-    </p>
   </td></tr>
 </table>"""
 
     body_html = '\n'.join(html_parts)
 
+    # ── Stars header ─────────────────────────────────────────
+    S = '&#10022;'
+    stars_row = f'&nbsp;&nbsp;{S}&nbsp;&nbsp;&nbsp;{S}&nbsp;&nbsp;&nbsp;{S}&nbsp;&nbsp;&nbsp;{S}&nbsp;&nbsp;&nbsp;{S}&nbsp;&nbsp;'
+
     return f"""<!DOCTYPE html>
-<html lang="uk">
+<html lang="uk" xmlns:v="urn:schemas-microsoft-com:vml">
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-  <!--[if mso]><noscript><xml><o:OfficeDocumentSettings>
-    <o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml></noscript><![endif]-->
+  <meta name="color-scheme" content="light dark"/>
+  <meta name="supported-color-schemes" content="light dark"/>
+  <style>
+    /* ── Dark mode (default) ── */
+    :root {{ color-scheme: light dark; }}
+
+    /* ── Light mode overrides ── */
+    @media (prefers-color-scheme: light) {{
+      .email-outer   {{ background-color: #F0EEF8 !important; }}
+      .email-card    {{ background-color: #FFFFFF !important;
+                        border-color: #D0C8F0 !important; }}
+      .email-header  {{ background-color: #1A1440 !important; }}
+      .email-body    {{ background-color: #FFFFFF !important; }}
+      .email-footer  {{ background-color: #F5F3FC !important;
+                        border-top-color: #E0D8F8 !important; }}
+      .body-text     {{ color: #2A2060 !important; }}
+      .feat          {{ color: #7B4FCC !important; }}
+      .feat span     {{ color: #5A30A0 !important; }}
+      .bullet        {{ color: #6B5F80 !important; }}
+      .sec-box       {{ background-color: #F0ECFF !important;
+                        border-color: #C0A8F0 !important; }}
+      .sec-head      {{ color: #6B3FCC !important; }}
+      .footer-text   {{ color: #6B5F80 !important; }}
+      .footer-link   {{ color: #7B4FCC !important; }}
+    }}
+  </style>
 </head>
-<body style="margin:0;padding:0;background-color:#08061A;-webkit-text-size-adjust:100%;mso-line-height-rule:exactly;">
+<body style="margin:0;padding:0;background-color:#08061A;
+             -webkit-text-size-adjust:100%;mso-line-height-rule:exactly;"
+      class="email-outer">
+
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
-       style="background-color:#08061A;">
+       style="background-color:#08061A;" class="email-outer">
   <tr><td align="center" style="padding:20px 10px;">
 
+    <!-- Card -->
     <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0"
            style="max-width:600px;width:100%;background-color:#0D0B1E;
-                  border:1px solid #1E1A45;border-radius:12px;overflow:hidden;">
+                  border:1px solid #1E1A45;border-radius:12px;overflow:hidden;"
+           class="email-card">
 
       <!-- ★ HEADER ★ -->
-      <tr><td style="padding:0;">{header_html}</td></tr>
+      <tr><td style="padding:0;background-color:#0D0B1E;" class="email-header">
+        <!-- Top accent line -->
+        <table width="100%" cellpadding="0" cellspacing="0" border="0">
+          <tr><td height="3"
+                  style="background:linear-gradient(90deg,#0D0B1E 0%,#D4A830 30%,#9B6EE0 50%,#D4A830 70%,#0D0B1E 100%);
+                         font-size:0;line-height:0;">&nbsp;</td></tr>
+        </table>
+        <!-- Constellation stars -->
+        <table width="100%" cellpadding="0" cellspacing="0" border="0">
+          <tr><td align="center"
+                  style="padding:20px 0 6px;font-size:14px;color:#2D2460;
+                         letter-spacing:4px;">{stars_row}</td></tr>
+        </table>
+        <!-- HD circle logo -->
+        <table width="100%" cellpadding="0" cellspacing="0" border="0">
+          <tr><td align="center" style="padding:4px 0 8px;">
+            <table cellpadding="0" cellspacing="0" border="0">
+              <tr><td width="68" height="68" align="center" valign="middle"
+                      style="width:68px;height:68px;border-radius:34px;
+                             background-color:#1A1440;border:2px solid #D4A830;
+                             font-family:Georgia,serif;font-size:28px;font-weight:bold;
+                             color:#D4A830;letter-spacing:3px;text-align:center;">
+                &nbsp;HD&nbsp;
+              </td></tr>
+            </table>
+          </td></tr>
+        </table>
+        <!-- Brand name -->
+        <table width="100%" cellpadding="0" cellspacing="0" border="0">
+          <tr><td align="center" style="padding:6px 0 3px;">
+            <span style="font-family:Georgia,'Times New Roman',serif;font-size:19px;
+                         letter-spacing:7px;color:#F0ECE8;text-transform:uppercase;">
+              Human Design UA
+            </span>
+          </td></tr>
+          <tr><td align="center" style="padding:0 0 18px;">
+            <span style="font-family:Arial,sans-serif;font-size:10px;letter-spacing:3px;
+                         color:#9B6EE0;text-transform:uppercase;">
+              Персональний розрахунок бодиграфу
+            </span>
+          </td></tr>
+        </table>
+        <!-- Bottom accent line -->
+        <table width="100%" cellpadding="0" cellspacing="0" border="0">
+          <tr><td height="3"
+                  style="background:linear-gradient(90deg,#0D0B1E 0%,#D4A830 30%,#9B6EE0 50%,#D4A830 70%,#0D0B1E 100%);
+                         font-size:0;line-height:0;">&nbsp;</td></tr>
+        </table>
+      </td></tr>
 
       <!-- ★ BODY ★ -->
-      <tr><td style="padding:28px 36px 8px;background-color:#0D0B1E;">
+      <tr><td style="padding:28px 36px 12px;background-color:#0D0B1E;"
+              class="email-body">
         {body_html}
         {cta_html}
       </td></tr>
 
       <!-- ★ DIVIDER ★ -->
-      <tr><td height="1" style="background-color:#1E1A45;font-size:0;line-height:0;">&nbsp;</td></tr>
+      <tr><td height="1"
+              style="background-color:#1E1A45;font-size:0;line-height:0;">&nbsp;</td></tr>
 
       <!-- ★ FOOTER ★ -->
-      <tr><td style="padding:18px 36px;background-color:#090718;">
+      <tr><td style="padding:16px 36px;background-color:#090718;
+                     border-top:1px solid #1A1440;" class="email-footer">
         <table width="100%" cellpadding="0" cellspacing="0" border="0">
           <tr>
             <td style="font-family:Arial,sans-serif;font-size:12px;
-                       color:#3D3360;line-height:1.6;">
+                       line-height:1.6;" class="footer-text">
               <span style="color:#D4A830;">✦</span>
               <span style="color:#5A5080;"> Human Design UA</span><br/>
               <a href="mailto:{GMAIL_USER}"
-                 style="color:#5A4A80;text-decoration:none;">{GMAIL_USER}</a>
+                 style="color:#6B5080;text-decoration:none;"
+                 class="footer-link">{GMAIL_USER}</a>
             </td>
-            <td align="right" style="font-family:Arial,sans-serif;font-size:10px;
-                                     color:#3D3360;letter-spacing:1px;text-transform:uppercase;">
+            <td align="right"
+                style="font-family:Arial,sans-serif;font-size:10px;
+                       color:#3D3360;letter-spacing:1px;text-transform:uppercase;"
+                class="footer-text">
               Персональний<br/>розрахунок
             </td>
           </tr>
         </table>
       </td></tr>
 
-    </table>
+    </table><!-- /card -->
   </td></tr>
 </table>
 </body>
@@ -994,9 +1069,7 @@ def _send(to_email, subject, body):
         return False
 
     cta_url = _extract_cta(body)
-
-    # Build HTML version
-    html = _build_html(body, cta_url=cta_url)
+    html    = _build_html(body, cta_url=cta_url)
 
     msg = MIMEMultipart('alternative')
     msg['From']     = f'Human Design UA <{GMAIL_USER}>'
@@ -1004,9 +1077,7 @@ def _send(to_email, subject, body):
     msg['Subject']  = Header(subject, 'utf-8')
     msg['Reply-To'] = GMAIL_USER
 
-    # Plain text fallback
     msg.attach(MIMEText(body.replace('\xa0', ' '), 'plain', 'utf-8'))
-    # HTML version (email clients prefer the last part)
     msg.attach(MIMEText(html, 'html', 'utf-8'))
 
     try:
@@ -1019,6 +1090,56 @@ def _send(to_email, subject, body):
         return True
     except Exception as e:
         print(f'❌ Send error: {e}')
+        return False
+
+
+def send_logo(to_email):
+    """Send the HD logo SVG as an email attachment."""
+    from email.mime.application import MIMEApplication
+
+    if not GMAIL_PASSWORD:
+        print('❌ GMAIL_APP_PASSWORD not set')
+        return False
+
+    svg_path = os.path.join(os.path.dirname(__file__),
+                            '..', 'site', 'assets', 'img', 'hd-logo.svg')
+
+    body = (
+        "Привет!\n\n"
+        "Во вложении — логотип Human Design UA в формате SVG.\n\n"
+        "Файл векторный, масштабируется без потери качества.\n"
+        "Цвета: золото #D4A830, фиолетовый #9B6EE0, тёмный фон #0D0B1E.\n\n"
+        "Human Design UA\n"
+        f"{GMAIL_USER}"
+    )
+
+    msg = MIMEMultipart()
+    msg['From']    = f'Human Design UA <{GMAIL_USER}>'
+    msg['To']      = to_email
+    msg['Subject'] = Header('✦ Логотип Human Design UA — SVG файл', 'utf-8')
+    msg.attach(MIMEText(body, 'plain', 'utf-8'))
+
+    if os.path.exists(svg_path):
+        with open(svg_path, 'rb') as f:
+            att = MIMEApplication(f.read(), _subtype='svg+xml')
+            att.add_header('Content-Disposition', 'attachment',
+                           filename='hd-logo.svg')
+            msg.attach(att)
+        print(f'📎 Attaching: {svg_path}')
+    else:
+        print(f'❌ Logo not found: {svg_path}')
+        return False
+
+    try:
+        with smtplib.SMTP(SMTP_HOST, SMTP_PORT, local_hostname='localhost') as s:
+            s.ehlo('localhost'); s.starttls(); s.ehlo('localhost')
+            s.login(GMAIL_USER, GMAIL_PASSWORD)
+            s.sendmail(GMAIL_USER, [to_email], msg.as_bytes(),
+                       mail_options=['BODY=8BITMIME'])
+        print(f'✅ Logo sent to {to_email}')
+        return True
+    except Exception as e:
+        print(f'❌ Logo send error: {e}')
         return False
 
 
