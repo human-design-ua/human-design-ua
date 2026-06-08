@@ -114,28 +114,13 @@ function goToPricing() {
       if (pricing) pricing.classList.add('active');
       if (!quizData.plan) selectPlan('full');
       updateProgress(totalSteps);
-      // Dynamic pricing subtitle
-      var subs = {
-        career_decisions: 'У твоїй карті: чому рішення в кар\'єрі даються так важко — і як твій тип це вирішує',
-        career_fatigue:   'Чому ти виснажуєшся на роботі — і де твій справжній джерело енергії',
-        career_purpose:   'Де твоє призначення насправді — і чому нинішній шлях може бути не твоїм',
-        career_people:    'Як твій тип взаємодіє в команді — і де твоя природна роль',
-        relationships_decisions: 'Як твій тип приймає рішення у стосунках — і чому інші не розуміють тебе',
-        relationships_fatigue:   'Чому стосунки виснажують — і які люди дають тобі енергію',
-        relationships_purpose:   'Яку роль ти граєш у стосунках — і де ти зраджуєш себе',
-        relationships_people:    'Чому тебе тягне до одних людей і відштовхує від інших — відповідь у карті',
-        energy_decisions:  'Як твій тип керує енергією — і чому стандартні поради не працюють',
-        energy_fatigue:    'Чому ти завжди втомлена — і що бодиграф каже про твій природний ритм',
-        energy_purpose:    'Де ти витрачаєш енергію на чуже — і як знайти своє',
-        energy_people:     'Які люди забирають твою енергію — і як захиститись без почуття провини',
-        self_decisions:    'Як твій тип приймає вірні рішення — і чому голос голови часто обманює',
-        self_fatigue:      'Чому ти не впізнаєш себе — і що твій дизайн каже про твою справжню природу',
-        self_purpose:      'Де ти справді на своєму місці — відповідь закодована в карті народження',
-        self_people:       'Як ти взаємодієш зі світом — і де втрачаєш себе заради інших',
-      };
+      // Dynamic pricing subtitle — uses i18n keys
       var key = (quizData.lifeArea || 'career') + '_' + (quizData.challenge || 'decisions');
       var pricingDesc = document.getElementById('pricingDynamicDesc');
-      if (pricingDesc) pricingDesc.textContent = subs[key] || subs['self_purpose'];
+      if (pricingDesc) {
+        var Tp = window.t || function(k){ return k; };
+        pricingDesc.textContent = Tp('pricing.sub.' + key) || Tp('pricing.sub.self_purpose');
+      }
       window.scrollTo({ top: 0, behavior: 'smooth' });
       history.pushState({ hd_pricing: true }, '', '#pricing');
     });
