@@ -1,23 +1,26 @@
 """
 Human Design UA — Email Funnel
-Two funnels, 7 emails total, AIDA copywriting.
+Two funnels, 7 emails total, AIDA copywriting, UA/RU/EN.
 
 FUNNEL A: upsell_basic — for customers who bought the BASIC plan
-  Email 1 — sent immediately after purchase (15-min urgency timer)
-  Email 2 — sent 24h later if no upgrade (story + social proof)
-  Email 3 — sent 48h later if no upgrade (scarcity)
-  Email 4 — sent 72h later if no upgrade (final goodbye)
+  Email 1 — sent immediately (15-min urgency timer)
+  Email 2 — sent 24h later if no upgrade
+  Email 3 — sent 48h later if no upgrade
+  Email 4 — sent 72h later if no upgrade (final)
 
 FUNNEL B: abandoned_payment — for customers whose payment FAILED
-  Email 1 — sent 15 min after failure (HD is ready, just pay)
+  Email 1 — sent 15 min after failure
   Email 2 — sent 24h later if still unpaid
   Email 3 — sent 48h later if still unpaid (final)
+
+Basic plan includes: Тип, Стратегія, Авторитет, Профіль, Ключові центри
+Full plan adds:      9 Центрів (детально), Планети і вузли, Канали,
+                     Автоматичні реакції, Інкарнаційний хрест, Самодостатність
 """
 
 import os
 import sqlite3
 import smtplib
-import json
 import sys
 from datetime import datetime, timedelta
 from email.header import Header
@@ -39,45 +42,73 @@ SMTP_PORT = 587
 SITE_URL = os.getenv('SITE_URL', 'http://localhost:4000')
 DB_PATH  = os.path.join(os.path.dirname(__file__), '..', 'tmp', 'dev.db')
 
-# Delays (in minutes — easy to change for prod: 60*24 = 1440)
+# Delays in minutes
 DELAYS = {
-    'upsell_1':    0,       # immediately
-    'upsell_2':    60*24,   # 24h
-    'upsell_3':    60*48,   # 48h
-    'upsell_4':    60*72,   # 72h
-    'abandoned_1': 15,      # 15 min
-    'abandoned_2': 60*24,   # 24h
-    'abandoned_3': 60*48,   # 48h
+    'upsell_1':    0,
+    'upsell_2':    60 * 24,
+    'upsell_3':    60 * 48,
+    'upsell_4':    60 * 72,
+    'abandoned_1': 15,
+    'abandoned_2': 60 * 24,
+    'abandoned_3': 60 * 48,
 }
 
 
 # ══════════════════════════════════════════════════════════════
-# EMAIL COPY  (AIDA formula: Attention → Interest → Desire → Action)
+# HELPERS
+# ══════════════════════════════════════════════════════════════
+
+def _hi(name, locale):
+    """Personalised greeting prefix."""
+    if not name:
+        return {'ua': 'Привіт!', 'ru': 'Привет!', 'en': 'Hello!'}[locale]
+    return {'ua': f'Привіт, {name}!', 'ru': f'Привет, {name}!', 'en': f'Hello, {name}!'}[locale]
+
+def _sign(locale):
+    return {
+        'ua': 'З теплом,\nHuman Design UA\nhumandesign.finance@gmail.com',
+        'ru': 'С теплом,\nHuman Design UA\nhumandesign.finance@gmail.com',
+        'en': 'With warmth,\nHuman Design UA\nhumandesign.finance@gmail.com',
+    }[locale]
+
+
+# ══════════════════════════════════════════════════════════════
+# UPSELL EMAILS  (basic → full, +400 UAH)
+# What FULL adds over BASIC:
+#   9 Центрів детально · Планети і вузли · Канали · Автоматичні реакції
+#   Інкарнаційний хрест · Самодостатність
 # ══════════════════════════════════════════════════════════════
 
 def _upsell_1(name, retry_url, locale='ru'):
-    """AIDA #1 — Attention: you got basic. Interest: what's missing. Desire: feature list. Action: 15-min offer."""
-    n = name or 'Дорогой читатель'
+    """
+    AIDA #1 — Immediate.
+    Attention: name + "your basic is ready".
+    Interest: what's STILL hidden.
+    Desire: full list of extra features + 15-min bonus.
+    Action: pay now.
+    """
+    hi   = _hi(name, locale)
+    sign = _sign(locale)
+
     texts = {
         'ua': {
-            'subject': f'✦ {name}, твоя базова розшифровка готова + пропозиція на 15 хвилин',
-            'body': f"""✦ {n.upper()}, ТВІЙ БАЗОВИЙ ДИЗАЙН ЛЮДИНИ РОЗРАХОВАНО
+            'subject': f'✦ Твоя базова розшифровка готова + пропозиція на 15 хвилин',
+            'body': f"""{hi}
 
-Ти щойно дізналась своє ядро — тип, стратегію та авторитет.
-Це вже змінює багато. Але знаєш, що залишилось за кадром?
+Твій базовий Дизайн Людини вже у тебе — тип, стратегія, авторитет, профіль і ключові центри.
+Це справжній фундамент для розуміння себе.
+
+Але ось що залишилось поза кадром...
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-ЗА 400 ГРН ТИ ОТРИМАЄШ ПОВНИЙ РОЗБІР:
+ЗА ДОПЛАТУ 400 ГРН ТИ ВІДКРИЄШ:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-✓ Профіль
-  Які ролі тобі легко даються, а де приймаєш нав'язані рішення
 
 ✓ 9 Центрів — 9 сфер життя
-  Де ти впливаєш на оточуючих і де вразлива
+  Де ти оказуєш вплив на оточуючих і де вразлива
 
 ✓ Планети та вузли
-  Що стоїть за твоїм характером і куди веде тебе життя
+  Що стоїть за твоїм характером і куди тебе веде життя
 
 ✓ Розбір каналів
   Твої природні переваги — де і як їх використати
@@ -92,10 +123,8 @@ def _upsell_1(name, retry_url, locale='ru'):
   Наскільки ти самодостатня і чи потрібні тобі інші люди
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-⏰ ТІЛЬКИ ЗАРАЗ — ПРОТЯГОМ 15 ХВИЛИН:
+⏰ ТІЛЬКИ ПРОТЯГОМ 15 ХВИЛИН — БЕЗКОШТОВНО:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-При оплаті зараз ти також отримаєш БЕЗКОШТОВНО:
 
 ✓ Практики декондиціонування
 ✓ Особистий план на 90 днів
@@ -103,23 +132,20 @@ def _upsell_1(name, retry_url, locale='ru'):
 → ОТРИМАТИ ПОВНУ РОЗШИФРОВКУ ЗА 400 ГРН:
 {retry_url}
 
-З теплом,
-Human Design UA
-humandesign.finance@gmail.com""",
+{sign}""",
         },
         'ru': {
-            'subject': f'✦ {name}, твоя базовая расшифровка готова + предложение на 15 минут',
-            'body': f"""✦ {n.upper()}, ТВОЙ БАЗОВЫЙ ДИЗАЙН ЧЕЛОВЕКА РАССЧИТАН
+            'subject': f'✦ Твоя базовая расшифровка готова + предложение на 15 минут',
+            'body': f"""{hi}
 
-Ты только что узнала своё ядро — тип, стратегию и авторитет.
-Это уже меняет многое. Но знаешь, что осталось за кадром?
+Твой базовый Дизайн Человека уже у тебя — тип, стратегия, авторитет, профиль и ключевые центры.
+Это настоящий фундамент для понимания себя.
+
+Но вот что осталось за кадром...
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-ЗА 400 ГРН ТЫ ПОЛУЧИШЬ ПОЛНЫЙ РАЗБОР:
+ЗА ДОПЛАТУ 400 ГРН ТЫ ОТКРОЕШЬ:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-✓ Профиль
-  Какие роли тебе легко даются, а где принимаешь навязанные решения
 
 ✓ 9 Центров — 9 сфер жизни
   Где ты оказываешь влияние на окружающих и где уязвима
@@ -140,10 +166,8 @@ humandesign.finance@gmail.com""",
   Насколько ты самодостаточна и нужны ли тебе другие люди
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-⏰ ТОЛЬКО СЕЙЧАС — В ТЕЧЕНИЕ 15 МИНУТ:
+⏰ ТОЛЬКО В ТЕЧЕНИЕ 15 МИНУТ — БЕСПЛАТНО:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-При оплате прямо сейчас ты также получишь БЕСПЛАТНО:
 
 ✓ Практики декондиционирования
 ✓ Личный план на 90 дней
@@ -151,9 +175,50 @@ humandesign.finance@gmail.com""",
 → ПОЛУЧИТЬ ПОЛНУЮ РАСШИФРОВКУ ЗА 400 ГРН:
 {retry_url}
 
-С теплом,
-Human Design UA
-humandesign.finance@gmail.com""",
+{sign}""",
+        },
+        'en': {
+            'subject': f'✦ Your basic reading is ready + 15-minute offer',
+            'body': f"""{hi}
+
+Your basic Human Design reading is with you — type, strategy, authority, profile and key centres.
+That's a real foundation for understanding yourself.
+
+But here's what's still hidden...
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+FOR AN EXTRA 400 UAH YOU'LL UNLOCK:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✓ 9 Centres — 9 areas of life
+  Where you influence others and where you're vulnerable
+
+✓ Planets and nodes
+  What's behind your character and where life is leading you
+
+✓ Channel analysis
+  Your natural advantages — where and how to use them
+
+✓ Automatic reactions
+  What others see in you that you don't notice — your hidden strengths
+
+✓ Incarnation cross
+  The global meaning of your life and your contribution to the world
+
+✓ Self-sufficiency
+  How self-sufficient you are and whether you need others
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+⏰ ONLY FOR THE NEXT 15 MINUTES — FREE BONUS:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✓ Deconditioning practices
+✓ Personal 90-day plan
+
+→ GET THE FULL READING FOR 400 UAH:
+{retry_url}
+
+{sign}""",
         },
     }
     t = texts.get(locale, texts['ru'])
@@ -161,17 +226,19 @@ humandesign.finance@gmail.com""",
 
 
 def _upsell_2(name, retry_url, locale='ru'):
-    """AIDA #2 — Day 1. Attention: story hook. Interest: "what you're missing". Desire: transformation. Action."""
-    n = name or ''
+    """AIDA #2 — Day 1. Story hook about what's missing."""
+    hi   = _hi(name, locale)
+    sign = _sign(locale)
+
     texts = {
         'ua': {
-            'subject': f'{name}, ти дізналась базу. Але ось що ти ще не знаєш про себе...',
-            'body': f"""Привіт, {n}!
+            'subject': 'Ти дізналась базу. Але ось що ти ще не знаєш про себе...',
+            'body': f"""{hi}
 
-Вчора ти отримала базову розшифровку свого Дизайну Людини.
+Учора ти отримала базову розшифровку свого Дизайну Людини.
 Сподіваюсь, ти вже відчула: «Так, це про мене!»
 
-Але я хочу розповісти тобі одну річ.
+Але є дещо важливе, що хочу тобі розповісти.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ЧОМУ ОДНОГО ТИПУ ЗАМАЛО
@@ -182,29 +249,24 @@ def _upsell_2(name, retry_url, locale='ru'):
 
 Справжні зміни починаються, коли ти бачиш повну карту:
   → Чому в одних стосунках тобі легко, а в інших — виснаження
-  → Чому певна робота приносить потік, а інша — пустоту
+  → Чому певна робота дає потік, а інша — пустоту
   → Де твої автоматичні реакції грають проти тебе
 
-Це не в базовій розшифровці. Це у повній.
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-І ТИ МОЖЕШ ОТРИМАТИ ЇЇ ЗА 400 ГРН
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Це — у повній розшифровці. І зараз вона коштує лише +400 грн.
 
 → ПЕРЕЙТИ ДО ПОВНОЇ РОЗШИФРОВКИ:
 {retry_url}
 
-З теплом,
-Human Design UA""",
+{sign}""",
         },
         'ru': {
-            'subject': f'{name}, ты узнала базу. Но вот что ты ещё не знаешь о себе...',
-            'body': f"""Привет, {n}!
+            'subject': 'Ты узнала базу. Но вот что ты ещё не знаешь о себе...',
+            'body': f"""{hi}
 
 Вчера ты получила базовую расшифровку своего Дизайна Человека.
 Надеюсь, ты уже почувствовала: «Да, это про меня!»
 
-Но я хочу рассказать тебе кое-что важное.
+Но есть кое-что важное, что хочу тебе рассказать.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ПОЧЕМУ ОДНОГО ТИПА НЕДОСТАТОЧНО
@@ -215,20 +277,43 @@ Human Design UA""",
 
 Настоящие изменения начинаются, когда ты видишь полную карту:
   → Почему в одних отношениях тебе легко, а в других — истощение
-  → Почему определённая работа приносит поток, а другая — пустоту
+  → Почему определённая работа даёт поток, а другая — пустоту
   → Где твои автоматические реакции работают против тебя
 
-Этого нет в базовой расшифровке. Это — в полной.
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-И ТЫ МОЖЕШЬ ПОЛУЧИТЬ ЕЁ ЗА 400 ГРН
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Это — в полной расшифровке. И сейчас она стоит всего +400 грн.
 
 → ПЕРЕЙТИ К ПОЛНОЙ РАСШИФРОВКЕ:
 {retry_url}
 
-С теплом,
-Human Design UA""",
+{sign}""",
+        },
+        'en': {
+            'subject': "You learned the basics. But here's what you still don't know about yourself...",
+            'body': f"""{hi}
+
+Yesterday you received your basic Human Design reading.
+I hope you already felt: "Yes, this is me!"
+
+But there's something important I want to share with you.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+WHY YOUR TYPE ALONE ISN'T ENOUGH
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Knowing your type is like knowing your star sign.
+Interesting? Yes. Useful for real life? Only partly.
+
+Real change begins when you see the full picture:
+  → Why some relationships feel easy and others drain you
+  → Why certain work brings flow and other work feels empty
+  → Where your automatic reactions work against you
+
+That's in the full reading. And right now it's only +400 UAH.
+
+→ GO TO THE FULL READING:
+{retry_url}
+
+{sign}""",
         },
     }
     t = texts.get(locale, texts['ru'])
@@ -237,25 +322,27 @@ Human Design UA""",
 
 def _upsell_3(name, retry_url, locale='ru'):
     """AIDA #3 — Day 2. Scarcity + social proof."""
-    n = name or ''
+    hi   = _hi(name, locale)
+    sign = _sign(locale)
+
     texts = {
         'ua': {
-            'subject': f'Останній шанс отримати повний розбір за 400 грн, {name}',
-            'body': f"""{n}, залишається зовсім мало часу.
+            'subject': 'Останній шанс отримати повний розбір за 400 грн',
+            'body': f"""{hi}
 
-Ми тримаємо ціну апгрейду на рівні 400 грн лише для тих,
-хто вже придбав базову розшифровку.
+Ціна апгрейду 400 грн діє тільки для тих,
+хто вже придбав базову розшифровку. Залишилось зовсім мало часу.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ЩО КАЖУТЬ НАШІ КЛІЄНТКИ
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-«Базова дала мені напрямок, але повна — це інший рівень.
-Я нарешті зрозуміла, чому виснажуюся в певних стосунках.»
+«Базова дала мені напрямок, але повна — це зовсім інший рівень.
+Я нарешті зрозуміла, чому виснажуюсь у певних стосунках.»
 — Олена, Київ
 
 «Після розбору каналів я перестала боротись із собою.
-Виявляється, я так і маю діяти — це моя природа.»
+Виявляється, я саме так і маю діяти — це моя природа.»
 — Марія, Львів
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -264,25 +351,25 @@ def _upsell_3(name, retry_url, locale='ru'):
 
 {retry_url}
 
-Human Design UA""",
+{sign}""",
         },
         'ru': {
-            'subject': f'Последний шанс получить полный разбор за 400 грн, {name}',
-            'body': f"""{n}, времени остаётся совсем мало.
+            'subject': 'Последний шанс получить полный разбор за 400 грн',
+            'body': f"""{hi}
 
-Мы держим цену апгрейда на уровне 400 грн только для тех,
-кто уже приобрёл базовую расшифровку.
+Цена апгрейда 400 грн действует только для тех,
+кто уже приобрёл базовую расшифровку. Времени остаётся совсем мало.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ЧТО ГОВОРЯТ НАШИ КЛИЕНТКИ
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-«Базовая дала мне направление, но полная — это другой уровень.
+«Базовая дала мне направление, но полная — это совсем другой уровень.
 Я наконец поняла, почему истощаюсь в определённых отношениях.»
 — Елена, Киев
 
 «После разбора каналов я перестала бороться с собой.
-Оказывается, я так и должна действовать — это моя природа.»
+Оказывается, я именно так и должна действовать — это моя природа.»
 — Мария, Львов
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -291,7 +378,34 @@ Human Design UA""",
 
 {retry_url}
 
-Human Design UA""",
+{sign}""",
+        },
+        'en': {
+            'subject': 'Last chance to get the full reading for 400 UAH',
+            'body': f"""{hi}
+
+The 400 UAH upgrade price is only available for those
+who have already purchased the basic reading. Very little time left.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+WHAT OUR CLIENTS SAY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+"The basic gave me direction, but the full reading is a whole other level.
+I finally understood why I get drained in certain relationships."
+— Elena, Kyiv
+
+"After the channel analysis I stopped fighting myself.
+Turns out I'm meant to act this way — it's just my nature."
+— Maria, Lviv
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+FULL READING FOR 400 UAH → TODAY ONLY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+{retry_url}
+
+{sign}""",
         },
     }
     t = texts.get(locale, texts['ru'])
@@ -300,56 +414,78 @@ Human Design UA""",
 
 def _upsell_4(name, retry_url, locale='ru'):
     """AIDA #4 — Day 3. Final farewell."""
-    n = name or ''
+    hi   = _hi(name, locale)
+    sign = _sign(locale)
+
     texts = {
         'ua': {
-            'subject': f'{name}, це наш останній лист',
-            'body': f"""{n}, привіт.
+            'subject': 'Це наш останній лист',
+            'body': f"""{hi}
 
 Ми більше не будемо нагадувати про повну розшифровку.
 Це наш останній лист із цією пропозицією.
 
-Якщо ти вирішиш повернутись — пропозиція апгрейду за 400 грн
-буде доступна ще 24 години. Після цього — лише повна ціна 799 грн.
+Якщо ти повернешся сьогодні — апгрейд за 400 грн ще доступний.
+Завтра — тільки повна ціна 799 грн.
 
 → ЗАБРАТИ ПОВНУ РОЗШИФРОВКУ ЗА 400 ГРН:
 {retry_url}
 
 Що б ти не вирішила — дякуємо, що довірила нам свій розрахунок.
 
-З теплом,
-Human Design UA""",
+{sign}""",
         },
         'ru': {
-            'subject': f'{name}, это наше последнее письмо',
-            'body': f"""{n}, привет.
+            'subject': 'Это наше последнее письмо',
+            'body': f"""{hi}
 
 Мы больше не будем напоминать о полной расшифровке.
 Это наше последнее письмо с этим предложением.
 
-Если ты решишь вернуться — предложение апгрейда за 400 грн
-будет доступно ещё 24 часа. После этого — только полная цена 799 грн.
+Если ты вернёшься сегодня — апгрейд за 400 грн ещё доступен.
+Завтра — только полная цена 799 грн.
 
 → ЗАБРАТЬ ПОЛНУЮ РАСШИФРОВКУ ЗА 400 ГРН:
 {retry_url}
 
 Что бы ты ни решила — спасибо, что доверила нам свой расчёт.
 
-С теплом,
-Human Design UA""",
+{sign}""",
+        },
+        'en': {
+            'subject': 'This is our last email',
+            'body': f"""{hi}
+
+We won't be reminding you about the full reading anymore.
+This is our last email with this offer.
+
+If you come back today — the 400 UAH upgrade is still available.
+Tomorrow — only the full price of 799 UAH.
+
+→ GET THE FULL READING FOR 400 UAH:
+{retry_url}
+
+Whatever you decide — thank you for trusting us with your reading.
+
+{sign}""",
         },
     }
     t = texts.get(locale, texts['ru'])
     return t['subject'], t['body']
 
 
+# ══════════════════════════════════════════════════════════════
+# ABANDONED PAYMENT EMAILS
+# ══════════════════════════════════════════════════════════════
+
 def _abandoned_1(name, retry_url, locale='ru'):
-    """Abandoned #1 — 15 min after fail. HD is calculated, just pay."""
-    n = name or ''
+    """Abandoned #1 — 15 min. HD is ready, just pay."""
+    sign = _sign(locale)
+
     texts = {
         'ua': {
             'subject': '✦ Твій Дизайн Людини розраховано — залишилось лише оплатити',
-            'body': f"""Добрий день{(', ' + n) if n else ''}!
+            'body': f"""Добрий день{(', ' + name) if name else ''}!
 
 Ти щойно намагалась отримати розшифровку Дизайну Людини.
 Схоже, оплата не пройшла — але твій розрахунок вже готовий.
@@ -369,13 +505,11 @@ def _abandoned_1(name, retry_url, locale='ru'):
 → ЗАВЕРШИТИ ОПЛАТУ І ОТРИМАТИ РОЗШИФРОВКУ:
 {retry_url}
 
-З теплом,
-Human Design UA
-humandesign.finance@gmail.com""",
+{sign}""",
         },
         'ru': {
             'subject': '✦ Твой Дизайн Человека рассчитан — осталось только оплатить',
-            'body': f"""Добрый день{(', ' + n) if n else ''}!
+            'body': f"""Добрый день{(', ' + name) if name else ''}!
 
 Ты только что пыталась получить расшифровку Дизайна Человека.
 Похоже, оплата не прошла — но твой расчёт уже готов.
@@ -395,9 +529,31 @@ humandesign.finance@gmail.com""",
 → ЗАВЕРШИТЬ ОПЛАТУ И ПОЛУЧИТЬ РАСШИФРОВКУ:
 {retry_url}
 
-С теплом,
-Human Design UA
-humandesign.finance@gmail.com""",
+{sign}""",
+        },
+        'en': {
+            'subject': '✦ Your Human Design is calculated — just complete your payment',
+            'body': f"""Hello{(', ' + name) if name else ''}!
+
+You just tried to get your Human Design reading.
+It looks like the payment didn't go through — but your reading is already calculated.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+YOUR PERSONAL BODYGRAPH IS WAITING FOR YOU
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+We've already calculated your Human Design based on your birth data.
+As soon as you complete payment — your reading will arrive in your inbox immediately.
+
+Possible reasons the payment didn't go through:
+  • Insufficient funds on the card
+  • Card blocked for online payments
+  • Temporary bank error
+
+→ COMPLETE PAYMENT AND GET YOUR READING:
+{retry_url}
+
+{sign}""",
         },
     }
     t = texts.get(locale, texts['ru'])
@@ -406,13 +562,14 @@ humandesign.finance@gmail.com""",
 
 def _abandoned_2(name, retry_url, locale='ru'):
     """Abandoned #2 — Day 1. Softer reminder."""
-    n = name or ''
+    sign = _sign(locale)
+
     texts = {
         'ua': {
-            'subject': f'{name}, твій розрахунок ще чекає на тебе',
-            'body': f"""Привіт{(', ' + n) if n else ''}!
+            'subject': 'Твій розрахунок ще чекає на тебе',
+            'body': f"""Привіт{(', ' + name) if name else ''}!
 
-Вчора ти почала оформлювати розшифровку Дизайну Людини,
+Учора ти почала оформлювати розшифровку Дизайну Людини,
 але щось завадило завершити оплату.
 
 Ми нікуди не ділись — і твій персональний бодиграф теж.
@@ -423,11 +580,11 @@ def _abandoned_2(name, retry_url, locale='ru'):
 → ЗАВЕРШИТИ ЗАМОВЛЕННЯ:
 {retry_url}
 
-Human Design UA""",
+{sign}""",
         },
         'ru': {
-            'subject': f'{name}, твой расчёт всё ещё ждёт тебя',
-            'body': f"""Привет{(', ' + n) if n else ''}!
+            'subject': 'Твой расчёт всё ещё ждёт тебя',
+            'body': f"""Привет{(', ' + name) if name else ''}!
 
 Вчера ты начала оформлять расшифровку Дизайна Человека,
 но что-то помешало завершить оплату.
@@ -440,7 +597,24 @@ Human Design UA""",
 → ЗАВЕРШИТЬ ЗАКАЗ:
 {retry_url}
 
-Human Design UA""",
+{sign}""",
+        },
+        'en': {
+            'subject': 'Your reading is still waiting for you',
+            'body': f"""Hello{(', ' + name) if name else ''}!
+
+Yesterday you started ordering your Human Design reading,
+but something got in the way of completing the payment.
+
+We're still here — and so is your personal bodygraph.
+
+Just follow the link and complete the payment.
+Your reading will arrive within 10 minutes.
+
+→ COMPLETE YOUR ORDER:
+{retry_url}
+
+{sign}""",
         },
     }
     t = texts.get(locale, texts['ru'])
@@ -449,11 +623,12 @@ Human Design UA""",
 
 def _abandoned_3(name, retry_url, locale='ru'):
     """Abandoned #3 — Day 2. Final nudge."""
-    n = name or ''
+    sign = _sign(locale)
+
     texts = {
         'ua': {
-            'subject': f'Останнє нагадування — твій Дизайн Людини готовий',
-            'body': f"""{n}, це наше останнє нагадування.
+            'subject': 'Останнє нагадування — твій Дизайн Людини готовий',
+            'body': f"""Привіт{(', ' + name) if name else ''}!
 
 Два дні тому ти намагалась отримати розшифровку Дизайну Людини.
 Твій персональний розрахунок досі готовий і чекає.
@@ -463,11 +638,11 @@ def _abandoned_3(name, retry_url, locale='ru'):
 → ОТРИМАТИ РОЗШИФРОВКУ ЗАРАЗ:
 {retry_url}
 
-Human Design UA""",
+{sign}""",
         },
         'ru': {
-            'subject': f'Последнее напоминание — твой Дизайн Человека готов',
-            'body': f"""{n}, это наше последнее напоминание.
+            'subject': 'Последнее напоминание — твой Дизайн Человека готов',
+            'body': f"""Привет{(', ' + name) if name else ''}!
 
 Два дня назад ты пыталась получить расшифровку Дизайна Человека.
 Твой персональный расчёт до сих пор готов и ждёт.
@@ -477,7 +652,21 @@ Human Design UA""",
 → ПОЛУЧИТЬ РАСШИФРОВКУ СЕЙЧАС:
 {retry_url}
 
-Human Design UA""",
+{sign}""",
+        },
+        'en': {
+            'subject': 'Last reminder — your Human Design reading is ready',
+            'body': f"""Hello{(', ' + name) if name else ''}!
+
+Two days ago you tried to get your Human Design reading.
+Your personal calculation is still ready and waiting.
+
+After today we won't be sending any more reminders.
+
+→ GET YOUR READING NOW:
+{retry_url}
+
+{sign}""",
         },
     }
     t = texts.get(locale, texts['ru'])
@@ -498,12 +687,12 @@ def init_funnel_db():
             email        TEXT NOT NULL,
             name         TEXT DEFAULT '',
             plan         TEXT DEFAULT 'basic',
-            locale       TEXT DEFAULT 'ru',
-            funnel_type  TEXT NOT NULL,   -- 'upsell_basic' | 'abandoned_payment'
+            locale       TEXT DEFAULT 'ua',
+            funnel_type  TEXT NOT NULL,
             step         INTEGER DEFAULT 0,
-            next_send_at TEXT,            -- ISO datetime
-            done         INTEGER DEFAULT 0,  -- 1 = no more emails
-            converted    INTEGER DEFAULT 0,  -- 1 = upgraded / paid
+            next_send_at TEXT,
+            done         INTEGER DEFAULT 0,
+            converted    INTEGER DEFAULT 0,
             created_at   TEXT DEFAULT (datetime('now')),
             last_sent_at TEXT,
             site_url     TEXT DEFAULT 'http://localhost:4000'
@@ -520,13 +709,11 @@ def enqueue_funnel(order_id, email, name, plan, locale, funnel_type, site_url=No
     init_funnel_db()
     url = site_url or SITE_URL
 
-    # delay_key for first email
     first_key = 'upsell_1' if funnel_type == 'upsell_basic' else 'abandoned_1'
     delay_min = DELAYS[first_key]
     send_at   = (datetime.now() + timedelta(minutes=delay_min)).strftime('%Y-%m-%d %H:%M:%S')
 
     conn = sqlite3.connect(DB_PATH)
-    # Avoid duplicate funnels for same order+type
     exists = conn.execute(
         "SELECT id FROM email_funnel WHERE order_id=? AND funnel_type=?",
         (order_id, funnel_type)
@@ -538,7 +725,7 @@ def enqueue_funnel(order_id, email, name, plan, locale, funnel_type, site_url=No
             VALUES (?,?,?,?,?,?,0,?,?)
         """, (order_id, email, name, plan, locale, funnel_type, send_at, url))
         conn.commit()
-        print(f'📬 Funnel enqueued: {funnel_type} for {email} — first email in {delay_min}m')
+        print(f'📬 Funnel [{funnel_type}] queued for {email} (locale={locale}) — first in {delay_min}m')
     else:
         print(f'ℹ️  Funnel {funnel_type} already exists for {order_id}')
     conn.close()
@@ -554,7 +741,7 @@ def mark_converted(email, funnel_type):
     """, (email, funnel_type))
     conn.commit()
     conn.close()
-    print(f'✅ Funnel {funnel_type} marked converted for {email}')
+    print(f'✅ Funnel [{funnel_type}] converted for {email}')
 
 
 # ══════════════════════════════════════════════════════════════
@@ -562,13 +749,12 @@ def mark_converted(email, funnel_type):
 # ══════════════════════════════════════════════════════════════
 
 def _build_retry_url(row):
-    plan     = row['plan'] if isinstance(row, dict) else row[3]
-    site_url = row['site_url'] if isinstance(row, dict) else row[13]
+    plan     = row['plan']
+    site_url = row['site_url']
     return f'{site_url}/quiz.html?plan={plan}#pricing'
 
 
 def _send(to_email, subject, body):
-    """Low-level SMTP send."""
     if not GMAIL_PASSWORD:
         print('❌ GMAIL_APP_PASSWORD not set')
         return False
@@ -584,31 +770,30 @@ def _send(to_email, subject, body):
             s.login(GMAIL_USER, GMAIL_PASSWORD)
             s.sendmail(GMAIL_USER, [to_email], msg.as_bytes(),
                        mail_options=['BODY=8BITMIME'])
-        print(f'✉️  Sent [{subject[:50]}] → {to_email}')
+        print(f'✉️  [{subject[:45]}] → {to_email}')
         return True
     except Exception as e:
         print(f'❌ Send error: {e}')
         return False
 
 
-# Map funnel_type + step → (content_fn, next_delay_key or None)
 FUNNEL_STEPS = {
     'upsell_basic': [
         (_upsell_1, 'upsell_2'),
         (_upsell_2, 'upsell_3'),
         (_upsell_3, 'upsell_4'),
-        (_upsell_4, None),        # final — done after this
+        (_upsell_4, None),
     ],
     'abandoned_payment': [
         (_abandoned_1, 'abandoned_2'),
         (_abandoned_2, 'abandoned_3'),
-        (_abandoned_3, None),     # final
+        (_abandoned_3, None),
     ],
 }
 
 
 def process_due_emails():
-    """Check DB for emails due now and send them. Call on a timer."""
+    """Check DB for emails due now and send them. Called every minute."""
     init_funnel_db()
     now  = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     conn = sqlite3.connect(DB_PATH)
@@ -616,13 +801,12 @@ def process_due_emails():
 
     due = conn.execute("""
         SELECT * FROM email_funnel
-        WHERE done=0 AND converted=0
-          AND next_send_at <= ?
+        WHERE done=0 AND converted=0 AND next_send_at <= ?
         ORDER BY next_send_at ASC
     """, (now,)).fetchall()
 
     for row in due:
-        row = dict(row)
+        row   = dict(row)
         ftype = row['funnel_type']
         step  = row['step']
         steps = FUNNEL_STEPS.get(ftype, [])
@@ -634,28 +818,26 @@ def process_due_emails():
 
         content_fn, next_delay_key = steps[step]
         retry_url = _build_retry_url(row)
-        subject, body = content_fn(row['name'], retry_url, row['locale'])
+        locale    = row.get('locale') or 'ua'
+        subject, body = content_fn(row['name'], retry_url, locale)
 
-        ok = _send(row['email'], subject, body)
-        now_ts = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        ok      = _send(row['email'], subject, body)
+        now_ts  = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        next_step = step + 1
 
         if ok:
-            next_step = step + 1
             if next_delay_key is None or next_step >= len(steps):
-                # No more emails
-                conn.execute("""
-                    UPDATE email_funnel
-                    SET step=?, done=1, last_sent_at=?
-                    WHERE id=?
-                """, (next_step, now_ts, row['id']))
+                conn.execute(
+                    "UPDATE email_funnel SET step=?, done=1, last_sent_at=? WHERE id=?",
+                    (next_step, now_ts, row['id'])
+                )
             else:
-                delay_min = DELAYS[next_delay_key]
-                next_at   = (datetime.now() + timedelta(minutes=delay_min)).strftime('%Y-%m-%d %H:%M:%S')
-                conn.execute("""
-                    UPDATE email_funnel
-                    SET step=?, next_send_at=?, last_sent_at=?
-                    WHERE id=?
-                """, (next_step, next_at, now_ts, row['id']))
+                next_at = (datetime.now() + timedelta(minutes=DELAYS[next_delay_key]))\
+                          .strftime('%Y-%m-%d %H:%M:%S')
+                conn.execute(
+                    "UPDATE email_funnel SET step=?, next_send_at=?, last_sent_at=? WHERE id=?",
+                    (next_step, next_at, now_ts, row['id'])
+                )
             conn.commit()
 
     conn.close()
@@ -663,21 +845,19 @@ def process_due_emails():
 
 
 # ══════════════════════════════════════════════════════════════
-# BACKGROUND SCHEDULER (runs inside dev_server)
+# BACKGROUND SCHEDULER
 # ══════════════════════════════════════════════════════════════
 
 def start_scheduler(interval_seconds=60):
-    """Start background thread that calls process_due_emails every N seconds."""
-    import threading
+    import threading, time
 
     def _loop():
-        import time
         print(f'📅 Email funnel scheduler started (every {interval_seconds}s)')
         while True:
             try:
                 sent = process_due_emails()
                 if sent:
-                    print(f'📬 Funnel tick: sent {sent} email(s)')
+                    print(f'📬 Funnel tick: {sent} email(s) sent')
             except Exception as e:
                 print(f'⚠️  Funnel scheduler error: {e}')
             time.sleep(interval_seconds)
@@ -688,18 +868,20 @@ def start_scheduler(interval_seconds=60):
 
 
 # ══════════════════════════════════════════════════════════════
-# CLI  — manual test
+# CLI — manual test:
+#   python3 scripts/email_funnel.py --funnel upsell_basic --step 0 \
+#       --email you@gmail.com --name Натали --locale ru
 # ══════════════════════════════════════════════════════════════
 
 if __name__ == '__main__':
-    import argparse, time
+    import argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument('--funnel', choices=['upsell_basic','abandoned_payment'], required=True)
+    parser.add_argument('--funnel', choices=['upsell_basic', 'abandoned_payment'], required=True)
     parser.add_argument('--email',  required=True)
     parser.add_argument('--name',   default='Натали')
     parser.add_argument('--plan',   default='basic')
-    parser.add_argument('--locale', default='ru')
-    parser.add_argument('--step',   type=int, default=0, help='Send specific step immediately')
+    parser.add_argument('--locale', default='ru', choices=['ua', 'ru', 'en'])
+    parser.add_argument('--step',   type=int, default=0)
     args = parser.parse_args()
 
     retry_url = f'{SITE_URL}/quiz.html?plan={args.plan}#pricing'
@@ -707,7 +889,7 @@ if __name__ == '__main__':
     content_fn, _ = steps[args.step]
     subject, body = content_fn(args.name, retry_url, args.locale)
 
-    print(f'\n📧 Sending {args.funnel} step {args.step} to {args.email}')
-    print(f'   Subject: {subject}')
+    print(f'\n📧 {args.funnel} step {args.step} | locale={args.locale} → {args.email}')
+    print(f'   Subject: {subject}\n')
     ok = _send(args.email, subject, body)
     print('Result:', '✅ sent' if ok else '❌ failed')
