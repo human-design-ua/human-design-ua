@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
+  <defs>
+    <linearGradient id="gold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#E8C55A"/>
+      <stop offset="100%" stop-color="#B8860B"/>
+    </linearGradient>
+  </defs>
+
+  <!-- White circle with gold border -->
+  <circle cx="100" cy="100" r="96" fill="#FFFFFF" stroke="url(#gold)" stroke-width="3"/>
+
+  <!-- Letter H -->
+  <rect x="30" y="54" width="13" height="92" rx="3" fill="url(#gold)"/>
+  <rect x="30" y="93" width="61" height="12" rx="3" fill="url(#gold)"/>
+  <rect x="78" y="54" width="13" height="92" rx="3" fill="url(#gold)"/>
+
+  <!-- Letter D -->
+  <rect x="104" y="54" width="13" height="92" rx="3" fill="url(#gold)"/>
+  <path d="M116 54 Q168 54 168 100 Q168 146 116 146 L116 133 Q152 133 152 100 Q152 67 116 67 Z"
+        fill="url(#gold)"/>
+</svg>
