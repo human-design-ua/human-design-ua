@@ -30,11 +30,13 @@ from generate_receipt import generate_receipt
 from send_receipt import send_receipt_email, send_reading_email, send_failed_payment_email
 from dev_db import init_db, save_order, get_orders, get_stats
 from generate_reading import generate_reading_with_ai
+from email_funnel import enqueue_funnel, mark_converted, start_scheduler, init_funnel_db
 
 PORT = 4000
 
-# Init DB
+# Init DB + funnel table
 init_db()
+init_funnel_db()
 
 
 class DevHandler(BaseHTTPRequestHandler):
@@ -152,6 +154,18 @@ class DevHandler(BaseHTTPRequestHandler):
             t.start()
             print(f'🕐 Reading will be sent in ~60 seconds to {order_data["email"]}...')
 
+            # Step 4: If basic plan — enqueue upsell funnel
+            if order_data.get('plan') == 'basic':
+                enqueue_funnel(
+                    order_id    = order_data['order_id'],
+                    email       = order_data['email'],
+                    name        = order_data.get('name', ''),
+                    plan        = 'basic',
+                    locale      = order_data.get('locale', 'ua'),
+                    funnel_type = 'upsell_basic',
+                    site_url    = 'http://localhost:4000',
+                )
+
             if sent:
                 print(f'\n✅ DEV flow complete!')
                 self._json(200, {
@@ -201,6 +215,18 @@ class DevHandler(BaseHTTPRequestHandler):
         }
 
         ok = send_failed_payment_email(order_data)
+
+        # Enqueue abandoned payment funnel (15 min → day 1 → day 2)
+        enqueue_funnel(
+            order_id    = order_data['order_id'],
+            email       = email,
+            name        = order_data.get('name', ''),
+            plan        = order_data.get('plan', 'full'),
+            locale      = order_data.get('locale', 'ua'),
+            funnel_type = 'abandoned_payment',
+            site_url    = 'http://localhost:4000',
+        )
+
         if ok:
             self._json(200, {'status': 'fail_email_sent', 'email': email})
         else:
@@ -245,10 +271,15 @@ def main():
     print('🚀 Human Design UA — DEV Server')
     print(f'   Listening on http://localhost:{PORT}')
     print(f'   Endpoints:')
-    print(f'     POST http://localhost:{PORT}/pay     — payment mock')
-    print(f'     GET  http://localhost:{PORT}/health  — health check')
+    print(f'     POST http://localhost:{PORT}/pay      — payment mock')
+    print(f'     POST http://localhost:{PORT}/pay/fail — failed payment email')
+    print(f'     GET  http://localhost:{PORT}/health   — health check')
+    print(f'     GET  http://localhost:{PORT}/admin    — admin panel')
     print('─' * 50)
     print('\nOpen site/quiz.html in browser and complete the quiz.\n')
+
+    # Start email funnel background scheduler (checks every 60s)
+    start_scheduler(interval_seconds=60)
 
     server = HTTPServer(('localhost', PORT), DevHandler)
     try:
