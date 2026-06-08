@@ -150,12 +150,13 @@ function showProcessingScreen(callback) {
   screen.classList.add('active');
   window.scrollTo({ top: 0, behavior: 'smooth' });
 
+  var T = window.t || function(k){ return k; };
   var steps = [
-    'Аналізуємо дату народження...',
-    'Розраховуємо планетарні позиції...',
-    'Визначаємо активовані ворота...',
-    'Будуємо твій бодиграф...',
-    'Результат готовий!'
+    T('proc.s1') || 'Аналізуємо...',
+    T('proc.s2') || 'Розраховуємо...',
+    T('proc.s3') || 'Визначаємо ворота...',
+    T('proc.s4') || 'Будуємо бодиграф...',
+    T('proc.s5') || 'Готово!'
   ];
   var fill = document.getElementById('processingFill');
   var text = document.getElementById('processingText');
@@ -181,11 +182,12 @@ function showBridgeScreen(callback) {
   if (!screen) { callback(); return; }
 
   // Determine type based on birth month (simplified calculation)
+  var Tr = window.t || function(k){ return k; };
   var types = [
-    { type: 'Генератор', pct: '37', desc: 'Твоя сила — відгук і наполегливість.' },
-    { type: 'Маніфестуючий Генератор', pct: '33', desc: 'Швидкість і багатозадачність — твоя природа.' },
-    { type: 'Проектор', pct: '21', desc: 'Твій дар — бачити систему і людей наскрізь.' },
-    { type: 'Маніфестор', pct: '9', desc: 'Ти народжена ініціювати і змінювати світ.' },
+    { type: Tr('type.gen')   || 'Генератор',              pct: '37', desc: Tr('type.gen.desc')   || 'Твоя сила — відгук і наполегливість.' },
+    { type: Tr('type.mg')    || 'Маніфестуючий Генератор', pct: '33', desc: Tr('type.mg.desc')    || 'Швидкість і багатозадачність — твоя природа.' },
+    { type: Tr('type.proj')  || 'Проектор',                pct: '21', desc: Tr('type.proj.desc')  || 'Твій дар — бачити систему і людей наскрізь.' },
+    { type: Tr('type.manif') || 'Маніфестор',              pct: '9',  desc: Tr('type.manif.desc') || 'Ти народжена ініціювати і змінювати світ.' },
   ];
   var bdate = quizData.birthDate || '';
   var month = bdate ? parseInt(bdate.split('-')[1]) || 1 : 1;
@@ -200,7 +202,8 @@ function showBridgeScreen(callback) {
 
   if (nameEl) nameEl.textContent = name ? name + ', твій тип визначено' : 'Твій тип визначено';
   if (typeEl) typeEl.textContent = t.type;
-  if (pctEl)  pctEl.textContent = 'Лише ' + t.pct + '% людей мають цей дизайн';
+  var rarityTpl = (window.t && window.t('type.rarity')) || 'Лише {{pct}}% людей мають цей дизайн';
+  if (pctEl)  pctEl.textContent = rarityTpl.replace('{{pct}}', t.pct);
   if (descEl) descEl.textContent = t.desc;
 
   document.querySelectorAll('.quiz-step').forEach(function(s) { s.classList.remove('active'); });

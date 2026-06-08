@@ -18,7 +18,7 @@ var HD_TRANSLATIONS = {
 
     // Hero
     'hero.badge':       '✦ Точний розрахунок по Swiss Ephemeris · 2 400+ розшифровок',
-    'hero.title':       'Чому ти виснажена,<br><em>роблячи все правильно?</em>',
+    'hero.title':       'Персональний розрахунок<br><em>твого Дизайну Людини</em>',
     'hero.subtitle':    'Всі кажуть, що ти така сильна. А всередині — постійна втома і відчуття, що живеш не своїм життям. Дізнайся чому — і отримай персональну карту своєї природи.',
     'hero.cta.btn':     'Отримати розшифровку',
     'hero.cta.note':    'Розраховуємо Дизайн Людини менш ніж за 10 хвилин',
@@ -127,6 +127,35 @@ var HD_TRANSLATIONS = {
     'quiz.full.vol':     '~50 сторінок · PDF на пошту',
 
     // Pricing start
+
+    // Hero — new informational title
+    'hero.title':       'Персональний розрахунок<br><em>твого Дизайну Людини</em>',
+    'hero.subtitle':    'Дизайн Людини — це система самопізнання, розрахована за точною датою, часом і місцем народження. Вона показує твою унікальну енергетичну конфігурацію — як ти влаштована, як приймаєш рішення, де твоя природна сила і де ти витрачаєш енергію даремно.',
+
+    // Processing screen (was hardcoded in JS)
+    'proc.s1': 'Аналізуємо дату народження...',
+    'proc.s2': 'Розраховуємо планетарні позиції...',
+    'proc.s3': 'Визначаємо активовані ворота...',
+    'proc.s4': 'Будуємо твій бодиграф...',
+    'proc.s5': 'Результат готовий!',
+
+    // HD Types (bridge screen)
+    'type.gen':   'Генератор',
+    'type.mg':    'Маніфестуючий Генератор',
+    'type.proj':  'Проектор',
+    'type.manif': 'Маніфестор',
+    'type.refl':  'Рефлектор',
+    'type.gen.desc':   'Твоя сила — відгук і наполегливість.',
+    'type.mg.desc':    'Швидкість і багатозадачність — твоя природа.',
+    'type.proj.desc':  'Твій дар — бачити систему і людей наскрізь.',
+    'type.manif.desc': 'Ти народжена ініціювати і змінювати світ.',
+    'type.refl.desc':  'Ти — дзеркало спільноти. Рідкісний і цінний тип.',
+    'type.rarity':     'Лише {{pct}}% людей мають цей дизайн',
+
+    // Skip time button
+    'skip.time':       'Не знаю точний час',
+    'skip.time.note':  'Використаємо 12:00 — базовий розрахунок залишиться точним',
+
     'pricing.start.badge': '✦ З чого почати',
     'pricing.start.title': 'З чого почати',
     'pricing.basic.cta':   'Розрахувати базовий дизайн →',
@@ -450,7 +479,7 @@ var HD_TRANSLATIONS = {
     'nav.theme.light':  'Включить тёмную тему',
 
     'hero.badge':       '✦ Точный расчёт по Swiss Ephemeris · 2 400+ расшифровок',
-    'hero.title':       'Почему ты устаёшь,<br><em>делая всё правильно?</em>',
+    'hero.title':       'Персональный расчёт<br><em>твоего Дизайна Человека</em>',
     'hero.subtitle':    'Все говорят, что ты такая сильная. А внутри — постоянная усталость и ощущение, что живёшь не своей жизнью. Узнай почему — и получи персональную карту своей природы.',
     'hero.cta.btn':     'Получить расшифровку',
     'hero.cta.note':    'Рассчитываем Дизайн Человека менее чем за 10 минут',
@@ -548,6 +577,35 @@ var HD_TRANSLATIONS = {
     'quiz.full.name':    'Полная расшифровка',
     'quiz.full.f1':      '✓ Тип, стратегия, авторитет, профиль',
     'quiz.full.vol':     '~50 страниц · PDF на почту',
+
+
+    // Hero
+    'hero.title':       'Персональный расчёт<br><em>твоего Дизайна Человека</em>',
+    'hero.subtitle':    'Дизайн Человека — это система самопознания, рассчитанная по точной дате, времени и месту рождения. Она показывает твою уникальную энергетическую конфигурацию — как ты устроена, как принимаешь решения, где твоя природная сила и где ты тратишь энергию впустую.',
+
+    // Processing screen
+    'proc.s1': 'Анализируем дату рождения...',
+    'proc.s2': 'Рассчитываем позиции планет...',
+    'proc.s3': 'Определяем активированные ворота...',
+    'proc.s4': 'Строим твой бодиграф...',
+    'proc.s5': 'Результат готов!',
+
+    // HD Types
+    'type.gen':   'Генератор',
+    'type.mg':    'Манифестирующий Генератор',
+    'type.proj':  'Проектор',
+    'type.manif': 'Манифестор',
+    'type.refl':  'Рефлектор',
+    'type.gen.desc':   'Твоя сила — отклик и настойчивость.',
+    'type.mg.desc':    'Скорость и многозадачность — твоя природа.',
+    'type.proj.desc':  'Твой дар — видеть систему и людей насквозь.',
+    'type.manif.desc': 'Ты рождена инициировать и менять мир.',
+    'type.refl.desc':  'Ты — зеркало сообщества. Редкий и ценный тип.',
+    'type.rarity':     'Лишь {{pct}}% людей имеют этот дизайн',
+
+    // Skip time
+    'skip.time':       'Не знаю точное время',
+    'skip.time.note':  'Используем 12:00 — базовый расчёт останется точным',
 
     'pricing.start.badge': '✦ С чего начать',
     'pricing.start.title': 'С чего начать',
@@ -883,7 +941,7 @@ var HD_TRANSLATIONS = {
     'nav.theme.light':  'Switch to dark theme',
 
     'hero.badge':       '✦ Precise Swiss Ephemeris calculation · 2,400+ readings',
-    'hero.title':       'Why are you exhausted<br><em>doing everything right?</em>',
+    'hero.title':       'Your Personal<br><em>Human Design Calculation</em>',
     'hero.subtitle':    'Everyone says you\'re so strong. But inside — constant exhaustion and the feeling that you\'re living someone else\'s life. Find out why with your personal nature map.',
     'hero.cta.btn':     'Get my reading',
     'hero.cta.note':    'Your Human Design calculated in under 10 minutes',
@@ -981,6 +1039,35 @@ var HD_TRANSLATIONS = {
     'quiz.full.name':    'Full Reading',
     'quiz.full.f1':      '✓ Type, strategy, authority, profile',
     'quiz.full.vol':     '~50 pages · PDF by email',
+
+
+    // Hero
+    'hero.title':       'Your Personal<br><em>Human Design Calculation</em>',
+    'hero.subtitle':    'Human Design is a self-knowledge system calculated from your exact birth date, time and place. It reveals your unique energetic configuration — how you are wired, how you make decisions, where your natural strength lies and where you waste energy.',
+
+    // Processing screen
+    'proc.s1': 'Analysing birth date...',
+    'proc.s2': 'Calculating planetary positions...',
+    'proc.s3': 'Identifying activated gates...',
+    'proc.s4': 'Building your bodygraph...',
+    'proc.s5': 'Result ready!',
+
+    // HD Types
+    'type.gen':   'Generator',
+    'type.mg':    'Manifesting Generator',
+    'type.proj':  'Projector',
+    'type.manif': 'Manifestor',
+    'type.refl':  'Reflector',
+    'type.gen.desc':   'Your strength is response and persistence.',
+    'type.mg.desc':    'Speed and multitasking are your nature.',
+    'type.proj.desc':  'Your gift is seeing systems and people clearly.',
+    'type.manif.desc': 'You are born to initiate and change the world.',
+    'type.refl.desc':  'You are a mirror of your community. A rare and valuable type.',
+    'type.rarity':     'Only {{pct}}% of people have this design',
+
+    // Skip time
+    'skip.time':       'I do not know the exact time',
+    'skip.time.note':  'We will use 12:00 — the basic calculation will remain accurate',
 
     'pricing.start.badge': '✦ Where to begin',
     'pricing.start.title': 'Where to begin',
