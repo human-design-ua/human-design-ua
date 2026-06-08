@@ -227,10 +227,10 @@
     <!-- BRIDGE SCREEN -->
     <div class="quiz-step" id="bridgeScreen">
       <div class="bridge-container">
-        <div class="bridge-badge">✦ Результат розрахунку</div>
+        <div class="bridge-badge" data-i18n="bridge.badge">✦ Результат розрахунку</div>
         <h2 class="bridge-name" id="bridgeName">Твій тип визначено</h2>
         <div class="bridge-type-box">
-          <div class="bridge-type-label">Твій Дизайн Людини:</div>
+          <div class="bridge-type-label" data-i18n="bridge.type.label">Твій Дизайн Людини:</div>
           <div class="bridge-type-name" id="bridgeType">Генератор</div>
         </div>
         <p class="bridge-rarity" id="bridgePct">Лише 37% людей мають цей дизайн</p>
@@ -250,9 +250,25 @@
       </div>
     </div>
 
-    <!-- STEP 7: Email (last) -->
+    <!-- STEP 7: Relationship status -->
     <div class="quiz-step" id="step7">
-      <div class="step-label" data-i18n-template="quiz.step.label" data-i18n-var-n="7" data-i18n-var-total="7">Крок 2 з 9</div>
+      <div class="step-label" data-i18n-template="quiz.step.label" data-i18n-var-n="7" data-i18n-var-total="8">Крок 7 з 8</div>
+      <h2 class="step-question" data-i18n="quiz.s8.question">Який у тебе зараз статус у стосунках?</h2>
+      <div class="quiz-options" id="relationshipOptions">
+        <div class="quiz-option" onclick="selectOption('relationshipStatus','married',this)" data-i18n="quiz.s8.o1">💍 Заміжня / у партнерстві</div>
+        <div class="quiz-option" onclick="selectOption('relationshipStatus','dating',this)" data-i18n="quiz.s8.o2">💕 У стосунках</div>
+        <div class="quiz-option" onclick="selectOption('relationshipStatus','searching',this)" data-i18n="quiz.s8.o3">🔍 У вільному пошуку</div>
+        <div class="quiz-option" onclick="selectOption('relationshipStatus','heartbroken',this)" data-i18n="quiz.s8.o4">💔 Серце розбите</div>
+      </div>
+      <div class="form-error" id="relationshipStatusError" data-i18n="quiz.s8.error">Обери варіант</div>
+      <div class="quiz-nav-buttons">
+        <button class="btn-back" onclick="prevStep(6)" data-i18n="quiz.btn.back">← Назад</button>
+      </div>
+    </div>
+
+    <!-- STEP 8: Email (last) -->
+    <div class="quiz-step" id="step8">
+      <div class="step-label" data-i18n-template="quiz.step.label" data-i18n-var-n="8" data-i18n-var-total="8">Крок 8 з 8</div>
       <h2 class="step-question" data-i18n="quiz.s2.question">Майже готово! Куди надіслати твою розшифровку?</h2>
       <p style="font-size:0.9rem; color:var(--text-dim); margin-bottom:1.5rem" data-i18n="quiz.s2.hint">Розшифровка буде готова за ~8 хвилин після оплати і надійде саме сюди.</p>
       <div class="form-group">
@@ -261,8 +277,8 @@
         <div class="form-error" id="emailError" data-i18n="quiz.s2.error">Введи коректну email-адресу</div>
       </div>
       <div class="quiz-nav-buttons">
-        <button class="btn-back" onclick="prevStep(6)" data-i18n="quiz.btn.back">← Назад</button>
-        <button class="btn btn-gold" onclick="nextStep(7)" data-i18n="quiz.btn.next">Далі →</button>
+        <button class="btn-back" onclick="prevStep(7)" data-i18n="quiz.btn.back">← Назад</button>
+        <button class="btn btn-gold" onclick="nextStep(8)" data-i18n="quiz.btn.next">Далі →</button>
       </div>
     </div>
 

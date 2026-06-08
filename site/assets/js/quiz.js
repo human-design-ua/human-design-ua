@@ -2,7 +2,7 @@
 
 const quizData = {};
 let currentStep = 1;
-const totalSteps = 7;
+const totalSteps = 8;
 
 // ── Restore from localStorage ──────────────────────────────
 (function restoreProgress() {
@@ -267,11 +267,11 @@ function collectStep(stepNum) {
     case 2: quizData.birthDate  = document.getElementById('birthDate')?.value; break;
     case 3: quizData.birthTime  = document.getElementById('birthTime')?.value || '12:00'; break;
     case 4: quizData.birthPlace = document.getElementById('birthPlace')?.value.trim(); break;
-    case 7:
+    case 8:
       quizData.email = document.getElementById('email')?.value.trim().toLowerCase();
       localStorage.setItem('hd_email', quizData.email);
       break;
-    // Steps 5-6 use selectOption()
+    // Steps 5-7 use selectOption()
   }
 }
 
@@ -286,7 +286,9 @@ function selectOption(field, value, el) {
     career: 'valid.career', relationships: 'valid.relationships',
     energy: 'valid.energy', self: 'valid.self',
     decisions: 'valid.decisions', fatigue: 'valid.fatigue',
-    purpose: 'valid.purpose', people: 'valid.people'
+    purpose: 'valid.purpose', people: 'valid.people',
+    married: 'valid.rel.married', dating: 'valid.rel.dating',
+    searching: 'valid.rel.searching', heartbroken: 'valid.rel.heartbroken'
   };
   if (toastMap[value] && window.t) {
     var msg = window.t(toastMap[value]);
@@ -294,7 +296,7 @@ function selectOption(field, value, el) {
   }
   saveProgress();
   // Auto-advance on choice steps
-  var choiceSteps = {lifeArea: 6, challenge: 7};
+  var choiceSteps = {lifeArea: 6, challenge: 7, relationshipStatus: 8};
   if (choiceSteps[field] !== undefined) {
     setTimeout(function() { nextStep(choiceSteps[field]); }, 400);
   }
@@ -337,9 +339,11 @@ function validateStep(stepNum) {
       if (!quizData.challenge) { showError('challengeError'); valid = false; }
       break;
     case 7:
+      if (!quizData.relationshipStatus) { showError('relationshipStatusError'); valid = false; }
+      break;
+    case 8:
       if (!isValidEmail(getVal('email'))) { showError('emailError'); valid = false; }
       break;
-    // step 8 removed
   }
   return valid;
 }
