@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="160" viewBox="0 0 600 160">
+  <defs>
+    <!-- Background gradient -->
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"   stop-color="#0D0B1E"/>
+      <stop offset="100%" stop-color="#1A1440"/>
+    </linearGradient>
+    <!-- Gold shimmer on star -->
+    <radialGradient id="starGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%"   stop-color="#E8C55A" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#D4A830" stop-opacity="0"/>
+    </radialGradient>
+    <!-- Subtle top line gradient -->
+    <linearGradient id="lineGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%"   stop-color="#9B6EE0" stop-opacity="0"/>
+      <stop offset="30%"  stop-color="#D4A830" stop-opacity="0.8"/>
+      <stop offset="70%"  stop-color="#D4A830" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#9B6EE0" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="600" height="160" fill="url(#bgGrad)" rx="0"/>
+
+  <!-- Top accent line -->
+  <rect x="0" y="0" width="600" height="3" fill="url(#lineGrad)"/>
+
+  <!-- Faint constellation dots -->
+  <circle cx="60"  cy="40"  r="1.2" fill="#D4A830" opacity="0.25"/>
+  <circle cx="88"  cy="28"  r="0.8" fill="#9B6EE0" opacity="0.3"/>
+  <circle cx="110" cy="55"  r="1"   fill="#D4A830" opacity="0.2"/>
+  <circle cx="490" cy="35"  r="1.2" fill="#D4A830" opacity="0.25"/>
+  <circle cx="520" cy="55"  r="0.8" fill="#9B6EE0" opacity="0.3"/>
+  <circle cx="545" cy="25"  r="1"   fill="#D4A830" opacity="0.2"/>
+  <circle cx="75"  cy="125" r="0.8" fill="#9B6EE0" opacity="0.2"/>
+  <circle cx="530" cy="130" r="0.8" fill="#9B6EE0" opacity="0.2"/>
+
+  <!-- Glow behind star -->
+  <circle cx="300" cy="68" r="42" fill="url(#starGlow)"/>
+
+  <!-- ✦ Star symbol -->
+  <!-- Four-pointed star built from paths -->
+  <g transform="translate(300,68)" fill="#D4A830">
+    <!-- Vertical diamond -->
+    <polygon points="0,-28 5,-5 0,28 -5,-5" opacity="0.95"/>
+    <!-- Horizontal diamond -->
+    <polygon points="-28,0 -5,5 28,0 -5,-5" opacity="0.95"/>
+    <!-- Diagonal small points -->
+    <polygon points="0,-28 3,-12 12,-12 5,-5" opacity="0.6"/>
+    <polygon points="28,0 12,-3 12,12 5,5" opacity="0.6"/>
+    <polygon points="0,28 -3,12 -12,12 -5,5" opacity="0.6"/>
+    <polygon points="-28,0 -12,3 -12,-12 -5,-5" opacity="0.6"/>
+    <!-- Centre dot -->
+    <circle cx="0" cy="0" r="3.5" fill="#E8C55A"/>
+  </g>
+
+  <!-- Brand name -->
+  <text
+    x="300" y="114"
+    font-family="Georgia, 'Times New Roman', serif"
+    font-size="22"
+    font-weight="normal"
+    letter-spacing="6"
+    text-anchor="middle"
+    fill="#F0ECE8"
+  >HUMAN DESIGN UA</text>
+
+  <!-- Tagline -->
+  <text
+    x="300" y="138"
+    font-family="Arial, Helvetica, sans-serif"
+    font-size="11"
+    letter-spacing="2.5"
+    text-anchor="middle"
+    fill="#9B6EE0"
+    opacity="0.85"
+  >ПЕРСОНАЛЬНИЙ РОЗРАХУНОК БОДИГРАФУ</text>
+
+  <!-- Bottom accent line -->
+  <rect x="0" y="157" width="600" height="3" fill="url(#lineGrad)"/>
+</svg>

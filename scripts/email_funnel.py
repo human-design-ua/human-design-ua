@@ -754,16 +754,156 @@ def _build_retry_url(row):
     return f'{site_url}/quiz.html?plan={plan}#pricing'
 
 
+def _load_header_b64():
+    """Load SVG header as base64 data URI (works in all email clients)."""
+    svg_path = os.path.join(os.path.dirname(__file__),
+                            '..', 'site', 'assets', 'img', 'email', 'email-header.svg')
+    try:
+        import base64
+        with open(svg_path, 'rb') as f:
+            return 'data:image/svg+xml;base64,' + base64.b64encode(f.read()).decode()
+    except Exception:
+        return ''
+
+
+def _build_html(body_text, cta_url=None, cta_label=None):
+    """Wrap plain text body in branded HTML template."""
+    header_src = _load_header_b64()
+    header_img = (
+        f'<img src="{header_src}" width="600" alt="Human Design UA" '
+        f'style="display:block;width:100%;max-width:600px;border:0;"/>'
+        if header_src else
+        '<div style="background:#1A1440;padding:40px 0;text-align:center;'
+        'font-size:22px;letter-spacing:6px;color:#F0ECE8;font-family:Georgia,serif;">'
+        '✦ HUMAN DESIGN UA</div>'
+    )
+
+    # Convert plain text to HTML paragraphs
+    lines = body_text.replace('\xa0', ' ').strip().split('\n')
+    html_lines = []
+    for line in lines:
+        stripped = line.strip()
+        if stripped.startswith('━'):
+            html_lines.append(
+                '<hr style="border:none;border-top:1px solid #2A2060;margin:20px 0;"/>'
+            )
+        elif stripped.startswith('→'):
+            # CTA line — already handled below if cta_url given
+            pass
+        elif stripped.startswith('✓'):
+            html_lines.append(
+                f'<p style="margin:6px 0;padding-left:8px;'
+                f'color:#E8C55A;font-size:15px;">{stripped}</p>'
+            )
+        elif stripped.startswith('•'):
+            html_lines.append(
+                f'<p style="margin:4px 0 4px 16px;color:#A090C0;font-size:14px;">{stripped}</p>'
+            )
+        elif stripped == '':
+            html_lines.append('<br/>')
+        else:
+            color = '#F0ECE8' if stripped else '#A090C0'
+            html_lines.append(
+                f'<p style="margin:6px 0;color:{color};font-size:15px;'
+                f'line-height:1.6;">{stripped}</p>'
+            )
+
+    # CTA button
+    cta_html = ''
+    if cta_url:
+        label = cta_label or 'Перейти →'
+        cta_html = f'''
+        <div style="text-align:center;margin:28px 0 16px;">
+          <a href="{cta_url}"
+             style="display:inline-block;background:linear-gradient(135deg,#D4A830,#E8C55A);
+                    color:#0D0B1E;font-weight:700;font-size:16px;
+                    padding:14px 36px;border-radius:8px;text-decoration:none;
+                    letter-spacing:0.5px;">
+            {label}
+          </a>
+        </div>'''
+
+    body_html = '\n'.join(html_lines)
+
+    return f"""<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Human Design UA</title>
+</head>
+<body style="margin:0;padding:0;background:#0A0818;font-family:Arial,Helvetica,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" border="0"
+         style="background:#0A0818;padding:24px 0;">
+    <tr><td align="center">
+      <table width="600" cellpadding="0" cellspacing="0" border="0"
+             style="max-width:600px;width:100%;">
+
+        <!-- HEADER / LOGO -->
+        <tr><td style="padding:0;">{header_img}</td></tr>
+
+        <!-- BODY -->
+        <tr><td style="background:#0D0B1E;padding:32px 40px 8px;">
+          {body_html}
+          {cta_html}
+        </td></tr>
+
+        <!-- FOOTER -->
+        <tr><td style="background:#090718;padding:20px 40px;border-top:1px solid #1A1440;">
+          <table width="100%" cellpadding="0" cellspacing="0">
+            <tr>
+              <td style="color:#4A3F6B;font-size:12px;line-height:1.6;">
+                ✦ Human Design UA<br/>
+                <a href="mailto:{GMAIL_USER}"
+                   style="color:#6B5F80;text-decoration:none;">{GMAIL_USER}</a>
+              </td>
+              <td align="right" style="color:#4A3F6B;font-size:11px;">
+                Персональний розрахунок<br/>Дизайну Людини
+              </td>
+            </tr>
+          </table>
+        </td></tr>
+
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>"""
+
+
+def _extract_cta(body_text):
+    """Pull the first → URL line out of plain text body."""
+    for line in body_text.split('\n'):
+        s = line.strip()
+        if s.startswith('→') and ('http' in s or 'localhost' in s):
+            # e.g. "→ ОТРИМАТИ ПОВНУ РОЗШИФРОВКУ ЗА 400 ГРН:\nhttp://..."
+            pass
+        if s.startswith('http://') or s.startswith('https://'):
+            return s
+    return None
+
+
 def _send(to_email, subject, body):
     if not GMAIL_PASSWORD:
         print('❌ GMAIL_APP_PASSWORD not set')
         return False
-    msg = MIMEMultipart()
+
+    cta_url = _extract_cta(body)
+
+    # Build HTML version
+    html = _build_html(body, cta_url=cta_url)
+
+    msg = MIMEMultipart('alternative')
     msg['From']     = f'Human Design UA <{GMAIL_USER}>'
     msg['To']       = to_email
     msg['Subject']  = Header(subject, 'utf-8')
     msg['Reply-To'] = GMAIL_USER
+
+    # Plain text fallback
     msg.attach(MIMEText(body.replace('\xa0', ' '), 'plain', 'utf-8'))
+    # HTML version (email clients prefer the last part)
+    msg.attach(MIMEText(html, 'html', 'utf-8'))
+
     try:
         with smtplib.SMTP(SMTP_HOST, SMTP_PORT, local_hostname='localhost') as s:
             s.ehlo('localhost'); s.starttls(); s.ehlo('localhost')
