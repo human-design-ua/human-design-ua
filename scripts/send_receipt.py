@@ -290,6 +290,110 @@ humandesign.finance@gmail.com""",
         return False
 
 
+def send_failed_payment_email(order_data: dict) -> bool:
+    """Send a payment failure email with a retry link."""
+
+    if not GMAIL_PASSWORD:
+        print('❌ GMAIL_APP_PASSWORD не вказано — failed payment email не надіслано')
+        return False
+
+    locale    = order_data.get('locale', 'ua')
+    name      = order_data.get('name', '')
+    plan      = order_data.get('plan', 'full')
+    to_email  = order_data.get('email', '')
+    site_url  = order_data.get('site_url', 'https://human-design-ua.netlify.app')
+
+    if not to_email:
+        print('❌ Email відсутній — failed payment email не надіслано')
+        return False
+
+    # Retry URL — direct link to the pricing step with pre-selected plan
+    retry_url = f'{site_url}/quiz.html?plan={plan}#pricing'
+
+    SUBJECTS = {
+        'ua': 'Оплата не пройшла — спробуйте ще раз',
+        'ru': 'Оплата не прошла — попробуйте ещё раз',
+        'en': 'Payment failed — please try again',
+    }
+
+    BODIES = {
+        'ua': f"""Добрий день{(', ' + name) if name else ''}!
+
+На жаль, ваша оплата не пройшла. Можливі причини:
+  • Недостатньо коштів на картці
+  • Карта заблокована для онлайн-платежів
+  • Помилка банку (спробуйте ще раз)
+
+Щоб завершити замовлення, перейдіть за посиланням:
+{retry_url}
+
+Якщо виникнуть питання — напишіть нам:
+humandesign.finance@gmail.com
+
+З повагою,
+Human Design UA""",
+
+        'ru': f"""Добрый день{(', ' + name) if name else ''}!
+
+К сожалению, ваша оплата не прошла. Возможные причины:
+  • Недостаточно средств на карте
+  • Карта заблокирована для онлайн-платежей
+  • Ошибка банка (попробуйте ещё раз)
+
+Чтобы завершить заказ, перейдите по ссылке:
+{retry_url}
+
+Если возникнут вопросы — напишите нам:
+humandesign.finance@gmail.com
+
+С уважением,
+Human Design UA""",
+
+        'en': f"""Hello{(', ' + name) if name else ''}!
+
+Unfortunately your payment was not successful. Possible reasons:
+  • Insufficient funds on the card
+  • Card blocked for online payments
+  • Bank error (please try again)
+
+To complete your order, please follow this link:
+{retry_url}
+
+If you have any questions, contact us:
+humandesign.finance@gmail.com
+
+Best regards,
+Human Design UA""",
+    }
+
+    subject = SUBJECTS.get(locale, SUBJECTS['ua'])
+    body    = BODIES.get(locale, BODIES['ua']).replace('\xa0', ' ')
+
+    msg = MIMEMultipart()
+    msg['From']     = f'Human Design UA <{GMAIL_USER}>'
+    msg['To']       = to_email
+    msg['Subject']  = Header(subject, 'utf-8')
+    msg['Reply-To'] = GMAIL_USER
+    msg.attach(MIMEText(body, 'plain', 'utf-8'))
+
+    try:
+        with smtplib.SMTP(SMTP_HOST, SMTP_PORT, local_hostname='localhost') as server:
+            server.ehlo('localhost')
+            server.starttls()
+            server.ehlo('localhost')
+            server.login(GMAIL_USER, GMAIL_PASSWORD)
+            server.sendmail(GMAIL_USER, [to_email], msg.as_bytes(),
+                            mail_options=['BODY=8BITMIME'])
+        print(f'✅ Failed payment email sent to {to_email}')
+        return True
+    except smtplib.SMTPAuthenticationError:
+        print('❌ Gmail auth failed — перевір GMAIL_APP_PASSWORD')
+        return False
+    except Exception as e:
+        print(f'❌ Failed payment email error: {e}')
+        return False
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Send HD receipt via Gmail')
     parser.add_argument('--order',  required=True)

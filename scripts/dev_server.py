@@ -3,9 +3,10 @@ Human Design UA — Local DEV server
 Simulates Make.com webhook in development environment.
 
 Handles:
-  POST /pay     — mock payment: generate receipt + send email
-  POST /webhook — same as /pay (Make.com webhook format)
-  GET  /health  — health check
+  POST /pay      — mock payment: generate receipt + send email
+  POST /pay/fail — failed payment: send retry email to customer
+  POST /webhook  — same as /pay (Make.com webhook format)
+  GET  /health   — health check
 
 Usage:
     python3 scripts/dev_server.py
@@ -26,7 +27,7 @@ from urllib.parse import urlparse
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import threading
 from generate_receipt import generate_receipt
-from send_receipt import send_receipt_email, send_reading_email
+from send_receipt import send_receipt_email, send_reading_email, send_failed_payment_email
 from dev_db import init_db, save_order, get_orders, get_stats
 from generate_reading import generate_reading_with_ai
 
@@ -79,6 +80,8 @@ class DevHandler(BaseHTTPRequestHandler):
 
         if path in ('/pay', '/webhook'):
             self._handle_payment(data)
+        elif path == '/pay/fail':
+            self._handle_payment_fail(data)
         else:
             self._json(404, {'error': 'Not found'})
 
@@ -171,6 +174,37 @@ class DevHandler(BaseHTTPRequestHandler):
         except Exception as e:
             traceback.print_exc()
             self._json(500, {'error': str(e)})
+
+    def _handle_payment_fail(self, data: dict):
+        """Handle failed payment — send retry email to customer."""
+        print('\n' + '─' * 50)
+        print(f'❌ DEV payment FAILED — sending retry email')
+        print(f'   Order:  {data.get("order_id", "—")}')
+        print(f'   Email:  {data.get("email", "—")}')
+        print(f'   Plan:   {data.get("plan", "—")}')
+        print('─' * 50)
+
+        email = data.get('email', '')
+        if not email:
+            self._json(400, {'error': 'Email is required'})
+            return
+
+        order_data = {
+            'order_id': data.get('order_id', f'HD-FAIL-{int(datetime.now().timestamp())}'),
+            'email':    email,
+            'name':     data.get('name', ''),
+            'plan':     data.get('plan', 'full'),
+            'amount':   data.get('amount', 799),
+            'locale':   data.get('locale', 'ua'),
+            'env':      'dev',
+            'site_url': 'http://localhost:4000',
+        }
+
+        ok = send_failed_payment_email(order_data)
+        if ok:
+            self._json(200, {'status': 'fail_email_sent', 'email': email})
+        else:
+            self._json(500, {'status': 'fail_email_error', 'email': email})
 
     def _serve_admin(self):
         admin_path = os.path.join(

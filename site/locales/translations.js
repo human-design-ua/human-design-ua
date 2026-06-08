@@ -390,9 +390,10 @@ var HD_TRANSLATIONS = {
     'dev.modal.cancel':  'Скасувати',
 
     // Payment errors
-    'pay.error.generic':  'Сталася помилка. Спробуй ще раз або напиши нам.',
-    'pay.error.server':   'Помилка сервера. Спробуй за кілька хвилин.',
-    'pay.error.network':  'Немає зʼєднання. Перевір інтернет і спробуй знову.',
+    'pay.error.generic':   'Сталася помилка. Спробуй ще раз або напиши нам.',
+    'pay.error.server':    'Помилка сервера. Спробуй за кілька хвилин.',
+    'pay.error.network':   'Немає зʼєднання. Перевір інтернет і спробуй знову.',
+    'pay.error.declined':  'Оплата не пройшла. Перевір картку або спробуй іншу. Лист з посиланням надіслано на твою пошту.',
     'pay.processing':     'Обробляємо...',
 
     // Footer
@@ -882,9 +883,10 @@ var HD_TRANSLATIONS = {
     'dev.modal.cancel':  'Отмена',
 
     // Payment errors
-    'pay.error.generic':  'Произошла ошибка. Попробуй ещё раз или напиши нам.',
-    'pay.error.server':   'Ошибка сервера. Попробуй через несколько минут.',
-    'pay.error.network':  'Нет соединения. Проверь интернет и попробуй снова.',
+    'pay.error.generic':   'Произошла ошибка. Попробуй ещё раз или напиши нам.',
+    'pay.error.server':    'Ошибка сервера. Попробуй через несколько минут.',
+    'pay.error.network':   'Нет соединения. Проверь интернет и попробуй снова.',
+    'pay.error.declined':  'Оплата не прошла. Проверь карту или попробуй другую. Письмо со ссылкой отправлено на твою почту.',
     'pay.processing':     'Обрабатываем...',
 
     'footer.brand':   'Дизайн Человека',
@@ -1370,9 +1372,10 @@ var HD_TRANSLATIONS = {
     'dev.modal.cancel':  'Cancel',
 
     // Payment errors
-    'pay.error.generic':  'Something went wrong. Please try again or contact us.',
-    'pay.error.server':   'Server error. Please try again in a few minutes.',
-    'pay.error.network':  'No connection. Check your internet and try again.',
+    'pay.error.generic':   'Something went wrong. Please try again or contact us.',
+    'pay.error.server':    'Server error. Please try again in a few minutes.',
+    'pay.error.network':   'No connection. Check your internet and try again.',
+    'pay.error.declined':  'Payment declined. Please check your card or try another. A retry link has been sent to your email.',
     'pay.processing':     'Processing...',
 
     'footer.brand':   'Human Design',

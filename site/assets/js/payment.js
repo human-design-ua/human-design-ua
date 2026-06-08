@@ -296,9 +296,26 @@ async function devPaymentResult(result, orderId, note) {
 
     window.location.href = 'success.html?order_id=' + orderId + '&status=success';
   } else {
-    showPaymentError('[DEV] Симуляція помилки оплати');
+    showPaymentError(window.t ? window.t('pay.error.declined') : 'Оплата не пройшла. Перевірте картку або спробуйте іншу.');
     const btn = document.getElementById('payBtn');
     setLoading(btn, false);
+    // Notify server → sends retry email to customer
+    const qd = JSON.parse(localStorage.getItem('hd_quiz_data') || '{}');
+    if (qd.email) {
+      fetch('http://localhost:4000/pay/fail', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          order_id: orderId,
+          email:    qd.email,
+          name:     qd.name  || '',
+          plan:     qd.plan  || 'full',
+          amount:   qd.plan === 'basic' ? 399 : 799,
+          locale:   window.i18n ? window.i18n.current() : localStorage.getItem('hd_lang') || 'ua',
+        }),
+      }).then(() => console.log('[DEV] Fail email queued for', qd.email))
+        .catch(() => console.warn('[DEV] Could not send fail email — server not running'));
+    }
   }
 }
 
