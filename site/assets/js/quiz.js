@@ -492,22 +492,25 @@ function closeDownsell() {
 }
 
 // Downsell bump toggle
-function toggleDownsellBump() {
+function toggleDownsellBump(fromDiv) {
   const check = document.getElementById('downsellBumpCheck');
   const bump  = document.getElementById('downsellBump');
   const cta   = document.getElementById('downsellCTA');
   if (!check || !cta) return;
-  check.checked = !check.checked;
+  // If called from div click — manually toggle; if from checkbox onChange — just read state
+  if (fromDiv) check.checked = !check.checked;
   if (check.checked) {
     bump.style.borderColor  = 'rgba(212,168,48,0.9)';
     bump.style.background   = 'rgba(212,168,48,0.08)';
-    cta.textContent = 'Отримати повну розшифровку за 799 грн →';
+    cta.innerHTML = 'Отримати <strong>ПОВНУ</strong> розшифровку за 799 грн →';
     cta.style.background = 'linear-gradient(135deg,#D4A830,#E8C55A)';
+    cta.style.fontSize = '1rem';
   } else {
     bump.style.borderColor  = 'rgba(212,168,48,0.5)';
     bump.style.background   = 'transparent';
     cta.textContent = 'Отримати базову за 399 грн →';
     cta.style.background = 'var(--gold,#D4A830)';
+    cta.style.fontSize = '';
   }
 }
 

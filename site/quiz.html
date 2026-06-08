@@ -383,16 +383,16 @@
     <!-- Order bump inside downsell -->
     <div id="downsellBump" style="border:2px dashed rgba(212,168,48,0.5);border-radius:12px;
       padding:.85rem;margin-bottom:1rem;cursor:pointer;transition:all .2s;"
-      onclick="toggleDownsellBump()">
+      onclick="toggleDownsellBump(true)">
       <div style="font-size:0.65rem;color:var(--gold,#D4A830);text-transform:uppercase;
         letter-spacing:.08em;margin-bottom:.4rem;font-weight:700;">⚡ Спеціальна пропозиція</div>
       <div style="display:flex;gap:.75rem;align-items:flex-start;">
         <input type="checkbox" id="downsellBumpCheck" style="width:18px;height:18px;min-width:18px;
           margin-top:2px;accent-color:var(--gold,#D4A830);" onclick="event.stopPropagation();"
-          onchange="toggleDownsellBump()">
+          onchange="toggleDownsellBump(false)">
         <div>
           <div style="font-size:.88rem;font-weight:700;color:#F0ECE8;margin-bottom:.25rem;">
-            Доплати лише +400 грн і отримай ПОВНУ розшифровку
+            Доплати лише +400 грн і отримай <strong>ПОВНУ</strong> розшифровку
           </div>
           <div style="font-size:.74rem;color:#A090C0;margin-bottom:.3rem;">
             Разом = 799 грн замість 3&nbsp;999 грн
