@@ -1,45 +1,51 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
   <defs>
-    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#1A1440"/>
-      <stop offset="100%" stop-color="#0D0B1E"/>
+    <linearGradient id="goldStroke" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"  stop-color="#E8C55A"/>
+      <stop offset="100%" stop-color="#B8860B"/>
     </linearGradient>
-    <linearGradient id="gold" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#E8C55A"/>
-      <stop offset="100%" stop-color="#C49020"/>
-    </linearGradient>
-    <radialGradient id="glow" cx="50%" cy="50%" r="50%">
-      <stop offset="0%" stop-color="#9B6EE0" stop-opacity="0.18"/>
-      <stop offset="100%" stop-color="#9B6EE0" stop-opacity="0"/>
+    <radialGradient id="bgFill" cx="50%" cy="50%" r="50%">
+      <stop offset="0%"   stop-color="#F5F0FF"/>
+      <stop offset="100%" stop-color="#EDE6FF"/>
     </radialGradient>
   </defs>
 
-  <!-- Outer ring -->
-  <circle cx="100" cy="100" r="98" fill="url(#bg)" stroke="url(#gold)" stroke-width="2.5"/>
+  <!-- Circle: light lavender fill + gold border -->
+  <circle cx="100" cy="100" r="94" fill="url(#bgFill)" stroke="url(#goldStroke)" stroke-width="3.5"/>
 
-  <!-- Inner glow -->
-  <circle cx="100" cy="100" r="85" fill="url(#glow)"/>
+  <!--
+    H — serif style: two verticals + crossbar + small serif caps
+    Using rect + small horizontal serif caps at top/bottom of each vertical
+  -->
 
-  <!-- Subtle inner ring -->
-  <circle cx="100" cy="100" r="85" fill="none" stroke="#D4A830" stroke-width="0.5" stroke-opacity="0.25"/>
+  <!-- H left vertical -->
+  <rect x="28" y="52" width="13" height="96" rx="1" fill="url(#goldStroke)"/>
+  <!-- H left top serif -->
+  <rect x="22" y="52" width="25" height="6"  rx="1" fill="url(#goldStroke)"/>
+  <!-- H left bottom serif -->
+  <rect x="22" y="142" width="25" height="6" rx="1" fill="url(#goldStroke)"/>
 
-  <!-- Letter H -->
-  <rect x="28" y="52" width="14" height="96" rx="3" fill="url(#gold)"/>
-  <rect x="28" y="94" width="64" height="13" rx="3" fill="url(#gold)"/>
-  <rect x="78" y="52" width="14" height="96" rx="3" fill="url(#gold)"/>
+  <!-- H right vertical -->
+  <rect x="79" y="52" width="13" height="96" rx="1" fill="url(#goldStroke)"/>
+  <!-- H right top serif -->
+  <rect x="73" y="52" width="25" height="6"  rx="1" fill="url(#goldStroke)"/>
+  <!-- H right bottom serif -->
+  <rect x="73" y="142" width="25" height="6" rx="1" fill="url(#goldStroke)"/>
 
-  <!-- Letter D -->
-  <rect x="105" y="52" width="14" height="96" rx="3" fill="url(#gold)"/>
-  <path d="M118 52 Q172 52 172 100 Q172 148 118 148 L118 135 Q155 135 155 100 Q155 65 118 65 Z"
-        fill="url(#gold)"/>
+  <!-- H crossbar -->
+  <rect x="28" y="93" width="64" height="12" rx="1" fill="url(#goldStroke)"/>
 
-  <!-- Bottom accent lines -->
-  <line x1="35"  y1="163" x2="165" y2="163" stroke="#9B6EE0" stroke-width="1" stroke-opacity="0.5"/>
-  <line x1="68"  y1="168" x2="132" y2="168" stroke="#D4A830" stroke-width="2" stroke-opacity="0.7"/>
+  <!--
+    D — serif style: vertical + curved right side
+  -->
+  <!-- D vertical -->
+  <rect x="106" y="52" width="13" height="96" rx="1" fill="url(#goldStroke)"/>
+  <!-- D top serif -->
+  <rect x="100" y="52" width="25" height="6"  rx="1" fill="url(#goldStroke)"/>
+  <!-- D bottom serif -->
+  <rect x="100" y="142" width="25" height="6" rx="1" fill="url(#goldStroke)"/>
 
-  <!-- Corner star dots -->
-  <circle cx="38"  cy="42"  r="2"   fill="#D4A830" opacity="0.5"/>
-  <circle cx="162" cy="42"  r="2"   fill="#D4A830" opacity="0.5"/>
-  <circle cx="30"  cy="62"  r="1.2" fill="#9B6EE0" opacity="0.5"/>
-  <circle cx="170" cy="62"  r="1.2" fill="#9B6EE0" opacity="0.5"/>
+  <!-- D curve -->
+  <path d="M118 58 Q170 58 170 100 Q170 142 118 142 L118 130 Q154 130 154 100 Q154 70 118 70 Z"
+        fill="url(#goldStroke)"/>
 </svg>

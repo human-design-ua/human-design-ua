@@ -784,11 +784,19 @@ def _cta_label_from_body(body_text):
     return None
 
 
-def _build_html(body_text, cta_url=None, cta_label=None):
+_TAGLINES = {
+    'ua': 'Персональний розрахунок Дизайну Людини',
+    'ru': 'Персональный расчёт Дизайна Человека',
+    'en': 'Personal Human Design calculation',
+}
+
+
+def _build_html(body_text, cta_url=None, cta_label=None, locale='ua'):
     """
     Gmail-safe HTML email template with dark/light mode support.
     Sections (━━━ blocks) are parsed as: ━━━ HEADING ━━━ content block.
     """
+    tagline = _TAGLINES.get(locale, _TAGLINES['ua'])
 
     # ── Parse body into structured blocks ────────────────────
     # A block is either a 'section' {heading, items[]} or a 'text' paragraph
@@ -1010,7 +1018,7 @@ def _build_html(body_text, cta_url=None, cta_label=None):
           <tr><td align="center" style="padding:0 0 18px;">
             <span style="font-family:Arial,sans-serif;font-size:10px;letter-spacing:3px;
                          color:#9B6EE0;text-transform:uppercase;">
-              Персональний розрахунок бодиграфу
+              {tagline}
             </span>
           </td></tr>
         </table>
@@ -1063,13 +1071,13 @@ def _build_html(body_text, cta_url=None, cta_label=None):
 </html>"""
 
 
-def _send(to_email, subject, body):
+def _send(to_email, subject, body, locale='ua'):
     if not GMAIL_PASSWORD:
         print('❌ GMAIL_APP_PASSWORD not set')
         return False
 
     cta_url = _extract_cta(body)
-    html    = _build_html(body, cta_url=cta_url)
+    html    = _build_html(body, cta_url=cta_url, locale=locale)
 
     msg = MIMEMultipart('alternative')
     msg['From']     = f'Human Design UA <{GMAIL_USER}>'
@@ -1187,7 +1195,7 @@ def process_due_emails():
         locale    = row.get('locale') or 'ua'
         subject, body = content_fn(row['name'], retry_url, locale)
 
-        ok      = _send(row['email'], subject, body)
+        ok      = _send(row['email'], subject, body, locale=locale)
         now_ts  = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         next_step = step + 1
 
@@ -1257,5 +1265,5 @@ if __name__ == '__main__':
 
     print(f'\n📧 {args.funnel} step {args.step} | locale={args.locale} → {args.email}')
     print(f'   Subject: {subject}\n')
-    ok = _send(args.email, subject, body)
+    ok = _send(args.email, subject, body, locale=args.locale)
     print('Result:', '✅ sent' if ok else '❌ failed')
