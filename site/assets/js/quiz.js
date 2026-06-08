@@ -281,7 +281,7 @@ function selectOption(field, value, el) {
   }
   saveProgress();
   // Auto-advance on choice steps
-  var choiceSteps = {lifeArea: 6, challenge: 7, relationshipStatus: 8};
+  var choiceSteps = {lifeArea: 5, challenge: 6, relationshipStatus: 7};
   if (choiceSteps[field] !== undefined) {
     setTimeout(function() { nextStep(choiceSteps[field]); }, 400);
   }

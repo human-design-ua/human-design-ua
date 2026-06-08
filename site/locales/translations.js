@@ -361,7 +361,7 @@ var HD_TRANSLATIONS = {
 
     // Final CTA
     'cta.title':  'Готова дізнатися<br><em>свій дизайн?</em>',
-    'cta.text':   'Пройди 9 запитань та отримай персональну розшифровку вже за 10 хвилин.',
+    'cta.text':   'Пройди 8 запитань та отримай персональну розшифровку вже за 10 хвилин.',
     'cta.btn':    'Почати безкоштовний квіз',
     'cta.note':   '399 грн · безпечна оплата · миттєва доставка на email',
 
@@ -830,7 +830,7 @@ var HD_TRANSLATIONS = {
     'faq.a6':     'Через платёжную систему LiqPay: Visa/Mastercard, Apple Pay, Google Pay. Все транзакции защищены. Мы не храним данные твоей карты.',
 
     'cta.title':  'Готова узнать<br><em>свой дизайн?</em>',
-    'cta.text':   'Пройди 9 вопросов и получи персональную расшифровку уже за 10 минут.',
+    'cta.text':   'Пройди 8 вопросов и получи персональную расшифровку уже за 10 минут.',
     'cta.btn':    'Начать бесплатный квиз',
     'cta.note':   '399 грн · безопасная оплата · мгновенная доставка на email',
 
@@ -1319,7 +1319,7 @@ var HD_TRANSLATIONS = {
     'faq.a6':     'Via LiqPay: Visa/Mastercard, Apple Pay, Google Pay. All transactions are secured. We do not store your card details.',
 
     'cta.title':  'Ready to discover<br><em>your design?</em>',
-    'cta.text':   'Answer 9 questions and get your personalised reading in 10 minutes.',
+    'cta.text':   'Answer 8 questions and get your personalised reading in 10 minutes.',
     'cta.btn':    'Start the free quiz',
     'cta.note':   '399 UAH · secure payment · instant email delivery',
 
