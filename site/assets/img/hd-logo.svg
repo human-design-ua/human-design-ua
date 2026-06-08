@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120">
+  <defs>
+    <linearGradient id="bgG" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"  stop-color="#1A1440"/>
+      <stop offset="100%" stop-color="#0D0B1E"/>
+    </linearGradient>
+    <linearGradient id="goldG" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"  stop-color="#E8C55A"/>
+      <stop offset="100%" stop-color="#C49020"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%"  stop-color="#9B6EE0" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#9B6EE0" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Background circle -->
+  <circle cx="60" cy="60" r="58" fill="url(#bgG)" stroke="#D4A830" stroke-width="1.5" stroke-opacity="0.6"/>
+
+  <!-- Glow -->
+  <circle cx="60" cy="60" r="50" fill="url(#glow)"/>
+
+  <!-- Small star dots -->
+  <circle cx="22" cy="28" r="1.2" fill="#D4A830" opacity="0.5"/>
+  <circle cx="98" cy="32" r="1"   fill="#9B6EE0" opacity="0.6"/>
+  <circle cx="15" cy="85" r="0.8" fill="#D4A830" opacity="0.4"/>
+  <circle cx="105" cy="88" r="1"  fill="#9B6EE0" opacity="0.5"/>
+  <circle cx="60" cy="14" r="0.8" fill="#D4A830" opacity="0.4"/>
+
+  <!-- Letter H -->
+  <!-- Left vertical bar -->
+  <rect x="20" y="34" width="9" height="52" rx="2" fill="url(#goldG)"/>
+  <!-- Right vertical bar -->
+  <rect x="50" y="34" width="9" height="52" rx="2" fill="url(#goldG)"/>
+  <!-- Crossbar -->
+  <rect x="20" y="56" width="39" height="8" rx="2" fill="url(#goldG)"/>
+
+  <!-- Letter D -->
+  <!-- Vertical bar -->
+  <rect x="68" y="34" width="9" height="52" rx="2" fill="url(#goldG)"/>
+  <!-- Curved right side — built from rectangles + circle arc -->
+  <path d="M76 34 Q105 34 105 60 Q105 86 76 86 L76 77 Q93 77 93 60 Q93 43 76 43 Z"
+        fill="url(#goldG)"/>
+
+  <!-- Bottom accent line -->
+  <line x1="20" y1="96" x2="100" y2="96" stroke="#9B6EE0" stroke-width="1" stroke-opacity="0.5"/>
+  <line x1="44" y1="99" x2="76"  y2="99" stroke="#D4A830" stroke-width="1.5" stroke-opacity="0.6"/>
+</svg>

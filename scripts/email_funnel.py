@@ -754,133 +754,238 @@ def _build_retry_url(row):
     return f'{site_url}/quiz.html?plan={plan}#pricing'
 
 
-def _load_header_b64():
-    """Load SVG header as base64 data URI (works in all email clients)."""
-    svg_path = os.path.join(os.path.dirname(__file__),
-                            '..', 'site', 'assets', 'img', 'email', 'email-header.svg')
-    try:
-        import base64
-        with open(svg_path, 'rb') as f:
-            return 'data:image/svg+xml;base64,' + base64.b64encode(f.read()).decode()
-    except Exception:
-        return ''
+def _extract_cta(body_text):
+    """Pull the first CTA line: either '→ ... http...' or a bare URL."""
+    lines = body_text.split('\n')
+    for i, line in enumerate(lines):
+        s = line.strip()
+        # Bare URL on its own line
+        if s.startswith('http://') or s.startswith('https://'):
+            return s
+        # Arrow line that contains a URL
+        if s.startswith('→') and ('http://' in s or 'https://' in s):
+            for part in s.split():
+                if part.startswith('http'):
+                    return part
+        # Arrow label followed by URL on the next line
+        if s.startswith('→') and i + 1 < len(lines):
+            nxt = lines[i + 1].strip()
+            if nxt.startswith('http://') or nxt.startswith('https://'):
+                return nxt
+    return None
+
+
+def _cta_label_from_body(body_text):
+    """Extract human-readable CTA label from the → line."""
+    for line in body_text.split('\n'):
+        s = line.strip()
+        if s.startswith('→') and 'http' not in s:
+            return s.lstrip('→').strip().rstrip(':')
+    return None
 
 
 def _build_html(body_text, cta_url=None, cta_label=None):
-    """Wrap plain text body in branded HTML template."""
-    header_src = _load_header_b64()
-    header_img = (
-        f'<img src="{header_src}" width="600" alt="Human Design UA" '
-        f'style="display:block;width:100%;max-width:600px;border:0;"/>'
-        if header_src else
-        '<div style="background:#1A1440;padding:40px 0;text-align:center;'
-        'font-size:22px;letter-spacing:6px;color:#F0ECE8;font-family:Georgia,serif;">'
-        '✦ HUMAN DESIGN UA</div>'
-    )
+    """
+    Gmail-safe HTML email template.
+    - No external images (Gmail blocks data:URI SVG)
+    - Pure table layout + inline styles
+    - Constellation header via Unicode + CSS
+    - Purple section boxes, gold CTA button
+    """
 
-    # Convert plain text to HTML paragraphs
+    # ── Constellation header (all inline, no images) ──────────
+    STARS = '&#10022;&nbsp;&nbsp;&#10022;&nbsp;&nbsp;&#10022;&nbsp;&nbsp;&#10022;&nbsp;&nbsp;&#10022;'
+    header_html = f"""
+<table width="100%" cellpadding="0" cellspacing="0" border="0"
+       style="background:#0D0B1E;">
+  <!-- Top gold line -->
+  <tr><td height="3" style="background:linear-gradient(90deg,#0D0B1E,#D4A830,#9B6EE0,#D4A830,#0D0B1E);font-size:0;line-height:0;">&nbsp;</td></tr>
+  <!-- Constellation dots row -->
+  <tr><td align="center" style="padding:22px 0 4px;font-size:13px;letter-spacing:8px;color:#2A2060;">
+    {STARS}
+  </td></tr>
+  <!-- HD Monogram -->
+  <tr><td align="center" style="padding:0 0 6px;">
+    <table cellpadding="0" cellspacing="0" border="0" style="display:inline-table;">
+      <tr>
+        <td style="background:#1A1440;border:1px solid #D4A830;border-radius:50%;
+                   width:64px;height:64px;text-align:center;vertical-align:middle;">
+          <span style="font-family:Georgia,serif;font-size:26px;font-weight:bold;
+                       color:#D4A830;letter-spacing:2px;line-height:64px;">HD</span>
+        </td>
+      </tr>
+    </table>
+  </td></tr>
+  <!-- Brand name -->
+  <tr><td align="center" style="padding:8px 0 4px;">
+    <span style="font-family:Georgia,'Times New Roman',serif;font-size:20px;
+                 letter-spacing:7px;color:#F0ECE8;text-transform:uppercase;">
+      Human Design UA
+    </span>
+  </td></tr>
+  <!-- Tagline -->
+  <tr><td align="center" style="padding:0 0 18px;">
+    <span style="font-family:Arial,sans-serif;font-size:10px;letter-spacing:3px;
+                 color:#9B6EE0;text-transform:uppercase;">
+      Персональний розрахунок бодиграфу
+    </span>
+  </td></tr>
+  <!-- Bottom gold line -->
+  <tr><td height="3" style="background:linear-gradient(90deg,#0D0B1E,#D4A830,#9B6EE0,#D4A830,#0D0B1E);font-size:0;line-height:0;">&nbsp;</td></tr>
+</table>"""
+
+    # ── Body lines → HTML ────────────────────────────────────
     lines = body_text.replace('\xa0', ' ').strip().split('\n')
-    html_lines = []
+    html_parts = []
+    in_section = False    # inside a ━━━ purple box
+
+    def close_section():
+        nonlocal in_section
+        if in_section:
+            html_parts.append(
+                '</td></tr></table>'
+            )
+            in_section = False
+
     for line in lines:
-        stripped = line.strip()
-        if stripped.startswith('━'):
-            html_lines.append(
-                '<hr style="border:none;border-top:1px solid #2A2060;margin:20px 0;"/>'
+        s = line.strip()
+
+        if s.startswith('━'):
+            # Toggle section box: first ━━━ opens, second ━━━ closes
+            if not in_section:
+                html_parts.append(
+                    '<table width="100%" cellpadding="0" cellspacing="0" border="0" '
+                    'style="margin:18px 0 0;border-radius:8px;background:#1A1440;'
+                    'border:1px solid #2D2070;">'
+                    '<tr><td style="padding:16px 20px;">'
+                )
+                in_section = True
+            else:
+                close_section()
+            continue
+
+        if s.startswith('→') or (s.startswith('http://') or s.startswith('https://')):
+            # Skip — rendered as button below
+            continue
+
+        close_section()  # close any open section before normal text
+
+        if s == '':
+            html_parts.append('<div style="height:10px;font-size:0;line-height:0;">&nbsp;</div>')
+        elif s.startswith('✓'):
+            # Feature item — gold checkmark style
+            text = s[1:].strip()
+            html_parts.append(
+                f'<p style="margin:6px 0;padding:2px 0 2px 4px;'
+                f'font-family:Arial,sans-serif;font-size:14px;line-height:1.55;color:#E8C55A;">'
+                f'<span style="color:#D4A830;margin-right:6px;">✓</span>{text}</p>'
             )
-        elif stripped.startswith('→'):
-            # CTA line — already handled below if cta_url given
-            pass
-        elif stripped.startswith('✓'):
-            html_lines.append(
-                f'<p style="margin:6px 0;padding-left:8px;'
-                f'color:#E8C55A;font-size:15px;">{stripped}</p>'
+        elif s.startswith('•'):
+            html_parts.append(
+                f'<p style="margin:4px 0 4px 14px;font-family:Arial,sans-serif;'
+                f'font-size:13px;color:#A090C0;line-height:1.5;">{s}</p>'
             )
-        elif stripped.startswith('•'):
-            html_lines.append(
-                f'<p style="margin:4px 0 4px 16px;color:#A090C0;font-size:14px;">{stripped}</p>'
+        elif s.isupper() and len(s) > 8 and not s.startswith('✦'):
+            # Section heading (ALL CAPS text like "ПОЧЕМУ ОДНОГО ТИПА НЕДОСТАТОЧНО")
+            html_parts.append(
+                f'<p style="margin:14px 0 6px;font-family:Arial,sans-serif;font-size:11px;'
+                f'font-weight:bold;letter-spacing:2px;color:#9B6EE0;text-transform:uppercase;">'
+                f'{s}</p>'
             )
-        elif stripped == '':
-            html_lines.append('<br/>')
         else:
-            color = '#F0ECE8' if stripped else '#A090C0'
-            html_lines.append(
-                f'<p style="margin:6px 0;color:{color};font-size:15px;'
-                f'line-height:1.6;">{stripped}</p>'
+            color = '#C0B8D8' if s.startswith('—') or s.startswith('«') else '#D8D4E8'
+            html_parts.append(
+                f'<p style="margin:6px 0;font-family:Arial,sans-serif;font-size:15px;'
+                f'line-height:1.65;color:{color};">{s}</p>'
             )
 
-    # CTA button
+    close_section()
+
+    # ── CTA button ───────────────────────────────────────────
+    if not cta_label:
+        cta_label = _cta_label_from_body(body_text) or 'Перейти →'
+    # Clean arrow prefix from label
+    cta_label = cta_label.lstrip('→ ').rstrip(':')
+
     cta_html = ''
     if cta_url:
-        label = cta_label or 'Перейти →'
-        cta_html = f'''
-        <div style="text-align:center;margin:28px 0 16px;">
+        cta_html = f"""
+<table width="100%" cellpadding="0" cellspacing="0" border="0"
+       style="margin:28px 0 16px;">
+  <tr><td align="center">
+    <table cellpadding="0" cellspacing="0" border="0">
+      <tr>
+        <td style="background:#7B4FCC;border-radius:8px;border:1px solid #9B6EE0;">
           <a href="{cta_url}"
-             style="display:inline-block;background:linear-gradient(135deg,#D4A830,#E8C55A);
-                    color:#0D0B1E;font-weight:700;font-size:16px;
-                    padding:14px 36px;border-radius:8px;text-decoration:none;
-                    letter-spacing:0.5px;">
-            {label}
+             style="display:block;padding:14px 36px;font-family:Arial,sans-serif;
+                    font-size:15px;font-weight:bold;color:#FFFFFF;text-decoration:none;
+                    letter-spacing:0.5px;text-align:center;white-space:nowrap;">
+            {cta_label} &rarr;
           </a>
-        </div>'''
+        </td>
+      </tr>
+    </table>
+    <p style="margin:10px 0 0;font-family:Arial,sans-serif;font-size:11px;color:#4A3F6B;">
+      Або скопіюй посилання: <span style="color:#7B4FCC;">{cta_url}</span>
+    </p>
+  </td></tr>
+</table>"""
 
-    body_html = '\n'.join(html_lines)
+    body_html = '\n'.join(html_parts)
 
     return f"""<!DOCTYPE html>
 <html lang="uk">
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-  <title>Human Design UA</title>
+  <!--[if mso]><noscript><xml><o:OfficeDocumentSettings>
+    <o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml></noscript><![endif]-->
 </head>
-<body style="margin:0;padding:0;background:#0A0818;font-family:Arial,Helvetica,sans-serif;">
-  <table width="100%" cellpadding="0" cellspacing="0" border="0"
-         style="background:#0A0818;padding:24px 0;">
-    <tr><td align="center">
-      <table width="600" cellpadding="0" cellspacing="0" border="0"
-             style="max-width:600px;width:100%;">
+<body style="margin:0;padding:0;background-color:#08061A;-webkit-text-size-adjust:100%;mso-line-height-rule:exactly;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
+       style="background-color:#08061A;">
+  <tr><td align="center" style="padding:20px 10px;">
 
-        <!-- HEADER / LOGO -->
-        <tr><td style="padding:0;">{header_img}</td></tr>
+    <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0"
+           style="max-width:600px;width:100%;background-color:#0D0B1E;
+                  border:1px solid #1E1A45;border-radius:12px;overflow:hidden;">
 
-        <!-- BODY -->
-        <tr><td style="background:#0D0B1E;padding:32px 40px 8px;">
-          {body_html}
-          {cta_html}
-        </td></tr>
+      <!-- ★ HEADER ★ -->
+      <tr><td style="padding:0;">{header_html}</td></tr>
 
-        <!-- FOOTER -->
-        <tr><td style="background:#090718;padding:20px 40px;border-top:1px solid #1A1440;">
-          <table width="100%" cellpadding="0" cellspacing="0">
-            <tr>
-              <td style="color:#4A3F6B;font-size:12px;line-height:1.6;">
-                ✦ Human Design UA<br/>
-                <a href="mailto:{GMAIL_USER}"
-                   style="color:#6B5F80;text-decoration:none;">{GMAIL_USER}</a>
-              </td>
-              <td align="right" style="color:#4A3F6B;font-size:11px;">
-                Персональний розрахунок<br/>Дизайну Людини
-              </td>
-            </tr>
-          </table>
-        </td></tr>
+      <!-- ★ BODY ★ -->
+      <tr><td style="padding:28px 36px 8px;background-color:#0D0B1E;">
+        {body_html}
+        {cta_html}
+      </td></tr>
 
-      </table>
-    </td></tr>
-  </table>
+      <!-- ★ DIVIDER ★ -->
+      <tr><td height="1" style="background-color:#1E1A45;font-size:0;line-height:0;">&nbsp;</td></tr>
+
+      <!-- ★ FOOTER ★ -->
+      <tr><td style="padding:18px 36px;background-color:#090718;">
+        <table width="100%" cellpadding="0" cellspacing="0" border="0">
+          <tr>
+            <td style="font-family:Arial,sans-serif;font-size:12px;
+                       color:#3D3360;line-height:1.6;">
+              <span style="color:#D4A830;">✦</span>
+              <span style="color:#5A5080;"> Human Design UA</span><br/>
+              <a href="mailto:{GMAIL_USER}"
+                 style="color:#5A4A80;text-decoration:none;">{GMAIL_USER}</a>
+            </td>
+            <td align="right" style="font-family:Arial,sans-serif;font-size:10px;
+                                     color:#3D3360;letter-spacing:1px;text-transform:uppercase;">
+              Персональний<br/>розрахунок
+            </td>
+          </tr>
+        </table>
+      </td></tr>
+
+    </table>
+  </td></tr>
+</table>
 </body>
 </html>"""
-
-
-def _extract_cta(body_text):
-    """Pull the first → URL line out of plain text body."""
-    for line in body_text.split('\n'):
-        s = line.strip()
-        if s.startswith('→') and ('http' in s or 'localhost' in s):
-            # e.g. "→ ОТРИМАТИ ПОВНУ РОЗШИФРОВКУ ЗА 400 ГРН:\nhttp://..."
-            pass
-        if s.startswith('http://') or s.startswith('https://'):
-            return s
-    return None
 
 
 def _send(to_email, subject, body):
