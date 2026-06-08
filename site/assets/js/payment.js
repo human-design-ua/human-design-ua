@@ -1,8 +1,8 @@
 // Human Design — Payment Integration (LiqPay)
 // DEV mode: uses mock payment, no real money charged
-// PROD mode: real LiqPay via Make.com webhook
+// PROD mode: real LiqPay via Netlify Function
 
-const MAKE_WEBHOOK_URL = 'YOUR_MAKE_WEBHOOK_URL_HERE';
+const LIQPAY_INIT_URL = '/.netlify/functions/liqpay-init';
 
 // ── DEV MOCK ──────────────────────────────────────────────
 // ── DEV Card input screen ─────────────────────────────────
@@ -363,7 +363,7 @@ async function initiatePayment(quizData) {
   localStorage.setItem('hd_email', quizData.email);
 
   try {
-    const res = await fetch(MAKE_WEBHOOK_URL, {
+    const res = await fetch(LIQPAY_INIT_URL, {
       method:  'POST',
       headers: { 'Content-Type': 'application/json' },
       body:    JSON.stringify(payload),
@@ -428,7 +428,7 @@ async function initiateUpsell(userId) {
   };
 
   try {
-    const res = await fetch(MAKE_WEBHOOK_URL, {
+    const res = await fetch(LIQPAY_INIT_URL, {
       method:  'POST',
       headers: { 'Content-Type': 'application/json' },
       body:    JSON.stringify(payload),
