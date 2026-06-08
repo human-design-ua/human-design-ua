@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1A1440"/>
+      <stop offset="100%" stop-color="#0D0B1E"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#E8C55A"/>
+      <stop offset="100%" stop-color="#C49020"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#9B6EE0" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#9B6EE0" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Outer ring -->
+  <circle cx="100" cy="100" r="98" fill="url(#bg)" stroke="url(#gold)" stroke-width="2.5"/>
+
+  <!-- Inner glow -->
+  <circle cx="100" cy="100" r="85" fill="url(#glow)"/>
+
+  <!-- Subtle inner ring -->
+  <circle cx="100" cy="100" r="85" fill="none" stroke="#D4A830" stroke-width="0.5" stroke-opacity="0.25"/>
+
+  <!-- Letter H -->
+  <rect x="28" y="52" width="14" height="96" rx="3" fill="url(#gold)"/>
+  <rect x="28" y="94" width="64" height="13" rx="3" fill="url(#gold)"/>
+  <rect x="78" y="52" width="14" height="96" rx="3" fill="url(#gold)"/>
+
+  <!-- Letter D -->
+  <rect x="105" y="52" width="14" height="96" rx="3" fill="url(#gold)"/>
+  <path d="M118 52 Q172 52 172 100 Q172 148 118 148 L118 135 Q155 135 155 100 Q155 65 118 65 Z"
+        fill="url(#gold)"/>
+
+  <!-- Bottom accent lines -->
+  <line x1="35"  y1="163" x2="165" y2="163" stroke="#9B6EE0" stroke-width="1" stroke-opacity="0.5"/>
+  <line x1="68"  y1="168" x2="132" y2="168" stroke="#D4A830" stroke-width="2" stroke-opacity="0.7"/>
+
+  <!-- Corner star dots -->
+  <circle cx="38"  cy="42"  r="2"   fill="#D4A830" opacity="0.5"/>
+  <circle cx="162" cy="42"  r="2"   fill="#D4A830" opacity="0.5"/>
+  <circle cx="30"  cy="62"  r="1.2" fill="#9B6EE0" opacity="0.5"/>
+  <circle cx="170" cy="62"  r="1.2" fill="#9B6EE0" opacity="0.5"/>
+</svg>
