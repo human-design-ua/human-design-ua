@@ -2210,9 +2210,20 @@ details[open] .faq-question::after { transform: rotate(45deg); }
   color: var(--gold);
 }
 
-/* Mobile: hide lang labels on very small screens */
-@media (max-width: 400px) {
-  .lang-switcher { display: none; }
+/* Mobile: compact lang switcher on small screens */
+@media (max-width: 480px) {
+  .lang-switcher {
+    display: flex;
+    gap: 1px;
+    padding: 2px;
+  }
+  .lang-btn {
+    padding: 0.25rem 0.4rem;
+    font-size: 0.65rem;
+  }
+  .nav-controls {
+    gap: 0.35rem;
+  }
 }
 
 /* ============================================================
