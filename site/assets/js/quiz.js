@@ -85,10 +85,12 @@ function showStep(stepId, stepNum) {
   currentStep = stepNum || currentStep;
   updateProgress(currentStep);
   window.scrollTo({ top: 0, behavior: 'smooth' });
-  // Almost-there encouragement
+  // Almost-there encouragement — hide on pricing page
   var almostEl = document.getElementById('progressAlmost');
   if (almostEl) {
-    if (stepNum && stepNum >= Math.ceil(totalSteps * 0.6)) {
+    if (stepId === 'stepPricing' || stepId === 'processingScreen' || stepId === 'bridgeScreen') {
+      almostEl.classList.remove('show');
+    } else if (stepNum && stepNum >= Math.ceil(totalSteps * 0.6)) {
       almostEl.classList.add('show');
     } else {
       almostEl.classList.remove('show');

@@ -9,6 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/css/main.css">
+  <script src="assets/js/theme.js"></script>
 </head>
 <body>
 
@@ -33,10 +34,12 @@
 </style>
 
 <script src="assets/js/analytics.js"></script>
+<script src="locales/translations.js"></script>
+<script src="assets/js/i18n.js"></script>
 <script>
   // Fire GA4 & Pixel purchase event
-  const savedPlan = localStorage.getItem('hd_plan');
-  const amount = savedPlan === 'full' ? 799 : 399;
+  var savedPlan = localStorage.getItem('hd_plan');
+  var amount = savedPlan === 'full' ? 799 : 399;
   if (typeof gtag !== 'undefined') {
     gtag('event', 'purchase', { currency: 'UAH', value: amount });
   }
@@ -46,64 +49,82 @@
 </script>
 <script>
 (function(){
-  // Get name
+  // Get name and language
   var name = '';
   try {
     var d = JSON.parse(localStorage.getItem('hd_quiz_data') || '{}');
     name = d.name || localStorage.getItem('hd_name') || '';
   } catch(e){}
 
-  // Set title
-  var title = document.getElementById('successTitle');
-  var sub = document.getElementById('successSubtitle');
-  if (title) title.textContent = (name ? name + ', ' : '') + 'твоя карта генерується!';
-  if (sub)   sub.textContent = 'Персональний розрахунок Дизайну Людини розпочато';
+  // Wait for i18n to be ready
+  function init() {
+    var lang = localStorage.getItem('hd_lang') || 'ua';
+    var trs = (typeof HD_TRANSLATIONS !== 'undefined' && HD_TRANSLATIONS[lang])
+      ? HD_TRANSLATIONS[lang] : {};
 
-  // Animate progress
-  var fill = document.getElementById('genFill');
-  var genText = document.getElementById('genText');
-  var etaText = document.getElementById('etaText');
-  var gates = 0;
-  var total = 64;
+    function tr(key) { return trs[key] || key; }
 
-  if (etaText) etaText.textContent = 'Розшифровка надійде на пошту через ~8 хвилин';
+    // Set title with name
+    var title = document.getElementById('successTitle');
+    var sub   = document.getElementById('successSubtitle');
+    var etaText = document.getElementById('etaText');
 
-  var interval = setInterval(function(){
-    gates += Math.floor(3 + 3);
-    if (gates > total) gates = total;
-    var pct = (gates / total * 100);
-    if (fill) fill.style.width = pct + '%';
-    if (genText) genText.textContent = 'Розраховуємо ' + gates + ' з ' + total + ' воріт...';
-    if (gates >= total) {
-      clearInterval(interval);
-      if (genText) genText.textContent = '✓ Розрахунок завершено!';
-      if (etaText) etaText.textContent = 'Розшифровка вже надіслана — перевір пошту ✦';
-      launchConfetti();
-    }
-  }, 400);
+    if (title) title.textContent = (name ? name + ', ' : '') + tr('success.title');
+    if (sub)   sub.textContent   = tr('success.subtitle');
+    if (etaText) etaText.textContent = tr('success.eta');
+
+    // Animate progress
+    var fill    = document.getElementById('genFill');
+    var genText = document.getElementById('genText');
+    var gates   = 0;
+    var total   = 64;
+
+    var interval = setInterval(function(){
+      gates += 6;
+      if (gates > total) gates = total;
+      var pct = (gates / total * 100);
+      if (fill) fill.style.width = pct + '%';
+
+      var gatesText = tr('success.gates')
+        .replace('{{gates}}', gates)
+        .replace('{{total}}', total);
+      if (genText) genText.textContent = gatesText;
+
+      if (gates >= total) {
+        clearInterval(interval);
+        if (genText)  genText.textContent  = tr('success.done');
+        if (etaText)  etaText.textContent  = tr('success.sent');
+        launchConfetti();
+      }
+    }, 400);
+  }
+
+  // Run after DOM + translations ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
 
   // Simple confetti
   function launchConfetti() {
     var canvas = document.getElementById('confettiCanvas');
     if (!canvas) return;
-    canvas.width = window.innerWidth;
+    canvas.width  = window.innerWidth;
     canvas.height = window.innerHeight;
     var ctx = canvas.getContext('2d');
     var particles = [];
     var colors = ['#D4A830','#9B6EE0','#E8C55A','#F0ECE8','#4CAF7D'];
     for (var i = 0; i < 80; i++) {
       particles.push({
-        x: canvas.width * (i / 80),
-        y: -10 - i * 3,
-        vx: (i % 5 - 2) * 0.8,
-        vy: 2 + (i % 3),
+        x: canvas.width * (i / 80), y: -10 - i * 3,
+        vx: (i % 5 - 2) * 0.8, vy: 2 + (i % 3),
         color: colors[i % colors.length],
-        size: 5 + (i % 5),
-        rot: i * 20
+        size: 5 + (i % 5), rot: i * 20
       });
     }
     var anim = setInterval(function(){
-      ctx.clearRect(0,0,canvas.width,canvas.height);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
       var alive = false;
       particles.forEach(function(p){
         p.x += p.vx; p.y += p.vy; p.rot += 3;
