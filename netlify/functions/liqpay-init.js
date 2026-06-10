@@ -15,6 +15,11 @@ exports.handler = async (event) => {
     return cors(405, JSON.stringify({ error: 'Method not allowed' }));
   }
 
+  // If LiqPay keys not configured yet — return test mode flag
+  if (!LIQPAY_PUBLIC_KEY || LIQPAY_PUBLIC_KEY === 'your_liqpay_public_key') {
+    return cors(200, JSON.stringify({ test_mode: true }));
+  }
+
   let body;
   try {
     body = JSON.parse(event.body);

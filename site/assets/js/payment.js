@@ -361,8 +361,17 @@ async function initiatePayment(quizData) {
 
     if (!res.ok) throw new Error('Server error ' + res.status);
 
-    const { data, signature } = await res.json();
+    const json = await res.json();
 
+    // LiqPay not configured yet — run test flow
+    if (json.test_mode) {
+      setLoading(btn, false);
+      localStorage.setItem('hd_quiz_data', JSON.stringify(quizData));
+      showDevCardScreen(quizData, orderId, amount);
+      return;
+    }
+
+    const { data, signature } = json;
     if (!data || !signature) throw new Error('Invalid server response');
 
     submitLiqPayForm(data, signature);
