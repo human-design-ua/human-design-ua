@@ -254,11 +254,12 @@ async function devPaymentResult(result, orderId, note) {
     const sendingBanner = document.createElement('div');
     sendingBanner.id = 'devSendingBanner';
     sendingBanner.style.cssText = 'position:fixed;bottom:1rem;right:1rem;background:#1A1440;border:1px solid #D4A830;color:#D4A830;padding:0.6rem 1rem;border-radius:8px;font-size:0.8rem;z-index:9999;';
-    sendingBanner.textContent = '📧 Надсилаємо чек...';
+    sendingBanner.textContent = '📧 Надсилаємо розшифровку...';
     document.body.appendChild(sendingBanner);
 
     try {
-      const res = await fetch('http://localhost:4000/pay', {
+      // Send directly to Netlify Function (works on live site)
+      const res = await fetch('/.netlify/functions/test-payment', {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -278,20 +279,9 @@ async function devPaymentResult(result, orderId, note) {
         }),
       });
       const json = await res.json();
-      if (json.status === 'partial') {
-        console.warn('[DEV] PDF ok but email failed:', json.message);
-      } else {
-        console.log('[DEV] Receipt sent:', json);
-      }
+      console.log('[TEST] Result:', json);
     } catch (e) {
-      document.getElementById('devSendingBanner')?.remove();
-      // Show visible error — server not running
-      const errBanner = document.createElement('div');
-      errBanner.style.cssText = 'position:fixed;bottom:1rem;right:1rem;background:#3A1020;border:1px solid #E05050;color:#E05050;padding:0.75rem 1rem;border-radius:8px;font-size:0.8rem;z-index:9999;max-width:280px;';
-      errBanner.innerHTML = '⚠️ DEV сервер не запущений!<br><code style="font-size:0.75rem;">python3 scripts/dev_server.py</code><br><span style="color:#A090C0;font-size:0.7rem;">Чек не відправлено, але редирект відбудеться</span>';
-      document.body.appendChild(errBanner);
-      setTimeout(() => errBanner.remove(), 6000);
-      console.warn('[DEV] Server not running: python3 scripts/dev_server.py');
+      console.warn('[TEST] Function call failed:', e.message);
     }
 
     window.location.href = 'success.html?order_id=' + orderId + '&status=success';

@@ -30,7 +30,7 @@
 
   // Hosts treated as dev environment
   var DEV_HOSTS    = ['localhost', '127.0.0.1'];
-  var DEV_PATTERNS = ['--humandesign', 'deploy-preview', '.netlify.app'];
+  var DEV_PATTERNS = ['deploy-preview--', 'branch-deploy--'];
 
   function detectEnv() {
     var host = window.location.hostname;
