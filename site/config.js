@@ -46,7 +46,11 @@
   window.HD_ENV    = detectEnv();
   window.HD_CONFIG = ENVS[window.HD_ENV];
 
+  // LIQPAY_ENABLED: set to true only when LiqPay keys are connected
+  // Until then — test payment screen is shown instead of real LiqPay
+  window.LIQPAY_ENABLED = false; // ← change to true after connecting LiqPay
+
   if (window.HD_CONFIG.debug) {
-    console.log('[HD] env:', window.HD_ENV, window.HD_CONFIG);
+    console.log('[HD] env:', window.HD_ENV, 'liqpay:', window.LIQPAY_ENABLED);
   }
 })();

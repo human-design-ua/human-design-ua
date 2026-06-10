@@ -317,8 +317,8 @@ async function initiatePayment(quizData) {
   const orderId = 'HD-' + Date.now() + '-' + Math.random().toString(36).slice(2, 7).toUpperCase();
   const amount  = quizData.plan === 'full' ? 799 : 399;
 
-  // ── DEV MODE: показати mock замість реального LiqPay ──
-  if (window.HD_ENV === 'dev') {
+  // ── TEST MODE: show mock payment if LiqPay not connected yet ──
+  if (window.HD_ENV === 'dev' || window.LIQPAY_ENABLED === false) {
     setLoading(btn, false);
     localStorage.setItem('hd_order_id', orderId);
     localStorage.setItem('hd_plan',     quizData.plan);
