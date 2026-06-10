@@ -7,10 +7,7 @@
   functions = "netlify/functions"
 
 [functions]
-  node_bundler = "esbuild"
-
-[functions."test-payment-background"]
-  timeout = 900
+  included_files = ["prompts/**"]
 
 # ── Production environment ──────────────────────────────────
 [context.production]

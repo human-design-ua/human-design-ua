@@ -23,8 +23,76 @@ const CHALLENGE_UA = {
 
 function loadPrompt(plan) {
   const file = plan === 'full' ? 'reading_full_ua.md' : 'reading_basic_ua.md';
-  const filePath = path.join(__dirname, '..', '..', '..', 'prompts', file);
-  return fs.readFileSync(filePath, 'utf8');
+  // Try multiple paths — works both locally and on Netlify
+  const candidates = [
+    path.join(__dirname, '..', '..', '..', 'prompts', file),
+    path.join(process.cwd(), 'prompts', file),
+    path.join('/var/task', 'prompts', file),
+  ];
+  for (const p of candidates) {
+    if (fs.existsSync(p)) return fs.readFileSync(p, 'utf8');
+  }
+  // Fallback — inline basic prompt if file not found
+  console.warn('Prompt file not found, using inline fallback');
+  return getFallbackPrompt(plan);
+}
+
+function getFallbackPrompt(plan) {
+  return `Ти — експерт з Дизайну Людини з 15-річним досвідом.
+
+## Дані клієнта
+- Ім'я: {{NAME}}
+- Дата народження: {{BIRTH_DATE}}
+- Час народження: {{BIRTH_TIME}}
+- Місце народження: {{BIRTH_PLACE}}
+- Сфера уваги: {{LIFE_AREA}}
+- Виклик: {{CHALLENGE}}
+
+Згенеруй персоналізовану розшифровку Дизайну Людини УКРАЇНСЬКОЮ МОВОЮ.
+Визнач Тип, Авторитет і Профіль на основі дати народження.
+Зверни увагу на {{LIFE_AREA}} та {{CHALLENGE}}.
+
+Відповідай ТІЛЬКИ валідним JSON:
+{
+  "hd_type": "Генератор",
+  "strategy": "Чекати на відгук",
+  "authority": "Сакральний",
+  "profile": "2/4",
+  "definition": "Простий",
+  "incarnation_cross": "Хрест Планування",
+  "intro_text": "Персоналізований вступ для {{NAME}}...",
+  "type_description": "Опис типу...",
+  "type_benefit": "Перевага типу...",
+  "strategy_description": "Опис стратегії...",
+  "strategy_benefit": "Перевага стратегії...",
+  "authority_description": "Опис авторитету...",
+  "authority_how_to": "Як застосовувати...",
+  "authority_benefit": "Перевага авторитету...",
+  "profile_description": "Опис профілю...",
+  "profile_role": "Роль у житті...",
+  "profile_benefit": "Перевага профілю...",
+  "centers_overview": "Огляд центрів...",
+  "centers_life_areas": "Центри та сфери...",
+  "center1_name": "Сакральний центр",
+  "center1_description": "Опис центру...",
+  "center2_name": "Центр серця",
+  "center2_description": "Опис центру...",
+  "center3_name": "Центр самості",
+  "center3_description": "Опис центру...",
+  "center4_name": "Центр горла",
+  "center4_description": "Опис центру...",
+  "open_centers_description": "Відкриті центри...",
+  "signature": "Задоволення та спокій...",
+  "not_self": "Фрустрація та гнів...",
+  "life_theme": "Тема для {{LIFE_AREA}} та {{CHALLENGE}}...",
+  "recommendations": [
+    "Рекомендація 1",
+    "Рекомендація 2",
+    "Рекомендація 3",
+    "Рекомендація 4",
+    "Рекомендація 5"
+  ]
+}`;
 }
 
 function buildPrompt(order) {
