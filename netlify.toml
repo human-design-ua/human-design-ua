@@ -6,6 +6,12 @@
   command = "npm install"
   functions = "netlify/functions"
 
+[functions]
+  node_bundler = "esbuild"
+
+[functions."test-payment-background"]
+  timeout = 900
+
 # ── Production environment ──────────────────────────────────
 [context.production]
   publish = "site"

@@ -259,7 +259,7 @@ async function devPaymentResult(result, orderId, note) {
 
     try {
       // Send directly to Netlify Function (works on live site)
-      const res = await fetch('/.netlify/functions/test-payment', {
+      const res = await fetch('/.netlify/functions/test-payment-background', {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
