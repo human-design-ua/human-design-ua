@@ -111,19 +111,40 @@ function buildPrompt(order) {
 async function generateReading(order) {
   const prompt = buildPrompt(order);
 
+  console.log(`Calling Claude API for ${order.email}, plan=${order.plan}`);
+
   const message = await client.messages.create({
-    model: 'claude-sonnet-4-6',
+    model: 'claude-sonnet-4-5',
     max_tokens: order.plan === 'full' ? 8000 : 5000,
     system: 'Ти — експерт з Дизайну Людини. Відповідай ТІЛЬКИ валідним JSON без markdown, без пояснень.',
     messages: [{ role: 'user', content: prompt }],
   });
 
   const raw = message.content[0].text.trim();
+  console.log('Claude raw response (first 200 chars):', raw.slice(0, 200));
 
   // Strip markdown code fences if present
-  const cleaned = raw.replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/```\s*$/i, '').trim();
+  const cleaned = raw
+    .replace(/^```json\s*/i, '')
+    .replace(/^```\s*/i, '')
+    .replace(/```\s*$/i, '')
+    .trim();
 
-  return JSON.parse(cleaned);
+  let parsed;
+  try {
+    parsed = JSON.parse(cleaned);
+  } catch(e) {
+    console.error('JSON parse failed:', e.message);
+    console.error('Cleaned text (first 500):', cleaned.slice(0, 500));
+    throw new Error('Claude вернул невалидный JSON: ' + e.message);
+  }
+
+  if (!parsed || typeof parsed !== 'object') {
+    throw new Error('Claude вернул не объект: ' + typeof parsed);
+  }
+
+  console.log('Reading generated successfully, hd_type:', parsed.hd_type);
+  return parsed;
 }
 
 module.exports = { generateReading };
