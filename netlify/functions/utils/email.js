@@ -1,5 +1,6 @@
 // Email via Gmail SMTP — nodemailer, no external service
 const nodemailer = require('nodemailer');
+const { generateReadingPDF } = require('./pdf');
 
 const GMAIL_USER = process.env.GMAIL_USER || 'humandesign.finance@gmail.com';
 const GMAIL_PASS = (process.env.GMAIL_APP_PASSWORD || '').replace(/\s/g, '');
@@ -205,12 +206,29 @@ async function sendReadingEmail(order, reading) {
 </body>
 </html>`;
 
+  // Generate PDF
+  let pdfBuffer;
+  try {
+    pdfBuffer = await generateReadingPDF(order, reading);
+    console.log('PDF generated, size:', pdfBuffer.length, 'bytes');
+  } catch(err) {
+    console.error('PDF generation failed (sending HTML only):', err.message);
+  }
+
+  const planLabel = plan === 'full' ? 'rozshyfrovka_povnaUA' : 'rozshyfrovka_bazovaUA';
+  const attachments = pdfBuffer ? [{
+    filename: `${planLabel}_${(order.name || 'HD').replace(/\s+/g,'_')}.pdf`,
+    content: pdfBuffer,
+    contentType: 'application/pdf',
+  }] : [];
+
   const transport = createTransport();
   await transport.sendMail({
     from: `"Human Design UA" <${GMAIL_USER}>`,
     to: email,
     subject: `✦ ${greeting}, твоя розшифровка Дизайну Людини готова`,
     html,
+    attachments,
   });
 }
 
