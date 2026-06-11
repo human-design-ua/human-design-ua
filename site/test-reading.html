@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Тест генерации расшифровки</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #0D0B1E; color: #F0ECE8; font-family: Inter, sans-serif; padding: 2rem; }
+    h1 { color: #D4A830; font-size: 1.5rem; margin-bottom: 2rem; }
+    .form { background: #1A1440; border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem; max-width: 600px; }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+    label { font-size: 0.75rem; color: #8B7FAA; display: block; margin-bottom: 0.3rem; }
+    input, select { width: 100%; background: #0D0B1E; border: 1px solid #2D2560; color: #F0ECE8;
+      padding: 0.6rem 0.75rem; border-radius: 8px; font-size: 0.9rem; }
+    .full { grid-column: 1/-1; }
+    button { background: #D4A830; color: #0D0B1E; border: none; border-radius: 10px;
+      padding: 0.85rem 2rem; font-weight: 700; font-size: 1rem; cursor: pointer; width: 100%; margin-top: 0.5rem; }
+    button:disabled { opacity: 0.6; cursor: not-allowed; }
+    #status { margin: 1rem 0; font-size: 0.9rem; color: #D4A830; }
+    #result { display: none; }
+    .section { background: #1A1440; border-radius: 12px; padding: 1.5rem; margin-bottom: 1rem; max-width: 800px; }
+    .section h2 { color: #D4A830; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1rem; }
+    .field { margin-bottom: 0.75rem; }
+    .field strong { color: #9B6EE0; font-size: 0.8rem; display: block; margin-bottom: 0.2rem; }
+    .field p { color: #D8D0E8; font-size: 0.9rem; line-height: 1.6; }
+    .tag { display: inline-block; background: #D4A830; color: #0D0B1E; padding: 0.2rem 0.6rem;
+      border-radius: 20px; font-size: 0.75rem; font-weight: 700; margin-right: 0.5rem; margin-bottom: 0.3rem; }
+    .rec { background: #120F2D; border-left: 3px solid #9B6EE0; padding: 0.6rem 0.75rem;
+      border-radius: 0 8px 8px 0; margin-bottom: 0.5rem; font-size: 0.85rem; color: #D8D0E8; }
+    .error { color: #E05050; background: #3A1020; border-radius: 8px; padding: 1rem; max-width: 600px; }
+    .timer { font-size: 0.8rem; color: #6B5F80; }
+  </style>
+</head>
+<body>
+  <h1>✦ Тест генерации расшифровки Дизайна Человека</h1>
+
+  <div class="form">
+    <div class="row">
+      <div>
+        <label>Имя</label>
+        <input id="name" type="text" value="Олена" placeholder="Имя клиента">
+      </div>
+      <div>
+        <label>Email</label>
+        <input id="email" type="email" value="test@test.com" placeholder="email@test.com">
+      </div>
+    </div>
+    <div class="row">
+      <div>
+        <label>Дата рождения</label>
+        <input id="birth_date" type="text" value="1990-05-15" placeholder="1990-05-15">
+      </div>
+      <div>
+        <label>Время рождения</label>
+        <input id="birth_time" type="text" value="14:30" placeholder="14:30">
+      </div>
+    </div>
+    <div class="row">
+      <div class="full">
+        <label>Место рождения</label>
+        <input id="birth_place" type="text" value="Київ, Україна" placeholder="Київ, Україна">
+      </div>
+    </div>
+    <div class="row">
+      <div>
+        <label>Сфера внимания</label>
+        <select id="life_area">
+          <option value="career">Карьера и деньги</option>
+          <option value="relationships">Отношения и любовь</option>
+          <option value="self" selected>Самопознание</option>
+          <option value="energy">Здоровье и энергия</option>
+          <option value="purpose">Предназначение</option>
+        </select>
+      </div>
+      <div>
+        <label>Вызов</label>
+        <select id="challenge">
+          <option value="decisions" selected>Сложно принимать решения</option>
+          <option value="fatigue">Постоянная усталость</option>
+          <option value="purpose">Не понимаю предназначения</option>
+          <option value="people">Конфликты с людьми</option>
+          <option value="self">Не принимаю себя</option>
+        </select>
+      </div>
+    </div>
+    <div class="row">
+      <div class="full">
+        <label>Тариф</label>
+        <select id="plan">
+          <option value="basic">Базовый (399 грн)</option>
+          <option value="full">Полный (799 грн)</option>
+        </select>
+      </div>
+    </div>
+    <button id="btn" onclick="generate()">✦ Сгенерировать расшифровку</button>
+    <div id="status"></div>
+  </div>
+
+  <div id="result"></div>
+
+  <script>
+    let startTime;
+
+    async function generate() {
+      const btn = document.getElementById('btn');
+      const status = document.getElementById('status');
+      const result = document.getElementById('result');
+
+      btn.disabled = true;
+      btn.textContent = '⏳ Генерирую...';
+      result.style.display = 'none';
+      startTime = Date.now();
+
+      const ticker = setInterval(() => {
+        const sec = Math.floor((Date.now() - startTime) / 1000);
+        status.innerHTML = `⏳ Claude генерирует расшифровку... ${sec}с <span class="timer">(обычно 30-60 сек)</span>`;
+      }, 1000);
+
+      const order = {
+        order_id: 'TEST-' + Date.now(),
+        name:        document.getElementById('name').value,
+        email:       document.getElementById('email').value,
+        birth_date:  document.getElementById('birth_date').value,
+        birth_time:  document.getElementById('birth_time').value,
+        birth_place: document.getElementById('birth_place').value,
+        life_area:   document.getElementById('life_area').value,
+        challenge:   document.getElementById('challenge').value,
+        plan:        document.getElementById('plan').value,
+      };
+
+      try {
+        const res = await fetch('/.netlify/functions/test-reading', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(order),
+        });
+
+        clearInterval(ticker);
+        const json = await res.json();
+        const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
+
+        if (json.error) {
+          status.innerHTML = `❌ Ошибка: ${json.error}`;
+          btn.disabled = false;
+          btn.textContent = '✦ Сгенерировать расшифровку';
+          return;
+        }
+
+        status.innerHTML = `✅ Готово за ${elapsed}с`;
+        renderReading(json.reading, order);
+        btn.disabled = false;
+        btn.textContent = '✦ Сгенерировать ещё раз';
+
+      } catch (err) {
+        clearInterval(ticker);
+        status.innerHTML = `❌ Ошибка: ${err.message}`;
+        btn.disabled = false;
+        btn.textContent = '✦ Сгенерировать расшифровку';
+      }
+    }
+
+    function renderReading(r, order) {
+      const result = document.getElementById('result');
+      result.style.display = 'block';
+      result.innerHTML = `
+        <div class="section">
+          <h2>✦ Базовые параметры</h2>
+          <div style="display:flex;flex-wrap:wrap;gap:0.5rem;margin-bottom:1rem;">
+            <span class="tag">${r.hd_type}</span>
+            <span class="tag">${r.authority}</span>
+            <span class="tag">Профиль ${r.profile}</span>
+            <span class="tag">${r.definition}</span>
+          </div>
+          <div class="field"><strong>Стратегия</strong><p>${r.strategy}</p></div>
+          <div class="field"><strong>Инкарнационный крест</strong><p>${r.incarnation_cross}</p></div>
+        </div>
+
+        <div class="section">
+          <h2>✦ Вступление</h2>
+          <div class="field"><p>${r.intro_text}</p></div>
+        </div>
+
+        <div class="section">
+          <h2>✦ Тип: ${r.hd_type}</h2>
+          <div class="field"><strong>Описание</strong><p>${r.type_description}</p></div>
+          <div class="field"><strong>Ценность знания своего типа</strong><p>${r.type_benefit}</p></div>
+        </div>
+
+        <div class="section">
+          <h2>✦ Стратегия: ${r.strategy}</h2>
+          <div class="field"><strong>Как работает</strong><p>${r.strategy_description}</p></div>
+          <div class="field"><strong>Результат</strong><p>${r.strategy_benefit}</p></div>
+        </div>
+
+        <div class="section">
+          <h2>✦ Авторитет: ${r.authority}</h2>
+          <div class="field"><strong>Описание</strong><p>${r.authority_description}</p></div>
+          <div class="field"><strong>Как применять</strong><p>${r.authority_how_to}</p></div>
+          <div class="field"><strong>Ценность</strong><p>${r.authority_benefit}</p></div>
+        </div>
+
+        <div class="section">
+          <h2>✦ Профиль ${r.profile}</h2>
+          <div class="field"><strong>Описание</strong><p>${r.profile_description}</p></div>
+          <div class="field"><strong>Роль в жизни</strong><p>${r.profile_role}</p></div>
+          ${r.profile_benefit ? `<div class="field"><strong>Ценность</strong><p>${r.profile_benefit}</p></div>` : ''}
+        </div>
+
+        <div class="section">
+          <h2>✦ Центры</h2>
+          <div class="field"><p>${r.centers_overview}</p></div>
+          ${r.centers_life_areas ? `<div class="field"><p>${r.centers_life_areas}</p></div>` : ''}
+          ${[1,2,3,4].map(i => r[`center${i}_name`] ? `
+            <div class="field">
+              <strong>${r['center'+i+'_name']}</strong>
+              <p>${r['center'+i+'_description']}</p>
+            </div>` : '').join('')}
+          ${r.open_centers_description ? `<div class="field"><strong>Открытые центры</strong><p>${r.open_centers_description}</p></div>` : ''}
+        </div>
+
+        <div class="section">
+          <h2>✦ Твоя тема — ${order.life_area}</h2>
+          <div class="field"><p>${r.life_theme}</p></div>
+        </div>
+
+        <div class="section">
+          <h2>✦ Подпись и Не-Я сигнал</h2>
+          ${r.signature ? `<div class="field"><strong>Подпись (ты в потоке)</strong><p>${r.signature}</p></div>` : ''}
+          ${r.not_self ? `<div class="field"><strong>Не-Я сигнал</strong><p>${r.not_self}</p></div>` : ''}
+        </div>
+
+        <div class="section">
+          <h2>✦ Рекомендации</h2>
+          ${(r.recommendations || []).map(rec => `<div class="rec">${rec}</div>`).join('')}
+        </div>
+
+        <div class="section">
+          <h2>📋 Сырой JSON (для отладки)</h2>
+          <pre style="font-size:0.7rem;color:#6B5F80;overflow-x:auto;white-space:pre-wrap;">${JSON.stringify(r, null, 2)}</pre>
+        </div>
+      `;
+      result.scrollIntoView({ behavior: 'smooth' });
+    }
+  </script>
+</body>
+</html>
