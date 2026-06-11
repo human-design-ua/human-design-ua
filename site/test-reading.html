@@ -108,14 +108,9 @@
       const result = document.getElementById('result');
 
       btn.disabled = true;
-      btn.textContent = '⏳ Генерирую...';
+      btn.textContent = '⏳ Запускаю...';
       result.style.display = 'none';
       startTime = Date.now();
-
-      const ticker = setInterval(() => {
-        const sec = Math.floor((Date.now() - startTime) / 1000);
-        status.innerHTML = `⏳ Claude генерирует расшифровку... ${sec}с <span class="timer">(обычно 30-60 сек)</span>`;
-      }, 1000);
 
       const order = {
         order_id: 'TEST-' + Date.now(),
@@ -130,48 +125,60 @@
       };
 
       try {
-        const res = await fetch('/.netlify/functions/test-reading', {
+        // Step 1: start generation
+        const startRes = await fetch('/.netlify/functions/test-reading-start', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(order),
         });
+        const startJson = await startRes.json();
+        if (startJson.error) throw new Error(startJson.error);
 
-        clearInterval(ticker);
-        const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
-        const rawText = await res.text();
+        const orderId = startJson.order_id;
 
-        // Show raw response for debugging
-        if (!res.ok || rawText.trim().startsWith('<')) {
-          status.innerHTML = `❌ HTTP ${res.status} — функция вернула ошибку`;
-          document.getElementById('result').style.display = 'block';
-          document.getElementById('result').innerHTML = `<div class="section"><h2>Ответ сервера (для диагностики)</h2><pre style="font-size:0.75rem;color:#E05050;white-space:pre-wrap;overflow-x:auto;">${rawText.slice(0, 2000)}</pre></div>`;
-          btn.disabled = false;
-          btn.textContent = '✦ Сгенерировать расшифровку';
-          return;
-        }
+        // Step 2: trigger background generation
+        fetch('/.netlify/functions/test-reading-generate-background', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(order),
+        }).catch(() => {});
 
-        let json;
-        try { json = JSON.parse(rawText); } catch(e) {
-          status.innerHTML = `❌ Ошибка парсинга JSON: ${e.message}`;
-          btn.disabled = false;
-          btn.textContent = '✦ Сгенерировать расшифровку';
-          return;
-        }
+        // Step 3: poll every 5 seconds
+        btn.textContent = '⏳ Claude генерирует...';
+        const ticker = setInterval(() => {
+          const sec = Math.floor((Date.now() - startTime) / 1000);
+          status.innerHTML = `⏳ Claude генерирует расшифровку... ${sec}с <span class="timer">(обычно 45-90 сек)</span>`;
+        }, 1000);
 
-        if (json.error) {
-          status.innerHTML = `❌ Ошибка: ${json.error}`;
-          btn.disabled = false;
-          btn.textContent = '✦ Сгенерировать расшифровку';
-          return;
-        }
+        const poll = async () => {
+          const res = await fetch(`/.netlify/functions/test-reading-result?order_id=${orderId}`);
+          const json = await res.json();
 
-        status.innerHTML = `✅ Готово за ${elapsed}с`;
-        renderReading(json.reading, order);
-        btn.disabled = false;
-        btn.textContent = '✦ Сгенерировать ещё раз';
+          if (json.status === 'done') {
+            clearInterval(ticker);
+            const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
+            status.innerHTML = `✅ Готово за ${elapsed}с`;
+            renderReading(json.reading, order);
+            btn.disabled = false;
+            btn.textContent = '✦ Сгенерировать ещё раз';
+          } else if (json.status === 'error') {
+            clearInterval(ticker);
+            status.innerHTML = `❌ Ошибка генерации: ${json.error}`;
+            btn.disabled = false;
+            btn.textContent = '✦ Попробовать снова';
+          } else if ((Date.now() - startTime) > 180000) {
+            clearInterval(ticker);
+            status.innerHTML = '❌ Таймаут 3 минуты — попробуй ещё раз';
+            btn.disabled = false;
+            btn.textContent = '✦ Попробовать снова';
+          } else {
+            setTimeout(poll, 5000);
+          }
+        };
+
+        setTimeout(poll, 8000); // first check after 8 seconds
 
       } catch (err) {
-        clearInterval(ticker);
         status.innerHTML = `❌ Ошибка: ${err.message}`;
         btn.disabled = false;
         btn.textContent = '✦ Сгенерировать расшифровку';
