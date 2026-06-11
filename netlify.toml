@@ -8,10 +8,6 @@
 
 [functions]
   included_files = ["prompts/**"]
-  timeout = 30
-
-[functions."test-reading"]
-  timeout = 30
 
 # ── Production environment ──────────────────────────────────
 [context.production]
