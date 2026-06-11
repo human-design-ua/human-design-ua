@@ -36,22 +36,31 @@ exports.handler = async (event) => {
     console.error('Background: receipt failed:', err.message);
   }
 
-  // Step 2 — generate reading (takes 30-60 seconds, no problem here)
+  // Step 2 — generate reading
   let reading;
   try {
-    console.log('Background: generating reading with Claude...');
+    console.log('Background: generating reading with Claude API...');
     reading = await generateReading(order);
-    console.log('Background: reading generated successfully');
+    console.log('Background: reading generated! hd_type=', reading?.hd_type);
   } catch (err) {
-    console.error('Background: reading generation failed:', err.message);
+    console.error('Background: reading generation FAILED:', err.message);
+    console.error('Background: full error:', err.stack);
+    // Still continue — don't return silently
+    return;
+  }
+
+  if (!reading || !reading.hd_type) {
+    console.error('Background: reading is empty or missing hd_type');
     return;
   }
 
   // Step 3 — send reading email
   try {
+    console.log('Background: sending reading email to', order.email);
     await sendReadingEmail(order, reading);
-    console.log('Background: reading email sent to', order.email);
+    console.log('Background: reading email sent successfully to', order.email);
   } catch (err) {
-    console.error('Background: reading email failed:', err.message);
+    console.error('Background: reading email FAILED:', err.message);
+    console.error('Background: email error stack:', err.stack);
   }
 };

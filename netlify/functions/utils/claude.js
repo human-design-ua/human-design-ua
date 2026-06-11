@@ -114,7 +114,7 @@ async function generateReading(order) {
   console.log(`Calling Claude API for ${order.email}, plan=${order.plan}`);
 
   const message = await client.messages.create({
-    model: 'claude-sonnet-4-5',
+    model: 'claude-sonnet-4-6',
     max_tokens: order.plan === 'full' ? 8000 : 5000,
     system: 'Ти — експерт з Дизайну Людини. Відповідай ТІЛЬКИ валідним JSON без markdown, без пояснень.',
     messages: [{ role: 'user', content: prompt }],
