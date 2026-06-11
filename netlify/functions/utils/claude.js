@@ -108,43 +108,92 @@ function buildPrompt(order) {
     .replace(/\{\{CHALLENGE\}\}/g,   CHALLENGE_UA[challenge] || challenge || '');
 }
 
-async function generateReading(order) {
-  const prompt = buildPrompt(order);
-
-  console.log(`Calling Claude API for ${order.email}, plan=${order.plan}`);
-
+async function callClaude(prompt, maxTokens) {
   const message = await client.messages.create({
     model: 'claude-sonnet-4-6',
-    max_tokens: order.plan === 'full' ? 8000 : 5000,
-    system: 'Ти — експерт з Дизайну Людини. Відповідай ТІЛЬКИ валідним JSON без markdown, без пояснень.',
+    max_tokens: maxTokens,
+    system: 'Ти — експерт з Дизайну Людини. Відповідай ТІЛЬКИ валідним JSON без markdown, без пояснень. Не обривай JSON.',
     messages: [{ role: 'user', content: prompt }],
   });
 
   const raw = message.content[0].text.trim();
-  console.log('Claude raw response (first 200 chars):', raw.slice(0, 200));
+  console.log('Claude raw (first 300):', raw.slice(0, 300));
 
-  // Strip markdown code fences if present
   const cleaned = raw
-    .replace(/^```json\s*/i, '')
-    .replace(/^```\s*/i, '')
-    .replace(/```\s*$/i, '')
-    .trim();
+    .replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/```\s*$/i, '').trim();
 
-  let parsed;
   try {
-    parsed = JSON.parse(cleaned);
+    return JSON.parse(cleaned);
   } catch(e) {
-    console.error('JSON parse failed:', e.message);
-    console.error('Cleaned text (first 500):', cleaned.slice(0, 500));
-    throw new Error('Claude вернул невалидный JSON: ' + e.message);
+    console.error('JSON parse failed at pos:', e.message);
+    // Try to fix truncated JSON by closing it
+    const fixed = tryFixJson(cleaned);
+    if (fixed) { console.log('JSON auto-fixed'); return fixed; }
+    throw new Error('Invalid JSON: ' + e.message);
+  }
+}
+
+function tryFixJson(str) {
+  // Try to close unclosed JSON by finding last complete key-value pair
+  try {
+    // Find last complete field before truncation
+    const lastComma = str.lastIndexOf('",');
+    const lastBrace = str.lastIndexOf('"}');
+    const cutAt = Math.max(lastComma, lastBrace);
+    if (cutAt > 100) {
+      const fixed = str.slice(0, cutAt + 1) + '}';
+      return JSON.parse(fixed);
+    }
+  } catch(e) { /* ignore */ }
+  return null;
+}
+
+async function generateReading(order) {
+  const prompt = buildPrompt(order);
+  console.log(`Calling Claude API for ${order.email}, plan=${order.plan}`);
+
+  // Use 8192 (max) for both plans to avoid truncation
+  const reading = await callClaude(prompt, 8192);
+
+  if (!reading || !reading.hd_type) {
+    throw new Error('Reading missing hd_type field');
   }
 
-  if (!parsed || typeof parsed !== 'object') {
-    throw new Error('Claude вернул не объект: ' + typeof parsed);
+  // For full plan — generate extended part separately
+  if (order.plan === 'full' && !reading.channels_description) {
+    console.log('Generating extended part for full plan...');
+    try {
+      const extPrompt = buildExtendedPrompt(order, reading);
+      const extended = await callClaude(extPrompt, 8192);
+      Object.assign(reading, extended);
+      console.log('Extended part merged');
+    } catch(e) {
+      console.warn('Extended part failed (non-fatal):', e.message);
+    }
   }
 
-  console.log('Reading generated successfully, hd_type:', parsed.hd_type);
-  return parsed;
+  console.log('Reading generated! hd_type:', reading.hd_type);
+  return reading;
+}
+
+function buildExtendedPrompt(order, basicReading) {
+  const { name, birth_date, birth_time, birth_place, life_area, challenge } = order;
+  return `Ти — експерт з Дизайну Людини. Клієнт: ${name || 'Клієнт'}, ${birth_date}, ${birth_time}, ${birth_place}.
+Тип: ${basicReading.hd_type}, Профіль: ${basicReading.profile}, Авторитет: ${basicReading.authority}.
+Сфера: ${LIFE_AREA_UA[life_area] || life_area}, Виклик: ${CHALLENGE_UA[challenge] || challenge}.
+
+Згенеруй РОЗШИРЕНУ частину розшифровки (повний тариф) УКРАЇНСЬКОЮ МОВОЮ.
+Відповідай ТІЛЬКИ валідним JSON:
+{
+  "channels_description": "5-6 речень про канали та ворота — які активовані, що означають для ${name}",
+  "planets_description": "5-6 речень про планетарні активації — Сонце, Земля, Місяць, їх вплив",
+  "incarnation_cross_description": "5-6 речень про інкарнаційний хрест ${basicReading.incarnation_cross} — тема життя, призначення",
+  "conditioning_description": "5-6 речень про декондиціювання — що знімати, як прийти до себе",
+  "relationships_description": "5-6 речень про стосунки — аура, притяжіння, сумісність для типу ${basicReading.hd_type}",
+  "self_sufficiency": "4-5 речень про самодостатність ${name} — де черпати силу, ресурсність",
+  "gift_meditation": "Персональна медитація-практика для ${name} (5-7 речень)",
+  "gift_affirmations": ["Афірмація 1 для ${name}", "Афірмація 2", "Афірмація 3", "Афірмація 4", "Афірмація 5"]
+}`;
 }
 
 module.exports = { generateReading };
