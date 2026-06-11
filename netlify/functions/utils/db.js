@@ -2,7 +2,7 @@
 const { getStore } = require('@netlify/blobs');
 
 function ordersStore() {
-  return getStore({ name: 'orders', consistency: 'strong' });
+  return getStore('orders');
 }
 
 async function saveOrder(order) {
