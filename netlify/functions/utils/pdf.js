@@ -75,6 +75,7 @@ class PDFFlow {
     this.FDB = FONTS.sansBold ? 'DV-Bold'    : 'Helvetica-Bold';
 
     doc.font(this.FDV); // default
+    this._dirty = false; // tracks if current page has any content
   }
 
   // ── Page helpers ────────────────────────────────────────────
@@ -91,11 +92,17 @@ class PDFFlow {
   }
 
   newPage(name) {
-    if (this.pg > 0) this._footer(name || this._name);
+    if (this.pg > 0) {
+      // Skip adding a new page if the current page has no content
+      if (!this._dirty) return this;
+      this._footer(name || this._name);
+    }
     this.doc.addPage();
     this.pg++;
+    this._dirty = false;
     this._header();
     this.doc.y = 22;
+    return this;
   }
 
   setName(n) { this._name = n; return this; }
@@ -110,6 +117,7 @@ class PDFFlow {
   // Big chapter opener — full width title
   chapterTitle(line1, line2) {
     this.ensure(90);
+    this._dirty = true;
     const d = this.doc;
     const y = d.y;
     d.font(this.FD).fontSize(38).fillColor(C.cream)
@@ -126,6 +134,7 @@ class PDFFlow {
   // Section label (small uppercase)
   label(text) {
     this.ensure(22);
+    this._dirty = true;
     this.doc.font(this.FDB).fontSize(8).fillColor(C.gold)
        .text(text.toUpperCase(), this.L, this.doc.y, { characterSpacing: 2, width: this.W });
     this.doc.y += 6;
@@ -135,6 +144,7 @@ class PDFFlow {
   // Sub-heading inside section
   heading(text) {
     this.ensure(30);
+    this._dirty = true;
     this.doc.y += 8;
     this.doc.font(this.FB).fontSize(14).fillColor(C.cream)
        .text(text, this.L, this.doc.y, { width: this.W });
@@ -150,6 +160,7 @@ class PDFFlow {
       .replace(/Минимум \d+ слов\.?/gi, '')
       .trim();
     if (clean.length < 4) return this;
+    this._dirty = true;
     this.ensure(44);
     this.doc.font(this.FDV).fontSize(10).fillColor(C.cream)
        .text(clean, this.L + (opts.indent||0), this.doc.y, {
@@ -181,6 +192,7 @@ class PDFFlow {
     if (!text) return this;
     const clean = String(text).replace(/Мінімум \d+ слів\.?/gi,'').trim();
     if (!clean) return this;
+    this._dirty = true;
     this.ensure(22);
     const d = this.doc, y = d.y;
     d.font(this.FB).fontSize(11).fillColor(C.gold).text('✦', this.L, y, { continued: true });
@@ -207,6 +219,7 @@ class PDFFlow {
   quote(text, style = 'gold') {
     if (!text) return this;
     const clean = String(text).replace(/Мінімум \d+ слів\.?/gi,'').trim();
+    this._dirty = true;
     this.ensure(60);
     const d = this.doc;
     const y  = d.y;
@@ -238,7 +251,6 @@ class PDFFlow {
 
   // ── Space image divider ──────────────────────────────────────
   imageBreak(imgFile, caption) {
-    // Always on new page for visual impact
     this.newPage();
     const d = this.doc;
     const imgBuf = loadBuf(imgFile);
@@ -255,6 +267,7 @@ class PDFFlow {
        .text(caption.toUpperCase(), 55, 80, { align: 'center', width: 485 });
     }
     d.y = 235;
+    this._dirty = true; // image page always has content
     return this;
   }
 
