@@ -101,11 +101,12 @@ class PDFFlow {
 
   newPage(name) {
     if (this.pg > 0) {
-      // Skip adding a new page if the current page has no content
-      if (!this._dirty) return this;
+      if (!this._dirty) return this; // skip empty page
       this._footer(name || this._name);
     }
+    this._myAddingPage = true;
     this.doc.addPage();
+    this._myAddingPage = false;
     this.pg++;
     this._dirty = false;
     this._header();
@@ -866,16 +867,17 @@ function renderClosing(flow, reading, order) {
 // ════════════════════════════════════════════════════════════════
 
 // Center geometry (absolute A4 page coords, bodygraph centered at x=298)
+// Follows standard HD bodygraph proportions
 const BG_CENTERS = {
-  head:   { x:298, y: 97, w: 80, h: 74, s:'tu', n:'Голова',    sub:'Натхнення' },
-  ajna:   { x:298, y:192, w: 72, h: 64, s:'td', n:'Аджна',     sub:'Ментал' },
-  throat: { x:298, y:278, w: 78, h: 46, s:'r',  n:'Горло',     sub:'Вираження' },
-  g:      { x:298, y:374, w: 96, h: 78, s:'d',  n:'G-центр',   sub:'Ідентичність' },
-  heart:  { x:381, y:337, w: 48, h: 48, s:'d',  n:'Серце',     sub:'Воля' },
-  sp:     { x:388, y:452, w: 76, h: 82, s:'tu', n:'Емоції',    sub:'Почуття' },
-  sacral: { x:298, y:467, w: 80, h: 54, s:'r',  n:'Сакрал',    sub:'Жива сила' },
-  spleen: { x:210, y:432, w: 76, h: 82, s:'td', n:'Сел-ка',    sub:'Інстинкт' },
-  root:   { x:298, y:556, w: 78, h: 48, s:'r',  n:'Корінь',    sub:'Адреналін' },
+  head:   { x:298, y: 92, w: 78, h: 72, s:'tu', n:'Голова',    sub:'Натхнення' },
+  ajna:   { x:298, y:183, w: 70, h: 62, s:'td', n:'Аджна',     sub:'Ментал' },
+  throat: { x:298, y:268, w: 76, h: 44, s:'r',  n:'Горло',     sub:'Вираження' },
+  g:      { x:298, y:360, w: 90, h: 74, s:'d',  n:'G-центр',   sub:'Ідентичність' },
+  heart:  { x:372, y:325, w: 46, h: 46, s:'d',  n:'Серце',     sub:'Воля' },
+  sp:     { x:375, y:422, w: 68, h: 72, s:'tu', n:'Емоції',    sub:'Почуття' },
+  sacral: { x:298, y:450, w: 78, h: 52, s:'r',  n:'Сакрал',    sub:'Жива сила' },
+  spleen: { x:222, y:408, w: 68, h: 72, s:'td', n:'Сел-ка',    sub:'Інстинкт' },
+  root:   { x:298, y:535, w: 76, h: 46, s:'r',  n:'Корінь',    sub:'Адреналін' },
 };
 
 const BG_DEF_COLORS = {
@@ -884,24 +886,25 @@ const BG_DEF_COLORS = {
   sacral:'#1A2E7A', spleen:'#2A5A22', root:'#5A3010',
 };
 
+// Channel routes — connection points between center borders
+// Recalculated for updated center positions
 const BG_ROUTES = [
-  { k:'head-ajna',     p:[[298,135],[298,160]] },
-  { k:'ajna-throat',   p:[[298,224],[298,255]] },
-  { k:'throat-g',      p:[[298,301],[298,335]] },
-  { k:'throat-heart',  p:[[336,278],[359,317]] },
-  { k:'throat-sp',     p:[[336,278],[352,411]] },
-  { k:'throat-spleen', p:[[260,278],[248,391]] },
-  { k:'g-heart',       p:[[345,374],[357,337]] },
-  { k:'g-sacral',      p:[[298,413],[298,440]] },
-  { k:'g-sp',          p:[[345,374],[352,411]] },
-  { k:'sacral-throat', p:[[298,440],[298,301]] },
-  { k:'heart-sp',      p:[[381,361],[388,411]] },
-  { k:'heart-spleen',  p:[[357,317],[248,391]] },
-  { k:'sp-sacral',     p:[[352,493],[336,467]] },
-  { k:'sacral-spleen', p:[[260,467],[248,473]] },
-  { k:'sacral-root',   p:[[298,494],[298,532]] },
-  { k:'spleen-root',   p:[[210,473],[260,532]] },
-  { k:'root-sp',       p:[[336,532],[352,493]] },
+  { k:'head-ajna',     p:[[298,128],[298,152]] },
+  { k:'ajna-throat',   p:[[298,214],[298,246]] },
+  { k:'throat-g',      p:[[298,290],[298,323]] },
+  { k:'throat-heart',  p:[[334,268],[349,302]] },
+  { k:'throat-sp',     p:[[334,268],[341,386]] },
+  { k:'throat-spleen', p:[[262,268],[256,372]] },
+  { k:'g-heart',       p:[[342,360],[349,302]] },
+  { k:'g-sacral',      p:[[298,397],[298,424]] },
+  { k:'sacral-throat', p:[[298,424],[298,290]] }, // channel 34-20
+  { k:'heart-sp',      p:[[372,348],[375,386]] },
+  { k:'heart-spleen',  p:[[349,302],[256,372]] },
+  { k:'sp-sacral',     p:[[341,458],[334,450]] },
+  { k:'sacral-spleen', p:[[260,450],[256,444]] },
+  { k:'sacral-root',   p:[[298,476],[298,512]] },
+  { k:'spleen-root',   p:[[222,444],[262,512]] },
+  { k:'root-sp',       p:[[334,512],[341,458]] },
 ];
 
 // Build channel → route map at module load
@@ -979,10 +982,10 @@ function renderBodygraphPage(doc, flow, reading, order) {
   const { getDefinedCenters, CENTER_GATES, CHANNELS } = require('./bodygraph');
   const definedCenters = getDefinedCenters(allGateNums);
 
-  // Draw inactive channel routes (dark background lines)
+  // Draw inactive channel routes — very thin, barely visible
   BG_ROUTES.forEach(r => {
     const [[x1,y1],[x2,y2]] = r.p;
-    d.moveTo(x1,y1).lineTo(x2,y2).lineWidth(4).stroke('#182436');
+    d.moveTo(x1,y1).lineTo(x2,y2).lineWidth(0.8).stroke('#1E3050');
   });
 
   // Draw active channels
@@ -1058,45 +1061,50 @@ function renderBodygraphPage(doc, flow, reading, order) {
     ry = d.y + 1.5;
   });
 
-  // Legend
-  d.rect(55, 618, 485, 0.5).fill(C.line);
-  [[55,'#D0C8A0','Особистість'],[145,'#CC4040','Дизайн'],[220,'#8B6EE0','Обидва']].forEach(([lx,col,lbl]) => {
-    d.rect(lx, 624, 20, 4).fill(col);
-    d.font(flow.FDV).fontSize(6.5).fillColor(C.muted).text(lbl, lx+24, 622);
+  // ── Legend ────────────────────────────────────────────────────
+  const LY = 605; // legend Y — well above page bottom
+  d.rect(55, LY, 485, 0.5).fill(C.line);
+  [[55,'#D0C8A0','Особистість'],[150,'#CC4040','Дизайн'],[230,'#8B6EE0','Обидва']].forEach(([lx,col,lbl]) => {
+    d.rect(lx, LY+6, 18, 4).fill(col);
+    d.font(flow.FDV).fontSize(6.5).fillColor(C.muted).text(lbl, lx+22, LY+4);
   });
-  d.roundedRect(320,622,10,8,2).fillAndStroke('#4A3E8A','#8A7ACA');
-  d.font(flow.FDV).fontSize(6.5).fillColor(C.muted).text('Визначений', 335, 622);
-  d.roundedRect(415,622,10,8,2).fillAndStroke('#0D1628','#1E2E46');
-  d.font(flow.FDV).fontSize(6.5).fillColor(C.muted).text('Відкритий', 430, 622);
+  d.roundedRect(330,LY+4,9,7,2).fillAndStroke('#4A3E8A','#8A7ACA');
+  d.font(flow.FDV).fontSize(6.5).fillColor(C.muted).text('Визначений', 343, LY+4);
+  d.roundedRect(415,LY+4,9,7,2).fillAndStroke('#0D1628','#1E2E46');
+  d.font(flow.FDV).fontSize(6.5).fillColor(C.muted).text('Відкритий', 428, LY+4);
 
-  // Bottom: key parameters
-  d.rect(55, 638, 485, 0.5).fill(C.gold);
+  // ── Key parameters ───────────────────────────────────────────
+  const PY = 624;
+  d.rect(55, PY, 485, 0.5).fill(C.gold);
   const params = [
     ['ТИП', reading.hd_type||'—'],
     ['АВТОРИТЕТ', reading.authority||'—'],
     ['ПРОФІЛЬ', reading.profile||'—'],
     ['ВИЗНАЧЕНІСТЬ', reading.definition||'—'],
-    ['ХРЕСТ', (reading.incarnation_cross||'—').slice(0,22)],
+    ['ХРЕСТ', (reading.incarnation_cross||'—').slice(0,20)],
   ];
   params.forEach(([k,v],i) => {
     const px = 55 + i*(485/5);
-    d.font(flow.FDB).fontSize(6).fillColor(C.muted).text(k,px,644,{characterSpacing:1});
-    d.font(flow.FB).fontSize(8).fillColor(C.cream).text(v,px,654,{width:92});
+    d.font(flow.FDB).fontSize(6).fillColor(C.muted).text(k, px, PY+6, {characterSpacing:1});
+    d.font(flow.FB).fontSize(8).fillColor(C.cream).text(v, px, PY+16, {width:90});
   });
 
-  // Active channels
+  // ── Active channels ──────────────────────────────────────────
   const chs = reading.active_channels||[];
-  if (chs.length) {
-    d.font(flow.FDB).fontSize(6).fillColor(C.muted).text('АКТИВНІ КАНАЛИ:', 55, 692, {characterSpacing:1.5});
-    d.font(flow.FDV).fontSize(7).fillColor(C.gold).text(chs.join('  ✦  '), 55, 702, {width:485});
-  }
+  d.font(flow.FDB).fontSize(6).fillColor(C.muted)
+   .text('АКТИВНІ КАНАЛИ:', 55, PY+40, {characterSpacing:1.5});
+  d.font(flow.FDV).fontSize(7).fillColor(C.gold)
+   .text(chs.length ? chs.join('  ✦  ') : '—', 55, PY+50, {width:485, lineBreak:false});
 
-  // Defined centers list
+  // ── Defined centers ──────────────────────────────────────────
   const defNames = [...definedCenters].map(k=>BG_CENTERS[k]?.n||k).join('  ·  ');
-  if (defNames) {
-    d.font(flow.FDB).fontSize(6).fillColor(C.muted).text('ВИЗНАЧЕНІ ЦЕНТРИ:', 55, 718, {characterSpacing:1.5});
-    d.font(flow.FDV).fontSize(7).fillColor('#8B6EE0').text(defNames, 55, 728, {width:485});
-  }
+  d.font(flow.FDB).fontSize(6).fillColor(C.muted)
+   .text('ВИЗНАЧЕНІ ЦЕНТРИ:', 55, PY+65, {characterSpacing:1.5});
+  d.font(flow.FDV).fontSize(7).fillColor('#8B6EE0')
+   .text(defNames||'—', 55, PY+75, {width:485, lineBreak:false});
+
+  // Lock cursor to prevent auto-page-add
+  d.y = 760;
 }
 
 // ════════════════════════════════════════════════════════════════
@@ -1123,6 +1131,18 @@ async function generateReadingPDF(order, reading) {
 
       const flow = new PDFFlow(doc);
       flow.setName(order.name || '');
+
+      // ── Intercept pdfkit auto-pages (text overflow) ─────────
+      // pdfkit adds a page when text overflows — draw our navy bg on it
+      doc.on('pageAdded', () => {
+        if (flow._myAddingPage) return; // we added it ourselves — skip
+        // Auto-added by pdfkit: draw background, advance counter
+        flow.doc.rect(0, 0, 595, 842).fill(C.bg);
+        flow.doc.rect(0, 0, 595, 3).fill(C.gold);
+        flow.pg++;
+        flow._dirty = false;
+        flow.doc.y = 22;
+      });
 
       // Cover
       doc.addPage();
