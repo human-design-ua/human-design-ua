@@ -21,6 +21,14 @@ const C = {
 
 const UTILS = path.join(__dirname);
 
+// ── Color helper ──────────────────────────────────────────────
+function lightenHex(hex, amt = 70) {
+  const r = Math.min(255, parseInt(hex.slice(1,3),16) + amt);
+  const g = Math.min(255, parseInt(hex.slice(3,5),16) + amt);
+  const b = Math.min(255, parseInt(hex.slice(5,7),16) + amt);
+  return '#' + [r,g,b].map(v => v.toString(16).padStart(2,'0')).join('');
+}
+
 // ── Font loader (Buffer — works in Lambda) ────────────────────
 function loadBuf(filename) {
   const candidates = [
@@ -854,6 +862,244 @@ function renderClosing(flow, reading, order) {
 }
 
 // ════════════════════════════════════════════════════════════════
+//  PROFESSIONAL BODYGRAPH PAGE
+// ════════════════════════════════════════════════════════════════
+
+// Center geometry (absolute A4 page coords, bodygraph centered at x=298)
+const BG_CENTERS = {
+  head:   { x:298, y: 97, w: 80, h: 74, s:'tu', n:'Голова',    sub:'Натхнення' },
+  ajna:   { x:298, y:192, w: 72, h: 64, s:'td', n:'Аджна',     sub:'Ментал' },
+  throat: { x:298, y:278, w: 78, h: 46, s:'r',  n:'Горло',     sub:'Вираження' },
+  g:      { x:298, y:374, w: 96, h: 78, s:'d',  n:'G-центр',   sub:'Ідентичність' },
+  heart:  { x:381, y:337, w: 48, h: 48, s:'d',  n:'Серце',     sub:'Воля' },
+  sp:     { x:388, y:452, w: 76, h: 82, s:'tu', n:'Емоції',    sub:'Почуття' },
+  sacral: { x:298, y:467, w: 80, h: 54, s:'r',  n:'Сакрал',    sub:'Жива сила' },
+  spleen: { x:210, y:432, w: 76, h: 82, s:'td', n:'Сел-ка',    sub:'Інстинкт' },
+  root:   { x:298, y:556, w: 78, h: 48, s:'r',  n:'Корінь',    sub:'Адреналін' },
+};
+
+const BG_DEF_COLORS = {
+  head:'#4A3E8A', ajna:'#4A3E8A', throat:'#1E5A62',
+  g:'#1E5232',   heart:'#7A1E1E', sp:'#7A4010',
+  sacral:'#1A2E7A', spleen:'#2A5A22', root:'#5A3010',
+};
+
+const BG_ROUTES = [
+  { k:'head-ajna',     p:[[298,135],[298,160]] },
+  { k:'ajna-throat',   p:[[298,224],[298,255]] },
+  { k:'throat-g',      p:[[298,301],[298,335]] },
+  { k:'throat-heart',  p:[[336,278],[359,317]] },
+  { k:'throat-sp',     p:[[336,278],[352,411]] },
+  { k:'throat-spleen', p:[[260,278],[248,391]] },
+  { k:'g-heart',       p:[[345,374],[357,337]] },
+  { k:'g-sacral',      p:[[298,413],[298,440]] },
+  { k:'g-sp',          p:[[345,374],[352,411]] },
+  { k:'sacral-throat', p:[[298,440],[298,301]] },
+  { k:'heart-sp',      p:[[381,361],[388,411]] },
+  { k:'heart-spleen',  p:[[357,317],[248,391]] },
+  { k:'sp-sacral',     p:[[352,493],[336,467]] },
+  { k:'sacral-spleen', p:[[260,467],[248,473]] },
+  { k:'sacral-root',   p:[[298,494],[298,532]] },
+  { k:'spleen-root',   p:[[210,473],[260,532]] },
+  { k:'root-sp',       p:[[336,532],[352,493]] },
+];
+
+// Build channel → route map at module load
+const BG_CHANNEL_ROUTE = {};
+const _BG_ROUTE_CHANNELS = {
+  'head-ajna':[[64,47],[61,24],[63,4]],
+  'ajna-throat':[[17,62],[43,23],[11,56]],
+  'throat-g':[[20,10],[31,7],[8,1],[33,13]],
+  'throat-heart':[[45,21]],
+  'throat-sp':[[12,22],[35,36]],
+  'throat-spleen':[[16,48]],
+  'g-heart':[[51,25]],
+  'g-sacral':[[29,46],[14,2],[5,15],[34,10]],
+  'sacral-throat':[[34,20]],
+  'heart-sp':[[40,37]],
+  'heart-spleen':[[26,44]],
+  'sp-sacral':[[6,59]],
+  'sacral-spleen':[[34,57]],
+  'sacral-root':[[42,53],[3,60],[9,52],[27,50]],
+  'spleen-root':[[32,54],[28,38],[18,58]],
+  'root-sp':[[41,30],[19,49],[39,55]],
+};
+for (const [rk, chs] of Object.entries(_BG_ROUTE_CHANNELS)) {
+  for (const [g1,g2] of chs) {
+    BG_CHANNEL_ROUTE[Math.min(g1,g2)+'-'+Math.max(g1,g2)] = rk;
+  }
+}
+
+function bgDrawCenter(d, key, c, isDefined, flow) {
+  const { x, y, w, h, s, n, sub } = c;
+  const x0 = x - w/2, y0 = y - h/2;
+  const fill   = isDefined ? (BG_DEF_COLORS[key]||'#4A3E8A') : '#0D1628';
+  const stroke = isDefined ? lightenHex(fill, 55) : '#1E2E46';
+
+  switch(s) {
+    case 'r':  d.roundedRect(x0, y0, w, h, 4); break;
+    case 'd':  d.moveTo(x,y0).lineTo(x+w/2,y).lineTo(x,y0+h).lineTo(x-w/2,y).closePath(); break;
+    case 'tu': d.moveTo(x,y0).lineTo(x+w/2,y0+h).lineTo(x-w/2,y0+h).closePath(); break;
+    case 'td': d.moveTo(x,y0+h).lineTo(x+w/2,y0).lineTo(x-w/2,y0).closePath(); break;
+  }
+  d.fillAndStroke(fill, stroke);
+
+  const labelY = s==='tu' ? y + h/2 - 18 : s==='td' ? y - h/2 + 5 : y - 8;
+  d.font(flow.FDB).fontSize(6.5).fillColor(isDefined ? '#E8DCC8' : '#5A6A7A')
+   .text(n, x0, labelY, { width:w, align:'center' });
+  d.font(flow.FDV).fontSize(5).fillColor(isDefined ? '#C9A860' : '#2A3A4A')
+   .text(sub, x0, labelY+9, { width:w, align:'center' });
+}
+
+function renderBodygraphPage(doc, flow, reading, order) {
+  flow.newPage();
+  flow._dirty = true;
+  const d = doc;
+
+  // Header
+  d.font(flow.FDB).fontSize(8).fillColor(C.gold)
+   .text('БОДИГРАФ  ·  КАРТА ДИЗАЙНУ ЛЮДИНИ', 55, 18, { characterSpacing:2, align:'center', width:485 });
+  d.font(flow.FDV).fontSize(7.5).fillColor(C.muted)
+   .text([order.name, order.birth_date, order.birth_time, order.birth_place].filter(Boolean).join('  ·  '),
+         55, 29, { align:'center', width:485 });
+  d.rect(55, 41, 485, 0.5).fill(C.gold);
+
+  // Parse personality/design gate data
+  const pGateMap = {}, dGateMap = {};
+  (reading.personality_gates||[]).forEach(s => {
+    const m = s.match(/(.+): (\d+)\.(\d+)/);
+    if (m) pGateMap[+m[2]] = { planet:m[1], line:+m[3] };
+  });
+  (reading.design_gates||[]).forEach(s => {
+    const m = s.match(/(.+): (\d+)\.(\d+)/);
+    if (m) dGateMap[+m[2]] = { planet:m[1], line:+m[3] };
+  });
+
+  const allGateNums = [...new Set([...Object.keys(pGateMap).map(Number), ...Object.keys(dGateMap).map(Number)])];
+  const { getDefinedCenters, CENTER_GATES, CHANNELS } = require('./bodygraph');
+  const definedCenters = getDefinedCenters(allGateNums);
+
+  // Draw inactive channel routes (dark background lines)
+  BG_ROUTES.forEach(r => {
+    const [[x1,y1],[x2,y2]] = r.p;
+    d.moveTo(x1,y1).lineTo(x2,y2).lineWidth(4).stroke('#182436');
+  });
+
+  // Draw active channels
+  const activeRoutes = new Map();
+  CHANNELS.forEach(([g1,g2]) => {
+    const rk = BG_CHANNEL_ROUTE[Math.min(g1,g2)+'-'+Math.max(g1,g2)];
+    if (!rk) return;
+    const hasP = pGateMap[g1] && pGateMap[g2];
+    const hasD = dGateMap[g1] && dGateMap[g2];
+    const anyActive = (pGateMap[g1]||dGateMap[g1]) && (pGateMap[g2]||dGateMap[g2]);
+    if (!anyActive) return;
+    const col = (hasP && hasD) ? '#8B6EE0' : hasP ? '#D0C8A0' : '#CC4040';
+    if (!activeRoutes.has(rk) || col==='#8B6EE0') activeRoutes.set(rk, col);
+  });
+  activeRoutes.forEach((col, rk) => {
+    const r = BG_ROUTES.find(x=>x.k===rk);
+    if (!r) return;
+    const [[x1,y1],[x2,y2]] = r.p;
+    d.moveTo(x1,y1).lineTo(x2,y2).lineWidth(5).stroke(col);
+  });
+
+  // Draw centers
+  Object.entries(BG_CENTERS).forEach(([key, c]) => {
+    bgDrawCenter(d, key, c, definedCenters.has(key), flow);
+  });
+
+  // Draw active gate numbers around centers
+  const PLANET_SYM = { Sun:'☉', Earth:'⊕', Moon:'☽', Mercury:'☿', Venus:'♀',
+                       Mars:'♂', Jupiter:'♃', Saturn:'♄', 'N.Node':'☊', 'S.Node':'☋' };
+
+  allGateNums.forEach(g => {
+    const centerKey = Object.keys(CENTER_GATES).find(c => CENTER_GATES[c].includes(g));
+    if (!centerKey) return;
+    const c = BG_CENTERS[centerKey];
+    if (!c) return;
+    const gateList = CENTER_GATES[centerKey];
+    const idx = gateList.indexOf(g);
+    const total = gateList.length;
+    const angle = (idx / total) * 2 * Math.PI - Math.PI / 2;
+    const radius = (Math.max(c.w, c.h) / 2) + 9;
+    const gx = c.x + Math.cos(angle) * radius;
+    const gy = c.y + Math.sin(angle) * radius;
+    // Skip if outside visible area
+    if (gx < 60 || gx > 530 || gy < 50 || gy > 610) return;
+    const col = (pGateMap[g] && dGateMap[g]) ? '#C9A860' : pGateMap[g] ? '#D0C8A0' : '#CC4040';
+    d.font(flow.FDB).fontSize(5.5).fillColor(col)
+     .text(String(g), gx - 6, gy - 4, { width:12, align:'center' });
+  });
+
+  // Left: DESIGN gates
+  d.font(flow.FDB).fontSize(7.5).fillColor('#CC4040').text('ДИЗАЙН', 55, 50, { characterSpacing:1.5 });
+  d.font(flow.FDV).fontSize(6).fillColor(C.muted).text('Несвідоме (червоне)', 55, 61);
+  let ly = 76;
+  (reading.design_gates||[]).forEach(s => {
+    const m = s.match(/(.+): (\d+)\.(\d+)/);
+    if (!m || ly > 600) return;
+    const sym = PLANET_SYM[m[1]] || m[1].slice(0,3);
+    d.font(flow.FDB).fontSize(7.5).fillColor('#CC4040').text(sym, 55, ly, { continued:true });
+    d.font(flow.FDV).fontSize(7).fillColor(C.muted).text(`  ${m[2]}.${m[3]}`, { width:85 });
+    ly = d.y + 1.5;
+  });
+
+  // Right: PERSONALITY gates
+  d.font(flow.FDB).fontSize(7.5).fillColor(C.cream).text('ОСОБИСТІСТЬ', 452, 50, { align:'right', width:88, characterSpacing:1 });
+  d.font(flow.FDV).fontSize(6).fillColor(C.muted).text('Свідоме (чорне)', 452, 61, { align:'right', width:88 });
+  let ry = 76;
+  (reading.personality_gates||[]).forEach(s => {
+    const m = s.match(/(.+): (\d+)\.(\d+)/);
+    if (!m || ry > 600) return;
+    const sym = PLANET_SYM[m[1]] || m[1].slice(0,3);
+    d.font(flow.FDV).fontSize(7).fillColor(C.muted).text(`${m[2]}.${m[3]}  `, 452, ry, { continued:true, align:'right', width:88 });
+    d.font(flow.FDB).fontSize(7.5).fillColor(C.cream).text(sym, { align:'right', width:88 });
+    ry = d.y + 1.5;
+  });
+
+  // Legend
+  d.rect(55, 618, 485, 0.5).fill(C.line);
+  [[55,'#D0C8A0','Особистість'],[145,'#CC4040','Дизайн'],[220,'#8B6EE0','Обидва']].forEach(([lx,col,lbl]) => {
+    d.rect(lx, 624, 20, 4).fill(col);
+    d.font(flow.FDV).fontSize(6.5).fillColor(C.muted).text(lbl, lx+24, 622);
+  });
+  d.roundedRect(320,622,10,8,2).fillAndStroke('#4A3E8A','#8A7ACA');
+  d.font(flow.FDV).fontSize(6.5).fillColor(C.muted).text('Визначений', 335, 622);
+  d.roundedRect(415,622,10,8,2).fillAndStroke('#0D1628','#1E2E46');
+  d.font(flow.FDV).fontSize(6.5).fillColor(C.muted).text('Відкритий', 430, 622);
+
+  // Bottom: key parameters
+  d.rect(55, 638, 485, 0.5).fill(C.gold);
+  const params = [
+    ['ТИП', reading.hd_type||'—'],
+    ['АВТОРИТЕТ', reading.authority||'—'],
+    ['ПРОФІЛЬ', reading.profile||'—'],
+    ['ВИЗНАЧЕНІСТЬ', reading.definition||'—'],
+    ['ХРЕСТ', (reading.incarnation_cross||'—').slice(0,22)],
+  ];
+  params.forEach(([k,v],i) => {
+    const px = 55 + i*(485/5);
+    d.font(flow.FDB).fontSize(6).fillColor(C.muted).text(k,px,644,{characterSpacing:1});
+    d.font(flow.FB).fontSize(8).fillColor(C.cream).text(v,px,654,{width:92});
+  });
+
+  // Active channels
+  const chs = reading.active_channels||[];
+  if (chs.length) {
+    d.font(flow.FDB).fontSize(6).fillColor(C.muted).text('АКТИВНІ КАНАЛИ:', 55, 692, {characterSpacing:1.5});
+    d.font(flow.FDV).fontSize(7).fillColor(C.gold).text(chs.join('  ✦  '), 55, 702, {width:485});
+  }
+
+  // Defined centers list
+  const defNames = [...definedCenters].map(k=>BG_CENTERS[k]?.n||k).join('  ·  ');
+  if (defNames) {
+    d.font(flow.FDB).fontSize(6).fillColor(C.muted).text('ВИЗНАЧЕНІ ЦЕНТРИ:', 55, 718, {characterSpacing:1.5});
+    d.font(flow.FDV).fontSize(7).fillColor('#8B6EE0').text(defNames, 55, 728, {width:485});
+  }
+}
+
+// ════════════════════════════════════════════════════════════════
 //  MAIN EXPORT
 // ════════════════════════════════════════════════════════════════
 async function generateReadingPDF(order, reading) {
@@ -882,6 +1128,9 @@ async function generateReadingPDF(order, reading) {
       doc.addPage();
       flow.pg = 1;
       renderCover(doc, flow, order, reading);
+
+      // Bodygraph page (right after cover)
+      renderBodygraphPage(doc, flow, reading, order);
 
       // Content
       if (order.plan === 'full') renderFull(flow, reading, order);
