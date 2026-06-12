@@ -1,440 +1,468 @@
-// PDF Generator — Human Design Reading (rich content, auto-pagination)
-// Full reading: ~50 pages | Basic reading: ~20 pages
+/**
+ * PDF Generator — Human Design Reading
+ * Dark navy aesthetic · Playfair Display headers · DejaVu body (Cyrillic)
+ * Space/Hubble imagery · Auto-pagination
+ */
+'use strict';
 const PDFDocument = require('pdfkit');
 const path = require('path');
-const { generateBodygraph } = require('./bodygraph');
+const fs   = require('fs');
 
-// ── Light theme palette ───────────────────────────────────────
+// ── Colour palette ────────────────────────────────────────────
 const C = {
-  bg:       '#FFFFFF',
-  primary:  '#4B3F8A',
-  gold:     '#B8892A',
-  text:     '#1A1530',
-  muted:    '#6B6090',
-  light:    '#F0EDF8',
-  lightGold:'#FFF8E7',
-  border:   '#DDD8F0',
-  borderGold:'#E8D8A0',
-  white:    '#FFFFFF',
+  bg:       '#0F1A2E',   // deep navy
+  surface:  '#162138',   // slightly lighter navy
+  cream:    '#E8DCC8',   // warm cream — main text
+  gold:     '#C9A860',   // amber gold — accents
+  muted:    '#8A8070',   // warm grey — labels
+  line:     '#263552',   // subtle divider
+  white:    '#F5F0E8',   // near-white
 };
 
-// ── Font paths ────────────────────────────────────────────────
-function getFontPath(filename) {
+const UTILS = path.join(__dirname);
+
+// ── Font loader (Buffer — works in Lambda) ────────────────────
+function loadBuf(filename) {
   const candidates = [
-    path.join(__dirname, filename),
+    path.join(UTILS, filename),
     path.join(process.cwd(), 'netlify/functions/utils', filename),
     path.join('/var/task/netlify/functions/utils', filename),
   ];
   for (const p of candidates) {
-    try { require('fs').accessSync(p); return p; } catch(e) {}
+    try { return fs.readFileSync(p); } catch(e) {}
   }
+  console.warn('Font/image not found:', filename);
   return null;
 }
 
+// Pre-load at module level
+const FONTS = {
+  display:  loadBuf('PlayfairDisplay-Black.ttf'),
+  bold:     loadBuf('PlayfairDisplay-Bold.ttf'),
+  serif:    loadBuf('PlayfairDisplay-Regular.ttf'),
+  sans:     loadBuf('DejaVuSans.ttf'),
+  sansBold: loadBuf('DejaVuSans-Bold.ttf'),
+};
+
+// Space images (used as chapter dividers / cover)
+const SPACE_IMGS = ['space_pillars.jpg','space_nebula_orion.jpg','space_andromeda.jpg',
+                    'space_butterfly.jpg','space_cluster.jpg','space_cone.jpg'];
+
 // ════════════════════════════════════════════════════════════════
-//  PDF Flow — auto-paginating renderer
+//  PDFFlow — renderer with auto-pagination
 // ════════════════════════════════════════════════════════════════
 class PDFFlow {
-  constructor(doc, name, plan) {
-    this.doc = doc;
-    this.name = name;
-    this.plan = plan;
-    this.pageNum = 0;
-    this.LEFT = 50;
-    this.RIGHT = 50;
-    this.WIDTH = 595 - this.LEFT - this.RIGHT; // 495
-    this.BOTTOM_LIMIT = 810;
-    this.hasCustomFonts = false;
+  constructor(doc) {
+    this.doc  = doc;
+    this.pg   = 0;
+    this.L    = 55;   // left margin
+    this.W    = 485;  // content width
+    this.SAFE = 800;  // page bottom limit
 
-    // Register DejaVu fonts (mandatory for Cyrillic support)
-    const boldPath = getFontPath('DejaVuSans-Bold.ttf');
-    const regPath  = getFontPath('DejaVuSans.ttf');
-    if (boldPath && regPath) {
-      try {
-        doc.registerFont('HDSans',      regPath);
-        doc.registerFont('HDSans-Bold', boldPath);
-        this.F  = 'HDSans';
-        this.FB = 'HDSans-Bold';
-        this.hasCustomFonts = true;
-      } catch(e) {
-        this.F  = 'Helvetica';
-        this.FB = 'Helvetica-Bold';
-      }
-    } else {
-      this.F  = 'Helvetica';
-      this.FB = 'Helvetica-Bold';
-    }
-    // Set default font immediately
-    doc.font(this.F);
+    // Register fonts
+    const reg = (name, buf) => { if (buf) doc.registerFont(name, buf); };
+    reg('PF-Display', FONTS.display);
+    reg('PF-Bold',    FONTS.bold);
+    reg('PF',         FONTS.serif);
+    reg('DV',         FONTS.sans);
+    reg('DV-Bold',    FONTS.sansBold);
+
+    // Choose fallbacks if a font failed to load
+    this.FD  = FONTS.display  ? 'PF-Display' : 'Helvetica-Bold';
+    this.FB  = FONTS.bold     ? 'PF-Bold'    : 'Helvetica-Bold';
+    this.FS  = FONTS.serif    ? 'PF'         : 'Helvetica';
+    this.FDV = FONTS.sans     ? 'DV'         : 'Helvetica';
+    this.FDB = FONTS.sansBold ? 'DV-Bold'    : 'Helvetica-Bold';
+
+    doc.font(this.FDV); // default
   }
 
-  font(bold = false) {
-    this.doc.font(bold ? this.FB : this.F);
-    return this;
+  // ── Page helpers ────────────────────────────────────────────
+  _header() {
+    this.doc.rect(0, 0, 595, 3).fill(C.gold);
+    this.doc.rect(0, 3, 595, 842).fill(C.bg);
+  }
+  _footer(name) {
+    const d = this.doc;
+    d.rect(0, 818, 595, 24).fill(C.surface);
+    d.font(this.FDV).fontSize(7).fillColor(C.muted)
+     .text(`HUMAN DESIGN UA  ·  ${(name||'').toUpperCase()}  ·  ${this.pg}`,
+           55, 825, { align: 'center', width: 485 });
   }
 
-  // Shorthand — apply font and return doc for chaining
-  f(bold = false) {
-    return this.doc.font(bold ? this.FB : this.F);
-  }
-
-  _drawPageChrome() {
-    this.doc.rect(0, 0, 595, 8).fill(C.primary);
-    this.doc.rect(0, 8, 595, 3).fill(C.gold);
-  }
-
-  _drawFooter() {
-    this.doc.rect(0, 820, 595, 22).fill(C.primary);
-    this.doc.fontSize(7).fillColor('#F0ECE8').font(this.F)
-       .text(
-         `Human Design UA  ·  ${this.name || ''}  ·  Сторінка ${this.pageNum}`,
-         50, 826, { align: 'center', width: 495 }
-       );
-  }
-
-  newPage() {
-    if (this.pageNum > 0) this._drawFooter();
+  newPage(name) {
+    if (this.pg > 0) this._footer(name || this._name);
     this.doc.addPage();
-    this.pageNum++;
-    this._drawPageChrome();
-    this.doc.y = 20;
+    this.pg++;
+    this._header();
+    this.doc.y = 22;
   }
 
-  ensureSpace(needed) {
-    if (this.doc.y + needed > this.BOTTOM_LIMIT) {
-      this.newPage();
-    }
+  setName(n) { this._name = n; return this; }
+
+  ensure(h) {
+    if (this.doc.y + h > this.SAFE) this.newPage();
     return this;
   }
 
-  // ── Section title ───────────────────────────────────────────
-  sectionTitle(title, style = 'primary') {
-    this.ensureSpace(36);
-    const y = this.doc.y;
-    if (style === 'gold') {
-      this.doc.rect(this.LEFT, y, this.WIDTH, 26).fill(C.lightGold);
-      this.doc.rect(this.LEFT, y, 4, 26).fill(C.gold);
-      this.doc.fontSize(11).fillColor(C.gold);
-    } else {
-      this.doc.rect(this.LEFT, y, this.WIDTH, 26).fill(C.light);
-      this.doc.rect(this.LEFT, y, 4, 26).fill(C.primary);
-      this.doc.fontSize(11).fillColor(C.primary);
+  // ── Typography ──────────────────────────────────────────────
+
+  // Big chapter opener — full width title
+  chapterTitle(line1, line2) {
+    this.ensure(90);
+    const d = this.doc;
+    const y = d.y;
+    d.font(this.FD).fontSize(38).fillColor(C.cream)
+     .text(line1.toUpperCase(), this.L, y, { width: this.W });
+    if (line2) {
+      d.font(this.FS).fontSize(22).fillColor(C.gold)
+       .text(line2, this.L, d.y + 2, { width: this.W });
     }
-    this.font(true).text(title.toUpperCase(), this.LEFT + 12, y + 8, { width: this.WIDTH - 16 });
-    this.doc.y = y + 33;
+    d.rect(this.L, d.y + 8, this.W, 0.5).fill(C.gold);
+    d.y += 18;
     return this;
   }
 
-  // ── Sub-section heading ─────────────────────────────────────
-  subHeading(title) {
-    this.ensureSpace(28);
+  // Section label (small uppercase)
+  label(text) {
+    this.ensure(22);
+    this.doc.font(this.FDB).fontSize(8).fillColor(C.gold)
+       .text(text.toUpperCase(), this.L, this.doc.y, { characterSpacing: 2, width: this.W });
     this.doc.y += 6;
-    this.font(true).fontSize(10).fillColor(C.primary)
-       .text('▸  ' + title, this.LEFT, this.doc.y, { width: this.WIDTH });
+    return this;
+  }
+
+  // Sub-heading inside section
+  heading(text) {
+    this.ensure(30);
+    this.doc.y += 8;
+    this.doc.font(this.FB).fontSize(14).fillColor(C.cream)
+       .text(text, this.L, this.doc.y, { width: this.W });
     this.doc.y += 4;
     return this;
   }
 
-  // ── Small label ─────────────────────────────────────────────
-  label(text) {
-    this.ensureSpace(16);
-    this.font(true).fontSize(8).fillColor(C.muted)
-       .text(text.toUpperCase(), this.LEFT, this.doc.y, { width: this.WIDTH });
-    this.doc.y += 3;
-    return this;
-  }
-
-  // ── Body paragraph ──────────────────────────────────────────
-  para(text, indent = 0) {
-    if (!text || text.length < 5) return this;
-    // Remove any JSON artifact artifacts
-    const clean = String(text).replace(/Мінімум \d+ слів\./gi, '').trim();
-    if (!clean) return this;
-
-    this.ensureSpace(40);
-    this.font(false).fontSize(10).fillColor(C.text)
-       .text(clean, this.LEFT + indent, this.doc.y, {
-         width: this.WIDTH - indent,
+  // Body paragraph — DejaVu for Cyrillic
+  para(text, opts = {}) {
+    if (!text) return this;
+    const clean = String(text)
+      .replace(/Мінімум \d+ слів\.?/gi, '')
+      .replace(/Минимум \d+ слов\.?/gi, '')
+      .trim();
+    if (clean.length < 4) return this;
+    this.ensure(44);
+    this.doc.font(this.FDV).fontSize(10).fillColor(C.cream)
+       .text(clean, this.L + (opts.indent||0), this.doc.y, {
+         width: this.W - (opts.indent||0),
          align: 'justify',
-         lineGap: 3,
+         lineGap: 3.5,
+         paragraphGap: 0,
        });
-    this.doc.y += 8;
+    this.doc.y += 10;
     return this;
   }
 
-  // ── Key-value row ────────────────────────────────────────────
-  keyValue(label, value) {
-    if (!value) return this;
-    this.ensureSpace(20);
-    const y = this.doc.y;
-    this.font(true).fontSize(9).fillColor(C.muted)
-       .text(label + ':', this.LEFT, y, { continued: true });
-    this.font(true).fontSize(9).fillColor(C.primary)
-       .text('  ' + String(value), { width: this.WIDTH - 120 });
-    this.doc.y += 3;
+  // Key=Value info row
+  kv(key, val) {
+    if (!val) return this;
+    this.ensure(18);
+    const d = this.doc;
+    const y = d.y;
+    d.font(this.FDB).fontSize(8).fillColor(C.muted)
+     .text(key.toUpperCase() + '  ', this.L, y, { continued: true, characterSpacing: 1.5 });
+    d.font(this.FDV).fontSize(10).fillColor(C.cream)
+     .text(String(val), { width: this.W - 120 });
+    d.y += 2;
     return this;
   }
 
-  // ── Check item (✓ list) ──────────────────────────────────────
-  checkItem(text) {
-    if (!text || text.length < 3) return this;
-    const clean = String(text).replace(/Мінімум \d+ слів\./gi, '').trim();
+  // Checkmark item
+  check(text) {
+    if (!text) return this;
+    const clean = String(text).replace(/Мінімум \d+ слів\.?/gi,'').trim();
     if (!clean) return this;
-    this.ensureSpace(22);
-    const y = this.doc.y;
-    this.doc.fontSize(10).fillColor(C.gold).font(this.FB)
-       .text('✓', this.LEFT, y, { continued: true });
-    this.font(false).fontSize(9).fillColor(C.text)
-       .text('  ' + clean, { width: this.WIDTH - 20, lineGap: 2 });
-    this.doc.y += 3;
+    this.ensure(22);
+    const d = this.doc, y = d.y;
+    d.font(this.FB).fontSize(11).fillColor(C.gold).text('✦', this.L, y, { continued: true });
+    d.font(this.FDV).fontSize(10).fillColor(C.cream)
+     .text('  ' + clean, { width: this.W - 18, lineGap: 2 });
+    d.y += 4;
     return this;
   }
 
-  // ── Bullet item ──────────────────────────────────────────────
-  bullet(text) {
-    if (!text || text.length < 3) return this;
-    const clean = String(text).replace(/Мінімум \d+ слів\./gi, '').trim();
-    this.ensureSpace(20);
-    this.font(false).fontSize(9).fillColor(C.text)
-       .text('•  ' + clean, this.LEFT + 12, this.doc.y, { width: this.WIDTH - 12, lineGap: 2 });
-    this.doc.y += 3;
-    return this;
-  }
-
-  // ── Numbered step ────────────────────────────────────────────
+  // Numbered step
   step(n, text) {
     if (!text) return this;
-    this.ensureSpace(20);
-    this.font(true).fontSize(9).fillColor(C.primary)
-       .text(`${n}.`, this.LEFT + 8, this.doc.y, { continued: true });
-    this.font(false).fontSize(9).fillColor(C.text)
-       .text('  ' + text, { width: this.WIDTH - 20, lineGap: 2 });
-    this.doc.y += 3;
+    this.ensure(20);
+    const d = this.doc;
+    d.font(this.FD).fontSize(13).fillColor(C.gold)
+     .text(String(n).padStart(2,'0'), this.L, d.y, { continued: true, width: 28 });
+    d.font(this.FDV).fontSize(10).fillColor(C.cream)
+     .text('  ' + text, { width: this.W - 30, lineGap: 2 });
+    d.y += 4;
     return this;
   }
 
-  // ── Spacer ───────────────────────────────────────────────────
-  space(h = 10) {
-    if (this.doc.y + h < this.BOTTOM_LIMIT) this.doc.y += h;
-    return this;
-  }
-
-  // ── Horizontal rule ──────────────────────────────────────────
-  rule(color = C.border) {
-    this.ensureSpace(10);
-    this.doc.rect(this.LEFT, this.doc.y, this.WIDTH, 1).fill(color);
-    this.doc.y += 8;
-    return this;
-  }
-
-  // ── Highlight box ────────────────────────────────────────────
-  highlight(text, style = 'primary') {
+  // Highlight quote box
+  quote(text, style = 'gold') {
     if (!text) return this;
-    const clean = String(text).replace(/Мінімум \d+ слів\./gi, '').trim();
-    this.ensureSpace(50);
-    const y = this.doc.y;
-    // Estimate height
-    const lineH = 14;
-    const chars = clean.length;
-    const lines = Math.ceil(chars / 60) + 1;
-    const h = Math.max(40, lines * lineH + 16);
-
-    const bgColor = style === 'gold' ? C.lightGold : C.light;
-    const accentColor = style === 'gold' ? C.gold : C.primary;
-    this.doc.rect(this.LEFT, y, this.WIDTH, h).fill(bgColor);
-    this.doc.rect(this.LEFT, y, 4, h).fill(accentColor);
-    this.font(false).fontSize(10).fillColor(C.text)
-       .text(clean, this.LEFT + 14, y + 10, { width: this.WIDTH - 20, lineGap: 3 });
-    this.doc.y = y + h + 8;
+    const clean = String(text).replace(/Мінімум \d+ слів\.?/gi,'').trim();
+    this.ensure(60);
+    const d = this.doc;
+    const y  = d.y;
+    const lineHeight = 14;
+    const rows = Math.ceil(clean.length / 55) + 1;
+    const h  = Math.max(48, rows * lineHeight + 20);
+    const accent = style === 'gold' ? C.gold : C.cream;
+    d.rect(this.L, y, this.W, h).fill(C.surface);
+    d.rect(this.L, y, 3, h).fill(accent);
+    d.font(this.FDV).fontSize(10).fillColor(C.cream)
+     .text(clean, this.L + 14, y + 12, { width: this.W - 20, lineGap: 3 });
+    d.y = y + h + 10;
     return this;
   }
 
-  // ── Center block (for center sections) ──────────────────────
-  centerBlock(centerData, isDefined) {
-    if (!centerData) return this;
-    const statusColor = isDefined ? C.primary : C.muted;
-    const statusText  = isDefined ? 'ВИЗНАЧЕНИЙ' : 'ВІДКРИТИЙ';
-    const bgColor     = isDefined ? C.light : '#F9F8FE';
-
-    this.ensureSpace(36);
-    const y = this.doc.y;
-    this.doc.rect(this.LEFT, y, this.WIDTH, 26).fill(bgColor);
-    this.doc.rect(this.LEFT, y, 4, 26).fill(statusColor);
-
-    // Title
-    this.font(true).fontSize(11).fillColor(statusColor)
-       .text((centerData.title || '').toUpperCase(), this.LEFT + 12, y + 4, {
-         width: this.WIDTH - 100, continued: true
-       });
-
-    // Status badge
-    this.font(true).fontSize(8).fillColor(statusColor)
-       .text(`  [${statusText}]`, { align: 'right', width: 80 });
-
-    this.doc.y = y + 33;
-
-    this.para(centerData.description);
-    if (centerData.gifts) {
-      this.subHeading('Дари та переваги');
-      this.para(centerData.gifts, 12);
+  // Thin divider line
+  rule() {
+    if (this.doc.y + 8 < this.SAFE) {
+      this.doc.rect(this.L, this.doc.y + 4, this.W, 0.5).fill(C.line);
+      this.doc.y += 14;
     }
-    if (centerData.shadow) {
-      this.subHeading('Тіньовий бік та виклики');
-      this.para(centerData.shadow, 12);
+    return this;
+  }
+
+  space(h = 10) {
+    if (this.doc.y + h < this.SAFE) this.doc.y += h;
+    return this;
+  }
+
+  // ── Space image divider ──────────────────────────────────────
+  imageBreak(imgFile, caption) {
+    // Always on new page for visual impact
+    this.newPage();
+    const d = this.doc;
+    const imgBuf = loadBuf(imgFile);
+    if (imgBuf) {
+      try {
+        d.image(imgBuf, 0, 0, { width: 595, height: 220, align: 'center', valign: 'center' });
+      } catch(e) {}
     }
-    if (centerData.practice) {
-      this.subHeading('Практика');
-      this.highlight(centerData.practice, 'gold');
+    // Dark overlay
+    d.rect(0, 0, 595, 220).fillOpacity(0.5).fill(C.bg);
+    d.fillOpacity(1);
+    if (caption) {
+      d.font(this.FD).fontSize(32).fillColor(C.cream)
+       .text(caption.toUpperCase(), 55, 80, { align: 'center', width: 485 });
     }
-    this.space(12);
+    d.y = 235;
+    return this;
+  }
+
+  // ── Center block ─────────────────────────────────────────────
+  centerBlock(cd, isDefined) {
+    if (!cd) return this;
+    this.ensure(50);
+    const d   = this.doc;
+    const y   = d.y;
+    const acc = isDefined ? C.gold : C.muted;
+    const status = isDefined ? 'ВИЗНАЧЕНИЙ' : 'ВІДКРИТИЙ';
+
+    // Title bar
+    d.rect(this.L, y, this.W, 28).fill(C.surface);
+    d.rect(this.L, y, 3, 28).fill(acc);
+    d.font(this.FB).fontSize(12).fillColor(isDefined ? C.cream : C.muted)
+     .text((cd.title||'').toUpperCase(), this.L + 12, y + 8, { width: this.W - 100 });
+    d.font(this.FDB).fontSize(7).fillColor(acc)
+     .text(`[${status}]`, this.L + 12, y + 8, { align: 'right', width: this.W - 20 });
+    d.y = y + 36;
+
+    this.para(cd.description);
+    if (cd.gifts) {
+      this.label('Твої дари');
+      this.para(cd.gifts, { indent: 8 });
+    }
+    if (cd.shadow) {
+      this.label('Зона уважності');
+      this.para(cd.shadow, { indent: 8 });
+    }
+    if (cd.practice) {
+      this.label('Практика');
+      this.quote(cd.practice, 'gold');
+    }
+    this.space(8);
     return this;
   }
 
   // ── Channel block ────────────────────────────────────────────
   channelBlock(ch) {
     if (!ch || !ch.description) return this;
-    this.ensureSpace(50);
-    const y = this.doc.y;
-    this.doc.rect(this.LEFT, y, this.WIDTH, 28).fill(C.light);
-    this.doc.rect(this.LEFT, y, 4, 28).fill(C.gold);
-    this.font(true).fontSize(11).fillColor(C.gold)
-       .text(`Канал ${ch.channel_id || ''} — ${ch.channel_name || ''}`, this.LEFT + 12, y + 8, { width: this.WIDTH - 20 });
-    this.doc.y = y + 35;
+    this.ensure(50);
+    const d = this.doc, y = d.y;
+    d.rect(this.L, y, this.W, 30).fill(C.surface);
+    d.rect(this.L, y, 3, 30).fill(C.gold);
+    d.font(this.FDB).fontSize(9).fillColor(C.gold)
+     .text(`КАНАЛ ${ch.channel_id||''}`, this.L + 12, y + 6, { characterSpacing: 1 });
+    d.font(this.FB).fontSize(13).fillColor(C.cream)
+     .text(ch.channel_name||'', this.L + 12, y + 16, { width: this.W - 20 });
+    d.y = y + 38;
     this.para(ch.description);
-    if (ch.gifts) { this.subHeading('Дари каналу'); this.para(ch.gifts, 12); }
-    if (ch.shadow) { this.subHeading('Виклики'); this.para(ch.shadow, 12); }
-    if (ch.how_to_use) { this.subHeading('Як використовувати'); this.highlight(ch.how_to_use, 'gold'); }
-    this.space(12);
+    if (ch.gifts) { this.label('Природні дари'); this.para(ch.gifts, { indent: 8 }); }
+    if (ch.shadow) { this.label('Зона уважності'); this.para(ch.shadow, { indent: 8 }); }
+    if (ch.how_to_use) { this.label('Як використовувати'); this.quote(ch.how_to_use); }
+    this.space(10);
     return this;
   }
 
-  // ── Planet row ───────────────────────────────────────────────
-  planetBlock(label, text) {
+  // ── Planet entry ─────────────────────────────────────────────
+  planet(title, text) {
     if (!text) return this;
-    this.ensureSpace(30);
-    const y = this.doc.y;
-    this.font(true).fontSize(10).fillColor(C.primary)
-       .text(`♦ ${label}`, this.LEFT, y, { width: 130, continued: false });
-    const afterLabel = y + 16;
-    this.font(false).fontSize(9.5).fillColor(C.text)
-       .text(String(text).replace(/Мінімум \d+ слів\./gi,'').trim(), this.LEFT + 16, afterLabel, {
-         width: this.WIDTH - 16, align: 'justify', lineGap: 2
-       });
-    this.doc.y += 6;
+    this.ensure(40);
+    const d = this.doc;
+    d.font(this.FB).fontSize(11).fillColor(C.gold)
+     .text('◈  ' + title, this.L, d.y, { width: this.W });
+    d.y += 2;
+    this.para(text, { indent: 16 });
     return this;
   }
 
   // ── Practice block ───────────────────────────────────────────
-  practiceBlock(practice, index) {
-    if (!practice) return this;
-    this.ensureSpace(50);
-    const y = this.doc.y;
-    this.doc.rect(this.LEFT, y, this.WIDTH, 28).fill(C.light);
-    this.doc.rect(this.LEFT, y, 4, 28).fill(C.primary);
-    this.font(true).fontSize(10).fillColor(C.primary)
-       .text(`Практика ${index}: ${practice.title || ''}`, this.LEFT + 12, y + 8, { width: this.WIDTH - 20 });
-    this.doc.y = y + 35;
-    this.para(practice.description);
-    if (Array.isArray(practice.steps) && practice.steps.length) {
-      this.subHeading('Як виконувати:');
-      practice.steps.forEach((step, i) => this.step(i + 1, step));
+  practiceBlock(p, i) {
+    if (!p) return this;
+    this.ensure(60);
+    const d = this.doc, y = d.y;
+    d.rect(this.L, y, this.W, 30).fill(C.surface);
+    d.rect(this.L, y, 3, 30).fill(C.gold);
+    d.font(this.FDB).fontSize(8).fillColor(C.gold)
+     .text(`ПРАКТИКА ${i}`, this.L + 12, y + 5, { characterSpacing: 2 });
+    d.font(this.FB).fontSize(12).fillColor(C.cream)
+     .text(p.title||'', this.L + 12, y + 16, { width: this.W - 20 });
+    d.y = y + 38;
+    this.para(p.description);
+    if (Array.isArray(p.steps) && p.steps.length) {
+      this.label('Як виконувати:');
+      p.steps.forEach((s, n) => this.step(n+1, s));
     }
-    this.space(12);
+    this.space(10);
     return this;
   }
 
-  // ── Plan week/month block ────────────────────────────────────
+  // ── 90-day plan block ────────────────────────────────────────
   planBlock(period, text) {
     if (!text) return this;
-    this.ensureSpace(40);
-    const y = this.doc.y;
-    this.doc.rect(this.LEFT, y, this.WIDTH, 24).fill(C.lightGold);
-    this.doc.rect(this.LEFT, y, 4, 24).fill(C.gold);
-    this.font(true).fontSize(10).fillColor(C.gold)
-       .text(period.toUpperCase(), this.LEFT + 12, y + 7, { width: this.WIDTH - 20 });
-    this.doc.y = y + 31;
+    this.ensure(50);
+    const d = this.doc, y = d.y;
+    d.rect(this.L, y, this.W, 26).fill(C.surface);
+    d.rect(this.L, y, 3, 26).fill(C.gold);
+    d.font(this.FDB).fontSize(9).fillColor(C.gold)
+     .text(period.toUpperCase(), this.L + 12, y + 8, { characterSpacing: 2 });
+    d.y = y + 33;
     this.para(text);
     return this;
   }
 }
 
 // ════════════════════════════════════════════════════════════════
-//  Cover page
+//  COVER PAGE
 // ════════════════════════════════════════════════════════════════
 function renderCover(doc, flow, order, reading) {
-  const { name, birth_date, birth_time, birth_place } = order;
-  const planName = order.plan === 'full' ? 'Повна розшифровка' : 'Базова розшифровка';
-  const pages = order.plan === 'full' ? '~50 сторінок' : '~20 сторінок';
+  const { name, birth_date, birth_time, birth_place, plan } = order;
+  const planLabel = plan === 'full' ? 'ПОВНА РОЗШИФРОВКА' : 'БАЗОВА РОЗШИФРОВКА';
+  const pages     = plan === 'full' ? '~50 СТОРІНОК' : '~20 СТОРІНОК';
 
-  // Cover gradient bg
-  doc.rect(0, 0, 595, 842).fill('#FAFAFA');
-  doc.rect(0, 0, 595, 8).fill(C.primary);
-  doc.rect(0, 8, 595, 3).fill(C.gold);
-  doc.rect(0, 829, 595, 13).fill(C.primary);
+  // Full-page navy bg
+  doc.rect(0, 0, 595, 842).fill(C.bg);
+  doc.rect(0, 0, 595, 3).fill(C.gold);
 
-  // Decorative center strip
-  doc.rect(0, 200, 595, 300).fill(C.light);
-  doc.rect(0, 200, 595, 4).fill(C.primary);
-  doc.rect(0, 496, 595, 4).fill(C.primary);
+  // Top space image with overlay
+  const imgBuf = loadBuf('space_pillars.jpg');
+  if (imgBuf) {
+    try {
+      doc.image(imgBuf, 0, 3, { width: 595, height: 260 });
+      doc.rect(0, 3, 595, 260).fillOpacity(0.45).fill(C.bg);
+      doc.fillOpacity(1);
+    } catch(e) {}
+  }
 
-  const fb = flow.FB; // bold font name
-  const fr = flow.F;  // regular font name
+  // Brand label
+  doc.font(flow.FDB).fontSize(9).fillColor(C.gold)
+     .text('HUMAN DESIGN UA', 55, 30, { align: 'center', width: 485, characterSpacing: 4 });
 
-  // Logo
-  doc.fontSize(10).fillColor(C.primary).font(fb)
-     .text('HUMAN DESIGN UA', 50, 35, { align: 'center', width: 495 });
-  doc.fontSize(8).fillColor(C.gold).font(fr)
-     .text('ПЕРСОНАЛЬНА РОЗШИФРОВКА ДИЗАЙНУ ЛЮДИНИ', 50, 50, { align: 'center', width: 495 });
+  // Main title
+  doc.font(flow.FD).fontSize(56).fillColor(C.cream)
+     .text('ТВІЙ', 55, 60, { align: 'center', width: 485 });
+  doc.font(flow.FD).fontSize(56).fillColor(C.cream)
+     .text('ДИЗАЙН', 55, 116, { align: 'center', width: 485 });
+  doc.font(flow.FS).fontSize(26).fillColor(C.gold)
+     .text('Людини', 55, 175, { align: 'center', width: 485 });
 
-  // Title
-  doc.fontSize(9).fillColor(C.gold).font(fb)
-     .text(planName.toUpperCase(), 50, 120, { align: 'center', width: 495 });
-  doc.fontSize(30).fillColor(C.primary).font(fb)
-     .text('Твій Дизайн', 50, 140, { align: 'center', width: 495 });
-  doc.fontSize(30).fillColor(C.primary).font(fb)
-     .text('Людини', 50, 174, { align: 'center', width: 495 });
+  // Gold divider
+  doc.rect(130, 215, 335, 0.8).fill(C.gold);
 
-  // Name block
-  doc.fontSize(22).fillColor(C.gold).font(fr)
-     .text(name || 'Клієнт', 50, 230, { align: 'center', width: 495 });
+  // Name
+  doc.font(flow.FB).fontSize(22).fillColor(C.cream)
+     .text(name || '', 55, 228, { align: 'center', width: 485 });
 
-  // Parameters table
+  // Params grid — 2×2
   const params = [
-    ['Тип',          reading.hd_type || '—'],
-    ['Профіль',      reading.profile || '—'],
-    ['Авторитет',    reading.authority || '—'],
-    ['Визначеність', reading.definition || '—'],
+    ['ТИП',          reading.hd_type  || '—'],
+    ['ПРОФІЛЬ',      reading.profile  || '—'],
+    ['АВТОРИТЕТ',    reading.authority|| '—'],
+    ['ВИЗНАЧЕНІСТЬ', reading.definition||'—'],
   ];
-  let py = 285;
-  params.forEach(([k, v]) => {
-    doc.fontSize(8).fillColor(C.muted).font(fb)
-       .text(k.toUpperCase() + ':', 100, py, { continued: true, width: 130 });
-    doc.fontSize(9).fillColor(C.primary).font(fb)
-       .text('  ' + v, { width: 300 });
-    py = doc.y + 3;
+
+  let gy = 280;
+  params.forEach(([k, v], i) => {
+    const gx = i % 2 === 0 ? 90 : 340;
+    if (i === 2) gy = 340;
+    doc.font(flow.FDB).fontSize(7.5).fillColor(C.muted)
+       .text(k, gx, gy, { characterSpacing: 1.5 });
+    doc.font(flow.FB).fontSize(17).fillColor(C.cream)
+       .text(v, gx, gy + 11);
   });
 
   // Cross
-  if (reading.incarnation_cross) {
-    doc.fontSize(8).fillColor(C.muted).font(fr)
-       .text('ІНКАРНАЦІЙНИЙ ХРЕСТ', 50, py + 8, { align: 'center', width: 495 });
-    doc.fontSize(11).fillColor(C.primary).font(fb)
-       .text(reading.incarnation_cross, 50, py + 22, { align: 'center', width: 495 });
-  }
+  doc.rect(90, 398, 415, 0.5).fill(C.line);
+  doc.font(flow.FDB).fontSize(7.5).fillColor(C.muted)
+     .text('ІНКАРНАЦІЙНИЙ ХРЕСТ', 90, 410, { characterSpacing: 1.5 });
+  doc.font(flow.FB).fontSize(13).fillColor(C.gold)
+     .text(reading.incarnation_cross || '—', 90, 424);
 
   // Birth data
-  const birthStr = [birth_date, birth_time, birth_place].filter(Boolean).join('  ·  ');
-  doc.fontSize(8).fillColor(C.muted).font(fr)
-     .text(birthStr, 50, 520, { align: 'center', width: 495 });
+  const bd = [birth_date, birth_time, birth_place].filter(Boolean).join('  ·  ');
+  doc.font(flow.FDV).fontSize(9).fillColor(C.muted)
+     .text(bd, 90, 455);
 
-  // Pages note
-  doc.fontSize(8).fillColor(C.muted).font(fr)
-     .text(pages + '  ·  PDF на пошту', 50, 540, { align: 'center', width: 495 });
+  // Bottom bodygraph area
+  drawCoverBodygraph(doc, flow, reading.activated_gates || [], 90, 490, 200, 165);
 
-  // Bodygraph
-  drawCoverBodygraph(doc, flow, reading.activated_gates || [], 170, 575, 255, 200);
+  // Bottom right — plan info
+  const bx = 320, by = 500;
+  doc.rect(bx, by, 185, 140).fill(C.surface);
+  doc.rect(bx, by, 2, 140).fill(C.gold);
+  doc.font(flow.FDB).fontSize(7.5).fillColor(C.gold)
+     .text(planLabel, bx + 12, by + 14, { characterSpacing: 1.5 });
+  doc.font(flow.FDV).fontSize(8.5).fillColor(C.cream)
+     .text(pages, bx + 12, by + 30);
 
-  flow.pageNum = 1;
+  doc.rect(bx + 12, by + 50, 161, 0.5).fill(C.line);
+
+  const includes = plan === 'full'
+    ? ['Розшифровка бодиграфа','Тип та стратегія','Авторитет','Профіль',
+       '9 Центрів','Планети','Канали','Хрест','90-денний план']
+    : ['Розшифровка бодиграфа','Тип та стратегія','Авторитет','Профіль','Ключові центри'];
+  let iy = by + 60;
+  includes.forEach(item => {
+    doc.font(flow.FDV).fontSize(7.5).fillColor(C.muted)
+       .text('✦  ' + item, bx + 12, iy);
+    iy += 13;
+  });
+
+  // Bottom gold line
+  doc.rect(0, 829, 595, 13).fill(C.surface);
+  doc.font(flow.FDV).fontSize(7).fillColor(C.muted)
+     .text('humandesign.finance@gmail.com', 55, 836, { align: 'center', width: 485 });
+
+  flow.pg = 1;
 }
 
 // ── Simplified bodygraph for cover ───────────────────────────
@@ -442,482 +470,415 @@ function drawCoverBodygraph(doc, flow, gates, x, y, w, h) {
   try {
     const { getDefinedCenters, CENTER_GATES, CHANNELS } = require('./bodygraph');
     const defined = getDefinedCenters(gates);
-    const scale = w / 420;
-
+    const scale   = w / 420;
     const centers = {
-      head:   [180, 20,  60, 38],
-      ajna:   [180, 78,  60, 38],
-      throat: [175,152,  70, 38],
-      g:      [165,222,  90, 48],
-      heart:  [285,222,  60, 38],
-      sp:     [285,294,  60, 52],
-      sacral: [165,308,  90, 48],
-      spleen: [ 60,222,  60, 52],
-      root:   [165,392,  90, 44],
+      head:   [180,20,60,36], ajna:   [180,76,60,36],
+      throat: [175,150,70,36], g:      [165,218,90,46],
+      heart:  [287,218,60,36], sp:     [287,290,60,50],
+      sacral: [165,304,90,46], spleen: [58,218,62,50],
+      root:   [165,388,90,42],
     };
-    const labels = {
-      head:'Голова', ajna:'Аджна', throat:'Горло', g:'G', heart:'Серце',
-      sp:'Емоції', sacral:'Сакрал', spleen:'Сел.', root:'Корінь'
+    const lbls = {
+      head:'Голова', ajna:'Аджна', throat:'Горло', g:'G',
+      heart:'Серце', sp:'Емоції', sacral:'Сакрал', spleen:'Сел.', root:'Корінь',
     };
-
     // Channels
     for (const ch of CHANNELS) {
       if (!gates.includes(ch[0]) || !gates.includes(ch[1])) continue;
       const c1 = Object.keys(CENTER_GATES).find(c => CENTER_GATES[c].includes(ch[0]));
       const c2 = Object.keys(CENTER_GATES).find(c => CENTER_GATES[c].includes(ch[1]));
-      if (!c1 || !c2 || c1 === c2 || !centers[c1] || !centers[c2]) continue;
-      const [cx1, cy1, cw1, ch1] = centers[c1];
-      const [cx2, cy2, cw2, ch2] = centers[c2];
-      doc.moveTo(x + (cx1+cw1/2)*scale, y + (cy1+ch1/2)*scale)
-         .lineTo(x + (cx2+cw2/2)*scale, y + (cy2+ch2/2)*scale)
-         .lineWidth(2).stroke(C.gold);
+      if (!c1||!c2||c1===c2||!centers[c1]||!centers[c2]) continue;
+      const [cx1,cy1,cw1,ch1]=centers[c1], [cx2,cy2,cw2,ch2]=centers[c2];
+      doc.moveTo(x+(cx1+cw1/2)*scale, y+(cy1+ch1/2)*scale)
+         .lineTo(x+(cx2+cw2/2)*scale, y+(cy2+ch2/2)*scale)
+         .lineWidth(1.5).stroke(C.gold);
     }
-
     // Centers
-    for (const [name, [cx, cy, cw, ch]] of Object.entries(centers)) {
-      const px = x + cx*scale, py2 = y + cy*scale;
-      const pw = cw*scale, ph = ch*scale;
-      const isDef = defined.has(name);
-      doc.roundedRect(px, py2, pw, ph, 4)
-         .fillAndStroke(isDef ? '#E4DEF8' : '#F5F3FC', isDef ? C.primary : '#C8C0E0');
-      doc.fontSize(6.5).fillColor(isDef ? C.primary : C.muted).font(flow ? flow.F : 'Helvetica')
-         .text(labels[name]||name, px, py2+ph/2-4, { width: pw, align: 'center' });
+    for (const [nm,[cx,cy,cw,ch]] of Object.entries(centers)) {
+      const px=x+cx*scale, py=y+cy*scale, pw=cw*scale, ph=ch*scale;
+      const def=defined.has(nm);
+      doc.roundedRect(px,py,pw,ph,3)
+         .fillAndStroke(def?'#1E3560':'#152030', def?C.gold:C.line);
+      doc.font(flow.FDV).fontSize(6).fillColor(def?C.gold:C.muted)
+         .text(lbls[nm]||nm, px, py+ph/2-4, { width:pw, align:'center' });
     }
-  } catch(e) {
-    // Silently skip if bodygraph module not available
-  }
+  } catch(e) {}
 }
 
 // ════════════════════════════════════════════════════════════════
-//  FULL READING renderer
+//  FULL READING — renderer
 // ════════════════════════════════════════════════════════════════
 function renderFull(flow, reading, order) {
-  const { name } = order;
+  const name = order.name || '';
+  const spaceImgs = SPACE_IMGS.filter(f => loadBuf(f));
+  let imgIdx = 0;
+  const nextImg = () => spaceImgs[imgIdx++ % spaceImgs.length];
 
-  // ── CHAPTER 1: Вступ + Тип ──────────────────────────────────
+  // ─── 1. Вступ ────────────────────────────────────────────────
   flow.newPage();
-  flow.sectionTitle(`✦ Персональний вступ`, 'gold');
+  flow.chapterTitle('Персональний', 'вступ');
   flow.para(reading.intro_text);
-  flow.space(8);
 
-  flow.sectionTitle(`Твій тип — ${reading.hd_type}`);
+  // ─── 2. Тип ──────────────────────────────────────────────────
+  flow.imageBreak(nextImg(), `Твій тип — ${reading.hd_type||''}`);
+
+  flow.label('Твоя аура');
   flow.para(reading.type_aura);
-  flow.space(4);
-  flow.subHeading('Твоя природа та внутрішній устрій');
+  flow.heading('Твоя природа');
   flow.para(reading.type_nature);
-  flow.subHeading('Твої природні сильні сторони');
+  flow.heading('Природні сильні сторони');
   flow.para(reading.type_strengths);
-  flow.subHeading('Виклики та зони росту');
+  flow.heading('Виклики');
   flow.para(reading.type_challenges);
 
   flow.newPage();
-  flow.sectionTitle(`Тип у різних сферах — ${reading.hd_type}`);
-  flow.subHeading('Кар\'єра та реалізація');
+  flow.chapterTitle(`Тип у різних`, 'сферах життя');
+  flow.heading('Кар\'єра та реалізація');
   flow.para(reading.type_work);
-  flow.subHeading('Стосунки та близькість');
+  flow.heading('Стосунки та любов');
   flow.para(reading.type_relationships);
-  flow.subHeading('Сон та відновлення');
+  flow.heading('Сон та відновлення');
   flow.para(reading.type_sleep);
-  flow.subHeading('Управління енергією');
+  flow.heading('Управління енергією');
   flow.para(reading.type_energy);
-  flow.subHeading('Тіньовий бік — коли живеш не своїм дизайном');
+  flow.heading('Тіньовий бік');
   flow.para(reading.type_shadow);
 
-  // ── CHAPTER 2: Авторитет ────────────────────────────────────
-  flow.newPage();
-  flow.sectionTitle(`✦ Твій авторитет — ${reading.authority}`);
+  // ─── 3. Авторитет ────────────────────────────────────────────
+  flow.imageBreak(nextImg(), `Авторитет — ${reading.authority||''}`);
+
   flow.para(reading.authority_nature);
-  flow.subHeading('Як розпізнати сигнал авторитету');
+  flow.heading('Як розпізнати свій авторитет');
   flow.para(reading.authority_recognition);
-  flow.subHeading('Типові помилки');
+  flow.heading('Типові помилки');
   flow.para(reading.authority_mistakes);
-
-  flow.newPage();
-  flow.sectionTitle(`Практика роботи з авторитетом`);
+  flow.heading('Практика прийняття рішень');
   flow.para(reading.authority_practice);
-  flow.subHeading('Авторитет у прийнятті рішень');
   flow.para(reading.authority_decisions);
-  flow.space(10);
-  flow.rule(C.borderGold);
 
-  // ── CHAPTER 3: Стратегія ────────────────────────────────────
-  flow.sectionTitle(`✦ Стратегія — ${reading.strategy}`);
+  // ─── 4. Стратегія ────────────────────────────────────────────
+  flow.newPage();
+  flow.chapterTitle('Стратегія', reading.strategy||'');
   flow.para(reading.strategy_explanation);
-  flow.subHeading('Приклади у житті');
+  flow.heading('Приклади у реальному житті');
   flow.para(reading.strategy_examples);
-  flow.subHeading(`Стратегія у сфері "${LIFE_AREA_UA_[order.life_area] || order.life_area || ''}"`);
   flow.para(reading.strategy_life_area);
 
   flow.newPage();
-  flow.sectionTitle('Підпис та Не-Я тема');
-  flow.subHeading(`✦ Підпис (ти у потоці)`);
-  flow.highlight(reading.signature, 'gold');
+  flow.label('Твій підпис — ти у потоці');
+  flow.quote(reading.signature, 'gold');
   flow.space(8);
-  flow.subHeading('⚑ Не-Я тема (ти поза своїм дизайном)');
-  flow.highlight(reading.not_self, 'primary');
-  flow.space(10);
+  flow.label('Не-Я тема — коли ти не своя');
+  flow.quote(reading.not_self, 'cream');
+  flow.space(8);
   if (Array.isArray(reading.not_self_signs) && reading.not_self_signs.length) {
-    flow.label('Конкретні ознаки Не-Я стану:');
-    reading.not_self_signs.forEach(s => flow.checkItem(s));
+    flow.label('Конкретні ознаки');
+    reading.not_self_signs.forEach(s => flow.check(s));
   }
 
-  // ── CHAPTER 4: Профіль ──────────────────────────────────────
-  flow.newPage();
-  flow.sectionTitle(`✦ Профіль ${reading.profile} — Твоя роль у цьому житті`);
+  // ─── 5. Профіль ──────────────────────────────────────────────
+  flow.imageBreak(nextImg(), `Профіль ${reading.profile||''}`);
+
   flow.para(reading.profile_overview);
-
-  flow.subHeading(`Перша лінія — ${reading.profile_line1_name || ''}`);
+  flow.heading(`Лінія 1 — ${reading.profile_line1_name||''}`);
   flow.para(reading.profile_line1);
-
   flow.newPage();
-  flow.subHeading(`Друга лінія — ${reading.profile_line2_name || ''}`);
+  flow.heading(`Лінія 2 — ${reading.profile_line2_name||''}`);
   flow.para(reading.profile_line2);
-  flow.subHeading('Взаємодія ліній');
+  flow.heading('Як лінії взаємодіють');
   flow.para(reading.profile_interaction);
-
-  flow.newPage();
-  flow.sectionTitle('Профіль у різних сферах');
-  flow.subHeading('Твоя роль у житті');
+  flow.heading('Твоя роль у житті');
   flow.para(reading.profile_life_role);
-  flow.subHeading('Профіль у стосунках');
-  flow.para(reading.profile_relationships);
-  flow.subHeading('Профіль у кар\'єрі');
-  flow.para(reading.profile_career);
-  flow.subHeading('Кондиціювання профілю');
-  flow.para(reading.profile_conditioning);
-  flow.subHeading('Автентичне вираження');
-  flow.highlight(reading.profile_authentic, 'gold');
-
-  // ── CHAPTER 5: Центри ───────────────────────────────────────
   flow.newPage();
-  flow.sectionTitle('✦ 9 Центрів — 9 сфер твого життя');
+  flow.heading('Профіль у стосунках');
+  flow.para(reading.profile_relationships);
+  flow.heading('Профіль у кар\'єрі');
+  flow.para(reading.profile_career);
+  flow.heading('Кондиціювання профілю');
+  flow.para(reading.profile_conditioning);
+  flow.heading('Як виглядає автентична ти');
+  flow.quote(reading.profile_authentic, 'gold');
+
+  // ─── 6. Центри ───────────────────────────────────────────────
+  flow.imageBreak(nextImg(), '9 Центрів — 9 сфер');
+
   flow.para(reading.centers_intro);
+  flow.space(8);
 
-  const centerOrder = ['head','ajna','throat','g','heart','sp','sacral','spleen','root'];
-  const definedSet  = new Set(reading.defined_centers || []);
-  const centersData = reading.centers || {};
+  const centersOrder = ['head','ajna','throat','g','heart','sp','sacral','spleen','root'];
+  const definedSet   = new Set(reading.defined_centers || []);
+  const centersData  = reading.centers || {};
 
-  for (const key of centerOrder) {
+  centersOrder.forEach(key => {
     flow.newPage();
     const cd = centersData[key];
     if (cd) {
       flow.centerBlock(cd, definedSet.has(key));
     } else {
-      // Fallback for old field format
-      const idx = centerOrder.indexOf(key) + 1;
-      const oldName = reading[`center${idx}_name`];
-      const oldDesc = reading[`center${idx}_description`];
-      if (oldName) {
-        flow.centerBlock({
-          title: oldName,
-          description: oldDesc,
-          gifts: '',
-          shadow: '',
-          practice: ''
-        }, definedSet.has(key));
-      }
+      // fallback
+      const i = centersOrder.indexOf(key) + 1;
+      const cn = reading[`center${i}_name`], cdesc = reading[`center${i}_description`];
+      if (cn) flow.centerBlock({ title: cn, description: cdesc }, definedSet.has(key));
     }
-  }
+  });
 
-  // ── CHAPTER 6: Канали ───────────────────────────────────────
-  flow.newPage();
-  flow.sectionTitle('✦ Твої активні канали — природні переваги');
+  // ─── 7. Канали ───────────────────────────────────────────────
+  flow.imageBreak(nextImg(), 'Твої канали');
+
   flow.para(reading.channels_intro);
   flow.space(8);
-
-  const channelDetails = reading.channels_detail || [];
-  if (channelDetails.length) {
-    channelDetails.forEach(ch => {
-      flow.newPage();
-      flow.channelBlock(ch);
-    });
+  const chDetails = reading.channels_detail || [];
+  if (chDetails.length) {
+    chDetails.forEach(ch => { flow.newPage(); flow.channelBlock(ch); });
   } else if (reading.channels_description) {
     flow.para(reading.channels_description);
-  } else {
-    flow.para('Канали визначають фіксовані енергії у твоїй карті. Детальний аналіз активних каналів доступний у повній версії.');
   }
 
-  // ── CHAPTER 7: Планети ──────────────────────────────────────
+  // ─── 8. Планети ──────────────────────────────────────────────
   flow.newPage();
-  flow.sectionTitle('✦ Планети та вузли — глибше розуміння');
+  flow.chapterTitle('Планети', 'та вузли');
   flow.para(reading.planets_intro);
   flow.space(8);
 
-  const planets = reading.planets || {};
   const planetRows = [
-    ['Сонце Особистості', reading.planet_sun_p || planets.sun_personality],
-    ['Земля Особистості', reading.planet_earth_p || planets.earth_personality],
-    ['Сонце Дизайну',    reading.planet_sun_d  || planets.sun_design],
-    ['Земля Дизайну',    reading.planet_earth_d|| planets.earth_design],
-    ['Місяць',           reading.planet_moon   || planets.moon],
-    ['Вузли (Північ/Південь)', reading.planet_nodes || planets.north_node],
+    ['Сонце Особистості — свідома тема',  reading.planet_sun_p],
+    ['Земля Особистості — заземлення',    reading.planet_earth_p],
+    ['Сонце Дизайну — несвідома тема',    reading.planet_sun_d],
+    ['Земля Дизайну — тілесна мудрість',  reading.planet_earth_d],
+    ['Місяць — рушійна сила',             reading.planet_moon],
+    ['Вузли Місяця — напрямок та коріння', reading.planet_nodes],
   ];
-  for (const [lbl, txt] of planetRows) {
-    if (txt) {
-      flow.planetBlock(lbl, txt);
-      flow.space(6);
-    }
-  }
+  planetRows.forEach(([t, v]) => v && flow.planet(t, v));
 
   flow.newPage();
-  flow.sectionTitle('Особисті планети — характер та поведінка');
-  const personalPlanets = [
-    ['Меркурій — Комунікація', reading.planet_mercury || planets.mercury],
-    ['Венера — Цінності та краса', reading.planet_venus || planets.venus],
-    ['Марс — Рушійна сила', reading.planet_mars || planets.mars],
-    ['Юпітер — Удача та мудрість', reading.planet_jupiter || planets.jupiter],
-    ['Сатурн — Структура та уроки', reading.planet_saturn || planets.saturn],
-  ];
-  for (const [lbl, txt] of personalPlanets) {
-    if (txt) {
-      flow.planetBlock(lbl, txt);
-      flow.space(6);
-    }
-  }
+  flow.label('Особисті планети — характер');
+  [
+    ['Меркурій — комунікація та мислення', reading.planet_mercury],
+    ['Венера — цінності та краса',         reading.planet_venus],
+    ['Марс — рушійна сила та пристрасть',  reading.planet_mars],
+    ['Юпітер — удача та мудрість',         reading.planet_jupiter],
+    ['Сатурн — структура та уроки',        reading.planet_saturn],
+  ].forEach(([t, v]) => v && flow.planet(t, v));
 
-  // ── CHAPTER 8: Інкарнаційний хрест ─────────────────────────
+  // ─── 9. Інкарнаційний хрест ──────────────────────────────────
   flow.newPage();
-  flow.sectionTitle(`✦ Інкарнаційний хрест — ${reading.incarnation_cross || ''}`);
+  flow.chapterTitle('Інкарнаційний', `хрест — ${reading.incarnation_cross||''}`);
   flow.para(reading.incarnation_cross_intro);
-  flow.space(6);
-
-  flow.sectionTitle('Значення твого хреста', 'gold');
+  flow.heading('Значення твого хреста');
   flow.para(reading.incarnation_cross_meaning || reading.incarnation_cross_description);
-  flow.subHeading('Ворота хреста та їх значення');
+  flow.heading('Ворота хреста');
   flow.para(reading.incarnation_cross_gates);
-  flow.subHeading('Місія та внесок у світ');
+  flow.heading('Твоя місія у світі');
   flow.para(reading.incarnation_cross_mission);
 
-  // ── CHAPTER 9: Автоматичні реакції ─────────────────────────
+  // ─── 10. Автоматичні реакції ─────────────────────────────────
   flow.newPage();
-  flow.sectionTitle('✦ Автоматичні реакції — скриті козирі');
+  flow.chapterTitle('Автоматичні', 'реакції');
   flow.para(reading.auto_reactions);
-  flow.space(6);
-  if (Array.isArray(reading.auto_examples) && reading.auto_examples.length) {
-    flow.label('Конкретні прояви:');
-    reading.auto_examples.forEach(ex => flow.checkItem(ex));
+  flow.space(8);
+  if (Array.isArray(reading.auto_examples)) {
+    flow.label('Конкретні прояви');
+    reading.auto_examples.forEach(e => flow.check(e));
   }
-  flow.space(10);
-  flow.sectionTitle('✦ Самодостатність');
+  flow.space(12);
+  flow.chapterTitle('Самодостатність', '');
   flow.para(reading.self_sufficiency);
-  flow.subHeading('Джерела ресурсності');
+  flow.heading('Джерела ресурсності');
   flow.para(reading.self_resource);
 
-  // ── CHAPTER 10: Декондиціювання ─────────────────────────────
+  // ─── 11. Декондиціювання ─────────────────────────────────────
   flow.newPage();
-  flow.sectionTitle('✦ Практики декондиціювання', 'gold');
+  flow.chapterTitle('Практики', 'декондиціювання');
   flow.para(reading.deconditioning_intro);
-  flow.space(8);
+  flow.space(10);
+  (reading.deconditioning_practices || []).forEach((p, i) => {
+    flow.practiceBlock(p, i + 1);
+  });
 
-  const practices = reading.deconditioning_practices || [];
-  practices.forEach((p, i) => flow.practiceBlock(p, i + 1));
-
-  // ── CHAPTER 11: 90-денний план ──────────────────────────────
+  // ─── 12. 90-денний план ──────────────────────────────────────
   flow.newPage();
-  flow.sectionTitle('✦ Особистий план на 90 днів', 'gold');
+  flow.chapterTitle('Твій план', 'на 90 днів');
   flow.para(reading.plan_intro);
-  flow.space(8);
-  flow.planBlock('Тиждень 1 — Спостереження', reading.plan_week1);
-  flow.planBlock('Тиждень 2 — Стратегія у дії', reading.plan_week2);
+  flow.space(10);
+  [
+    ['Тиждень 1 — Спостереження', reading.plan_week1],
+    ['Тиждень 2 — Стратегія у дії', reading.plan_week2],
+    ['Тиждень 3 — Робота з центрами', reading.plan_week3],
+    ['Тиждень 4 — Інтеграція', reading.plan_week4],
+  ].forEach(([p, t]) => flow.planBlock(p, t));
   flow.newPage();
-  flow.planBlock('Тиждень 3 — Робота з центрами', reading.plan_week3);
-  flow.planBlock('Тиждень 4 — Інтеграція', reading.plan_week4);
-  flow.planBlock('Місяць 2 — Поглиблення', reading.plan_month2);
-  flow.planBlock('Місяць 3 — Нова ідентичність', reading.plan_month3);
+  [
+    ['Місяць 2 — Поглиблення', reading.plan_month2],
+    ['Місяць 3 — Нова ідентичність', reading.plan_month3],
+  ].forEach(([p, t]) => flow.planBlock(p, t));
 
-  // ── CHAPTER 12: Рекомендації ────────────────────────────────
+  // ─── 13. Рекомендації ────────────────────────────────────────
   flow.newPage();
-  flow.sectionTitle('✦ Персональні рекомендації');
+  flow.chapterTitle('Персональні', 'рекомендації');
   flow.para(reading.life_theme);
-  flow.space(8);
-  flow.label('Конкретні кроки для тебе:');
-  (reading.recommendations || []).forEach(r => flow.checkItem(r));
+  flow.space(12);
+  flow.label('Конкретні кроки для тебе');
+  (reading.recommendations || []).forEach(r => flow.check(r));
 }
 
 // ════════════════════════════════════════════════════════════════
-//  BASIC READING renderer
+//  BASIC READING — renderer
 // ════════════════════════════════════════════════════════════════
 function renderBasic(flow, reading, order) {
-  // ── CHAPTER 1: Вступ + Тип ──────────────────────────────────
-  flow.newPage();
-  flow.sectionTitle(`✦ Персональний вступ`, 'gold');
-  flow.para(reading.intro_text);
-  flow.space(8);
+  const spaceImgs = SPACE_IMGS.filter(f => loadBuf(f));
+  let imgIdx = 0;
+  const nextImg = () => spaceImgs[imgIdx++ % spaceImgs.length];
 
-  flow.sectionTitle(`Твій тип — ${reading.hd_type}`);
+  flow.newPage();
+  flow.chapterTitle('Персональний', 'вступ');
+  flow.para(reading.intro_text);
+
+  flow.imageBreak(nextImg(), `Тип — ${reading.hd_type||''}`);
   flow.para(reading.type_aura);
-  flow.subHeading('Твоя природа');
+  flow.heading('Твоя природа');
   flow.para(reading.type_nature);
-  flow.subHeading('Виклики та зони росту');
+  flow.heading('Кар\'єра');
+  flow.para(reading.type_work);
+  flow.heading('Стосунки');
+  flow.para(reading.type_relationships);
+  flow.heading('Сон та енергія');
+  flow.para(reading.type_sleep);
+  flow.para(reading.type_energy);
+  flow.heading('Виклики');
   flow.para(reading.type_challenges);
 
   flow.newPage();
-  flow.sectionTitle('Тип у різних сферах');
-  flow.subHeading('Кар\'єра');
-  flow.para(reading.type_work);
-  flow.subHeading('Стосунки');
-  flow.para(reading.type_relationships);
-  flow.subHeading('Сон та енергія');
-  flow.para(reading.type_sleep);
-  flow.para(reading.type_energy);
-
-  // ── CHAPTER 2: Авторитет + Стратегія ───────────────────────
-  flow.newPage();
-  flow.sectionTitle(`✦ Авторитет — ${reading.authority}`);
+  flow.chapterTitle('Авторитет', reading.authority||'');
   flow.para(reading.authority_nature);
-  flow.subHeading('Практика роботи з авторитетом');
+  flow.heading('Практика');
   flow.para(reading.authority_practice);
-  flow.subHeading('Прийняття рішень');
   flow.para(reading.authority_decisions);
-  flow.space(10);
   flow.rule();
-
-  flow.sectionTitle(`✦ Стратегія — ${reading.strategy}`);
+  flow.chapterTitle('Стратегія', reading.strategy||'');
   flow.para(reading.strategy_explanation);
-  flow.subHeading('Приклади');
+  flow.heading('Приклади');
   flow.para(reading.strategy_examples);
 
   flow.newPage();
-  flow.sectionTitle('Підпис та Не-Я');
-  flow.subHeading('✦ Підпис — ти у потоці');
-  flow.highlight(reading.signature || reading.signature_extended, 'gold');
-  flow.space(6);
-  flow.subHeading('⚑ Не-Я тема');
-  flow.highlight(reading.not_self, 'primary');
+  flow.label('Підпис — ти у потоці');
+  flow.quote(reading.signature || reading.signature_extended, 'gold');
+  flow.space(8);
+  flow.label('Не-Я тема');
+  flow.quote(reading.not_self, 'cream');
   if (Array.isArray(reading.not_self_signs)) {
-    flow.space(4);
-    reading.not_self_signs.forEach(s => flow.checkItem(s));
+    flow.space(6); reading.not_self_signs.forEach(s => flow.check(s));
   }
 
-  // ── CHAPTER 3: Профіль ──────────────────────────────────────
-  flow.newPage();
-  flow.sectionTitle(`✦ Профіль ${reading.profile}`);
+  flow.imageBreak(nextImg(), `Профіль ${reading.profile||''}`);
   flow.para(reading.profile_overview);
-  flow.subHeading(`Перша лінія — ${reading.profile_line1_name || ''}`);
+  flow.heading(`Лінія 1 — ${reading.profile_line1_name||''}`);
   flow.para(reading.profile_line1);
-
   flow.newPage();
-  flow.subHeading(`Друга лінія — ${reading.profile_line2_name || ''}`);
+  flow.heading(`Лінія 2 — ${reading.profile_line2_name||''}`);
   flow.para(reading.profile_line2);
-  flow.subHeading('Профіль у стосунках');
+  flow.heading('Профіль у стосунках');
   flow.para(reading.profile_relationships);
-  flow.subHeading('Профіль у кар\'єрі');
+  flow.heading('Профіль у кар\'єрі');
   flow.para(reading.profile_career);
 
-  // ── CHAPTER 4: Центри ───────────────────────────────────────
-  flow.newPage();
-  flow.sectionTitle('✦ Ключові центри — сфери твого життя');
+  flow.imageBreak(nextImg(), 'Центри');
   flow.para(reading.centers_intro);
   flow.space(8);
-
   const keyCenters = Array.isArray(reading.centers_key) ? reading.centers_key : [];
   const definedSet = new Set(reading.defined_centers || []);
-
   if (keyCenters.length) {
-    keyCenters.forEach(cd => {
-      flow.newPage();
-      flow.centerBlock(cd, cd.defined !== false);
-    });
+    keyCenters.forEach(cd => { flow.newPage(); flow.centerBlock(cd, cd.defined !== false); });
   } else {
-    // Fallback to old format
     for (let i = 1; i <= 5; i++) {
-      const cn = reading[`center${i}_name`];
-      const cd = reading[`center${i}_description`];
-      if (cn) {
-        flow.newPage();
-        flow.centerBlock({ title: cn, description: cd }, true);
-      }
-    }
-    if (reading.open_centers_description) {
-      flow.sectionTitle('Відкриті центри');
-      flow.para(reading.open_centers_description);
+      const cn = reading[`center${i}_name`], cd = reading[`center${i}_description`];
+      if (cn) { flow.newPage(); flow.centerBlock({ title: cn, description: cd }, true); }
     }
   }
 
-  // ── CHAPTER 5: Рекомендації + Завершення ───────────────────
   flow.newPage();
-  flow.sectionTitle('✦ Тема та призначення');
+  flow.chapterTitle('Тема', 'та призначення');
   flow.para(reading.life_theme);
-  flow.space(10);
-  flow.sectionTitle('✦ Персональні рекомендації', 'gold');
-  (reading.recommendations || []).forEach(r => flow.checkItem(r));
+  flow.space(12);
+  flow.label('Персональні рекомендації');
+  (reading.recommendations || []).forEach(r => flow.check(r));
 }
 
 // ════════════════════════════════════════════════════════════════
-//  Closing page (shared)
+//  CLOSING PAGE
 // ════════════════════════════════════════════════════════════════
 function renderClosing(flow, reading, order) {
   flow.newPage();
-  const doc = flow.doc;
-  const y = Math.max(doc.y, 120);
+  const d = flow.doc;
 
-  doc.rect(50, y, 495, 2).fill(C.gold);
+  // Space image background
+  const imgBuf = loadBuf('space_cluster.jpg') || loadBuf('space_andromeda.jpg');
+  if (imgBuf) {
+    try {
+      d.image(imgBuf, 0, 0, { width: 595, height: 280 });
+      d.rect(0, 0, 595, 280).fillOpacity(0.5).fill(C.bg);
+      d.fillOpacity(1);
+    } catch(e) {}
+  }
 
-  flow.space(20);
-  doc.fontSize(18).fillColor(C.primary).font(flow.FB)
-     .text('З теплом та повагою ✦', 50, doc.y, { align: 'center', width: 495 });
-  flow.space(20);
+  d.y = 60;
+  d.font(flow.FD).fontSize(36).fillColor(C.cream)
+   .text('З ТЕПЛОМ', 55, 70, { align: 'center', width: 485 });
+  d.font(flow.FS).fontSize(20).fillColor(C.gold)
+   .text('та повагою до твого унікального Дизайну', 55, 115, { align: 'center', width: 485 });
+
+  d.rect(130, 150, 335, 0.8).fill(C.gold);
+  d.y = 290;
+
   flow.para(reading.closing_message);
-  flow.space(20);
-
-  doc.fontSize(12).fillColor(C.gold).font(flow.FB)
-     .text('Human Design UA', 50, doc.y, { align: 'center', width: 495 });
-  doc.fontSize(9).fillColor(C.muted).font(flow.F)
-     .text('humandesign.finance@gmail.com', 50, doc.y + 8, { align: 'center', width: 495 });
-  doc.fontSize(8).fillColor(C.muted).font(flow.F)
-     .text(`© ${new Date().getFullYear()} Human Design UA — персональна розшифровка для ${order.name || ''}`, 50, doc.y + 8, { align: 'center', width: 495 });
+  d.y += 20;
+  d.font(flow.FB).fontSize(14).fillColor(C.gold)
+   .text('Human Design UA', 55, d.y, { align: 'center', width: 485 });
+  d.font(flow.FDV).fontSize(10).fillColor(C.muted)
+   .text('humandesign.finance@gmail.com', 55, d.y + 16, { align: 'center', width: 485 });
+  d.font(flow.FDV).fontSize(8).fillColor(C.line)
+   .text(`© ${new Date().getFullYear()} Human Design UA — персональна розшифровка для ${order.name||''}`,
+         55, d.y + 32, { align: 'center', width: 485 });
 }
 
-// Helper to avoid undefined ref
-const LIFE_AREA_UA_ = {
-  career:'Кар\'єра та гроші', relationships:'Стосунки та любов',
-  self:'Самопізнання', energy:'Здоров\'я та енергія', purpose:'Призначення',
-};
-
 // ════════════════════════════════════════════════════════════════
-//  MAIN export
+//  MAIN EXPORT
 // ════════════════════════════════════════════════════════════════
 async function generateReadingPDF(order, reading) {
   return new Promise((resolve, reject) => {
     try {
       const doc = new PDFDocument({
         size: 'A4',
-        margins: { top: 20, bottom: 40, left: 50, right: 50 },
+        autoFirstPage: false,
+        margins: { top: 20, bottom: 40, left: 55, right: 55 },
         info: {
-          Title: `Розшифровка Дизайну Людини — ${order.name || ''}`,
-          Author: 'Human Design UA',
+          Title:   `Дизайн Людини — ${order.name||''}`,
+          Author:  'Human Design UA',
           Subject: reading.hd_type || '',
         },
-        autoFirstPage: false,
       });
 
       const chunks = [];
-      doc.on('data', chunk => chunks.push(chunk));
-      doc.on('end', () => resolve(Buffer.concat(chunks)));
+      doc.on('data', c => chunks.push(c));
+      doc.on('end',  () => resolve(Buffer.concat(chunks)));
       doc.on('error', reject);
 
-      const flow = new PDFFlow(doc, order.name, order.plan);
+      const flow = new PDFFlow(doc);
+      flow.setName(order.name || '');
 
-      // First page: add manually (cover)
+      // Cover
       doc.addPage();
-      flow.pageNum = 1;
+      flow.pg = 1;
       renderCover(doc, flow, order, reading);
 
-      // Content pages
-      if (order.plan === 'full') {
-        renderFull(flow, reading, order);
-      } else {
-        renderBasic(flow, reading, order);
-      }
+      // Content
+      if (order.plan === 'full') renderFull(flow, reading, order);
+      else                        renderBasic(flow, reading, order);
 
-      // Closing page
+      // Closing
       renderClosing(flow, reading, order);
-
-      // Draw footer on last page
-      flow._drawFooter();
+      flow._footer(order.name || '');
 
       doc.end();
-
     } catch(err) {
       reject(err);
     }

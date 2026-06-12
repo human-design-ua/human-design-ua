@@ -7,7 +7,7 @@
   functions = "netlify/functions"
 
 [functions]
-  included_files = ["prompts/**"]
+  included_files = ["prompts/**", "netlify/functions/utils/*.ttf"]
 
 # ── Production environment ──────────────────────────────────
 [context.production]
