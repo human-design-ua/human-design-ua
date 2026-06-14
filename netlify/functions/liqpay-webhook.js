@@ -2,10 +2,10 @@
 // LiqPay calls this after payment → generate reading → send emails → save to DB
 const { verify, decode }          = require('./utils/liqpay');
 const { getOrder, updateOrder }   = require('./utils/db');
-const { generateReading }         = require('./utils/claude');
-const { sendReceiptEmail, sendReadingEmail, sendFailedPaymentEmail } = require('./utils/email');
+const { sendReceiptEmail, sendFailedPaymentEmail } = require('./utils/email');
 
 const LIQPAY_PRIVATE_KEY = process.env.LIQPAY_PRIVATE_KEY;
+const SITE_URL           = process.env.SITE_URL || 'https://human-design-ua.netlify.app';
 
 exports.handler = async (event) => {
   if (event.httpMethod !== 'POST') {
@@ -84,27 +84,18 @@ exports.handler = async (event) => {
     console.error('Receipt email failed:', err.message);
   }
 
-  // Step 2 — generate reading with Claude API
-  let reading;
+  // Step 2 — trigger background function for reading generation + email
+  // (generateReading does 6 Claude API calls and can take minutes — far longer
+  // than this webhook's execution limit, so it must run in a background function)
   try {
-    reading = await generateReading(order);
-    await updateOrder(order_id, {
-      reading_json: JSON.stringify(reading),
-      reading_generated_at: new Date().toISOString(),
+    await fetch(`${SITE_URL}/.netlify/functions/liqpay-webhook-background`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(order),
     });
-    console.log(`Reading generated for ${order_id}`);
+    console.log(`Background reading generation triggered for ${order_id}`);
   } catch (err) {
-    console.error('Reading generation failed:', err.message);
-    return { statusCode: 200, body: 'receipt sent, reading failed' };
-  }
-
-  // Step 3 — send reading email
-  try {
-    await sendReadingEmail(order, reading);
-    await updateOrder(order_id, { reading_sent_at: new Date().toISOString() });
-    console.log(`Reading email sent to ${order.email}`);
-  } catch (err) {
-    console.error('Reading email failed:', err.message);
+    console.error('Failed to trigger background reading generation:', err.message);
   }
 
   return { statusCode: 200, body: 'ok' };

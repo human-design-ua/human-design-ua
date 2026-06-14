@@ -384,147 +384,252 @@ class PDFFlow {
 }
 
 // ════════════════════════════════════════════════════════════════
-//  COVER PAGE
+//  COVER PAGE  — premium redesign
+//  Layout (A4 = 595×842):
+//   [  0– 3]  Gold top stripe
+//   [  6–22]  Brand label "HUMAN DESIGN UA"
+//   [ 30–90]  Name — HERO (52px Playfair Black)
+//   [ 95–96]  Gold divider (short, centered)
+//   [100–115] Key params row: Тип · Авторитет · Профіль
+//   [120–130] Birth data row
+//   [140–700] BODYGRAPH — full proper shapes, centered, hero element
+//   [705–706] Gold divider (full)
+//   [712–732] Тариф label + cross
+//   [820–842] Bottom strip (email)
 // ════════════════════════════════════════════════════════════════
 function renderCover(doc, flow, order, reading) {
   const { name, birth_date, birth_time, birth_place, plan } = order;
   const planLabel = plan === 'full' ? 'ПОВНА РОЗШИФРОВКА' : 'БАЗОВА РОЗШИФРОВКА';
-  const pages     = plan === 'full' ? '~50 СТОРІНОК' : '~20 СТОРІНОК';
 
-  // Full-page navy bg
+  // ── Full-page background ─────────────────────────────────────
   doc.rect(0, 0, 595, 842).fill(C.bg);
   doc.rect(0, 0, 595, 3).fill(C.gold);
 
-  // Top space image with overlay
-  const imgBuf = loadBuf('space_pillars.jpg');
-  if (imgBuf) {
-    try {
-      doc.image(imgBuf, 0, 3, { width: 595, height: 260 });
-      doc.rect(0, 3, 595, 260).fillOpacity(0.45).fill(C.bg);
-      doc.fillOpacity(1);
-    } catch(e) {}
-  }
-
-  // Brand label
-  doc.font(flow.FDB).fontSize(9).fillColor(C.gold)
-     .text('HUMAN DESIGN UA', 55, 30, { align: 'center', width: 485, characterSpacing: 4 });
-
-  // Main title
-  doc.font(flow.FD).fontSize(56).fillColor(C.cream)
-     .text('ТВІЙ', 55, 60, { align: 'center', width: 485 });
-  doc.font(flow.FD).fontSize(56).fillColor(C.cream)
-     .text('ДИЗАЙН', 55, 116, { align: 'center', width: 485 });
-  doc.font(flow.FS).fontSize(26).fillColor(C.gold)
-     .text('Людини', 55, 175, { align: 'center', width: 485 });
-
-  // Gold divider
-  doc.rect(130, 215, 335, 0.8).fill(C.gold);
-
-  // Name
-  doc.font(flow.FB).fontSize(22).fillColor(C.cream)
-     .text(name || '', 55, 228, { align: 'center', width: 485 });
-
-  // Params grid — 2×2
-  const params = [
-    ['ТИП',          reading.hd_type  || '—'],
-    ['ПРОФІЛЬ',      reading.profile  || '—'],
-    ['АВТОРИТЕТ',    reading.authority|| '—'],
-    ['ВИЗНАЧЕНІСТЬ', reading.definition||'—'],
-  ];
-
-  let gy = 280;
-  params.forEach(([k, v], i) => {
-    const gx = i % 2 === 0 ? 90 : 340;
-    if (i === 2) gy = 340;
-    doc.font(flow.FDB).fontSize(7.5).fillColor(C.muted)
-       .text(k, gx, gy, { characterSpacing: 1.5 });
-    doc.font(flow.FB).fontSize(17).fillColor(C.cream)
-       .text(v, gx, gy + 11);
-  });
-
-  // Cross
-  doc.rect(90, 398, 415, 0.5).fill(C.line);
-  doc.font(flow.FDB).fontSize(7.5).fillColor(C.muted)
-     .text('ІНКАРНАЦІЙНИЙ ХРЕСТ', 90, 410, { characterSpacing: 1.5 });
-  doc.font(flow.FB).fontSize(13).fillColor(C.gold)
-     .text(reading.incarnation_cross || '—', 90, 424);
-
-  // Birth data
-  const bd = [birth_date, birth_time, birth_place].filter(Boolean).join('  ·  ');
-  doc.font(flow.FDV).fontSize(9).fillColor(C.muted)
-     .text(bd, 90, 455);
-
-  // Bottom bodygraph area
-  drawCoverBodygraph(doc, flow, reading.activated_gates || [], 90, 490, 200, 165);
-
-  // Bottom right — plan info
-  const bx = 320, by = 500;
-  doc.rect(bx, by, 185, 140).fill(C.surface);
-  doc.rect(bx, by, 2, 140).fill(C.gold);
+  // ── Brand ────────────────────────────────────────────────────
   doc.font(flow.FDB).fontSize(7.5).fillColor(C.gold)
-     .text(planLabel, bx + 12, by + 14, { characterSpacing: 1.5 });
-  doc.font(flow.FDV).fontSize(8.5).fillColor(C.cream)
-     .text(pages, bx + 12, by + 30);
+     .text('HUMAN DESIGN UA', 55, 12, { align: 'center', width: 485, characterSpacing: 5 });
 
-  doc.rect(bx + 12, by + 50, 161, 0.5).fill(C.line);
+  // ── Name — HERO TEXT ─────────────────────────────────────────
+  const nameStr = (name || '').toUpperCase();
+  doc.font(flow.FD).fontSize(52).fillColor(C.cream)
+     .text(nameStr, 55, 28, { align: 'center', width: 485 });
 
-  const includes = plan === 'full'
-    ? ['Розшифровка бодиграфа','Тип та стратегія','Авторитет','Профіль',
-       '9 Центрів','Планети','Канали','Хрест','90-денний план']
-    : ['Розшифровка бодиграфа','Тип та стратегія','Авторитет','Профіль','Ключові центри'];
-  let iy = by + 60;
-  includes.forEach(item => {
-    doc.font(flow.FDV).fontSize(7.5).fillColor(C.muted)
-       .text('✦  ' + item, bx + 12, iy);
-    iy += 13;
-  });
+  // ── Thin gold divider under name ─────────────────────────────
+  const divW = 180;
+  doc.rect((595 - divW) / 2, 90, divW, 0.6).fill(C.gold);
 
-  // Bottom gold line
-  doc.rect(0, 829, 595, 13).fill(C.surface);
+  // ── Key params — one line: Тип · Авторитет · Профіль ─────────
+  const paramStr = [
+    reading.hd_type || '—',
+    reading.authority || '—',
+    (reading.profile || '—'),
+  ].join('   ·   ');
+  doc.font(flow.FB).fontSize(9).fillColor(C.cream)
+     .text(paramStr, 55, 100, { align: 'center', width: 485, characterSpacing: 0.5 });
+
+  // ── Birth data ────────────────────────────────────────────────
+  const bd = [birth_date, birth_time, birth_place].filter(Boolean).join('  ·  ');
+  doc.font(flow.FDV).fontSize(7.5).fillColor(C.muted)
+     .text(bd, 55, 116, { align: 'center', width: 485 });
+
+  // ── BODYGRAPH — full premium version, centered on page ────────
+  _drawCoverBG(doc, flow, reading);
+
+  // ── Gold divider ─────────────────────────────────────────────
+  doc.rect(55, 705, 485, 0.6).fill(C.gold);
+
+  // ── Plan label + cross ────────────────────────────────────────
+  doc.font(flow.FDB).fontSize(7).fillColor(C.gold)
+     .text(planLabel, 55, 714, { characterSpacing: 2, continued: true });
   doc.font(flow.FDV).fontSize(7).fillColor(C.muted)
-     .text('humandesign.finance@gmail.com', 55, 836, { align: 'center', width: 485 });
+     .text('   ·   ' + (reading.incarnation_cross || ''), { characterSpacing: 0 });
+
+  // ── Bottom strip ─────────────────────────────────────────────
+  doc.rect(0, 828, 595, 14).fill(C.surface);
+  doc.font(flow.FDV).fontSize(6.5).fillColor(C.muted)
+     .text('humandesign.finance@gmail.com', 55, 835, { align: 'center', width: 485 });
 
   flow.pg = 1;
 }
 
-// ── Simplified bodygraph for cover ───────────────────────────
-function drawCoverBodygraph(doc, flow, gates, x, y, w, h) {
+// ── Full bodygraph for cover — proper shapes, correct colors ─
+// Uses the same BG_CENTERS / BG_ROUTES geometry as the bodygraph page,
+// scaled and offset so it occupies y=140..700 centered on 595px wide page.
+function _drawCoverBG(doc, flow, reading) {
   try {
     const { getDefinedCenters, CENTER_GATES, CHANNELS } = require('./bodygraph');
-    const defined = getDefinedCenters(gates);
-    const scale   = w / 420;
-    const centers = {
-      head:   [180,20,60,36], ajna:   [180,76,60,36],
-      throat: [175,150,70,36], g:      [165,218,90,46],
-      heart:  [287,218,60,36], sp:     [287,290,60,50],
-      sacral: [165,304,90,46], spleen: [58,218,62,50],
-      root:   [165,388,90,42],
+
+    const allGates = (reading.activated_gates || []).map(Number);
+    const pGateMap = {}, dGateMap = {};
+    (reading.personality_gates || []).forEach(s => {
+      const m = s.match(/(.+): (\d+)\./);
+      if (m) pGateMap[+m[2]] = true;
+    });
+    (reading.design_gates || []).forEach(s => {
+      const m = s.match(/(.+): (\d+)\./);
+      if (m) dGateMap[+m[2]] = true;
+    });
+    const definedCenters = getDefinedCenters(allGates);
+
+    // Geometry: BG_CENTERS span x≈154–442, y≈56–558  (288×502 native)
+    // Target area on cover: x=100–495 (395px wide), y=136–700 (564px tall)
+    // Scale by height: 564/502 = 1.123  → width = 288*1.123 = 323px
+    // Center horizontally: x_offset = (595-323)/2 - 154*1.123 ≈ 136 - 173 = -37
+    // Simpler: just apply scale from the center x=298:
+    //   x_cover = 297.5 + (x_orig - 298) * scale
+    //   y_cover = Y_TOP + (y_orig - 56) * scale
+
+    const SCALE  = 1.08;
+    const Y_TOP  = 138;   // top of bodygraph area
+    const X_CTR  = 297.5; // horizontal center of A4
+
+    const tx = (x) => X_CTR + (x - 298) * SCALE;
+    const ty = (y) => Y_TOP + (y - 56)  * SCALE;
+
+    const BG_CENTERS_LOCAL = {
+      head:   { x:298, y: 92, w: 78, h: 72, s:'tu' },
+      ajna:   { x:298, y:183, w: 70, h: 62, s:'td' },
+      throat: { x:298, y:268, w: 76, h: 44, s:'r'  },
+      g:      { x:298, y:360, w: 90, h: 74, s:'d'  },
+      heart:  { x:372, y:325, w: 46, h: 46, s:'d'  },
+      sp:     { x:375, y:422, w: 68, h: 72, s:'tu' },
+      sacral: { x:298, y:450, w: 78, h: 52, s:'r'  },
+      spleen: { x:222, y:408, w: 68, h: 72, s:'td' },
+      root:   { x:298, y:535, w: 76, h: 46, s:'r'  },
     };
-    const lbls = {
-      head:'Голова', ajna:'Аджна', throat:'Горло', g:'G',
-      heart:'Серце', sp:'Емоції', sacral:'Сакрал', spleen:'Сел.', root:'Корінь',
+    const BG_DEF_COLORS_LOCAL = {
+      head:'#4A3E8A', ajna:'#4A3E8A', throat:'#1E5A62',
+      g:'#1E5232',   heart:'#7A1E1E', sp:'#7A4010',
+      sacral:'#1A2E7A', spleen:'#2A5A22', root:'#5A3010',
     };
-    // Channels
-    for (const ch of CHANNELS) {
-      if (!gates.includes(ch[0]) || !gates.includes(ch[1])) continue;
-      const c1 = Object.keys(CENTER_GATES).find(c => CENTER_GATES[c].includes(ch[0]));
-      const c2 = Object.keys(CENTER_GATES).find(c => CENTER_GATES[c].includes(ch[1]));
-      if (!c1||!c2||c1===c2||!centers[c1]||!centers[c2]) continue;
-      const [cx1,cy1,cw1,ch1]=centers[c1], [cx2,cy2,cw2,ch2]=centers[c2];
-      doc.moveTo(x+(cx1+cw1/2)*scale, y+(cy1+ch1/2)*scale)
-         .lineTo(x+(cx2+cw2/2)*scale, y+(cy2+ch2/2)*scale)
-         .lineWidth(1.5).stroke(C.gold);
+    const BG_ROUTES_LOCAL = [
+      { k:'head-ajna',     p:[[298,128],[298,152]] },
+      { k:'ajna-throat',   p:[[298,214],[298,246]] },
+      { k:'throat-g',      p:[[298,290],[298,323]] },
+      { k:'throat-heart',  p:[[334,268],[349,302]] },
+      { k:'throat-sp',     p:[[334,268],[341,386]] },
+      { k:'throat-spleen', p:[[262,268],[256,372]] },
+      { k:'g-heart',       p:[[342,360],[349,302]] },
+      { k:'g-sacral',      p:[[298,397],[298,424]] },
+      { k:'sacral-throat', p:[[298,424],[298,290]] },
+      { k:'heart-sp',      p:[[372,348],[375,386]] },
+      { k:'heart-spleen',  p:[[349,302],[256,372]] },
+      { k:'sp-sacral',     p:[[341,458],[334,450]] },
+      { k:'sacral-spleen', p:[[260,450],[256,444]] },
+      { k:'sacral-root',   p:[[298,476],[298,512]] },
+      { k:'spleen-root',   p:[[222,444],[262,512]] },
+      { k:'root-sp',       p:[[334,512],[341,458]] },
+    ];
+    const _BG_ROUTE_CHANNELS = {
+      'head-ajna':[[64,47],[61,24],[63,4]],
+      'ajna-throat':[[17,62],[43,23],[11,56]],
+      'throat-g':[[20,10],[31,7],[8,1],[33,13]],
+      'throat-heart':[[45,21]],
+      'throat-sp':[[12,22],[35,36]],
+      'throat-spleen':[[16,48]],
+      'g-heart':[[51,25]],
+      'g-sacral':[[29,46],[14,2],[5,15],[34,10]],
+      'sacral-throat':[[34,20]],
+      'heart-sp':[[40,37]],
+      'heart-spleen':[[26,44]],
+      'sp-sacral':[[6,59]],
+      'sacral-spleen':[[34,57]],
+      'sacral-root':[[42,53],[3,60],[9,52],[27,50]],
+      'spleen-root':[[32,54],[28,38],[18,58]],
+      'root-sp':[[41,30],[19,49],[39,55]],
+    };
+
+    // Build route → color map
+    const BG_CHANNEL_ROUTE = {};
+    for (const [rk, chs] of Object.entries(_BG_ROUTE_CHANNELS)) {
+      for (const [g1,g2] of chs) {
+        BG_CHANNEL_ROUTE[Math.min(g1,g2)+'-'+Math.max(g1,g2)] = rk;
+      }
     }
-    // Centers
-    for (const [nm,[cx,cy,cw,ch]] of Object.entries(centers)) {
-      const px=x+cx*scale, py=y+cy*scale, pw=cw*scale, ph=ch*scale;
-      const def=defined.has(nm);
-      doc.roundedRect(px,py,pw,ph,3)
-         .fillAndStroke(def?'#1E3560':'#152030', def?C.gold:C.line);
-      doc.font(flow.FDV).fontSize(6).fillColor(def?C.gold:C.muted)
-         .text(lbls[nm]||nm, px, py+ph/2-4, { width:pw, align:'center' });
-    }
-  } catch(e) {}
+
+    // 1. Inactive routes — very subtle
+    BG_ROUTES_LOCAL.forEach(r => {
+      const [[x1,y1],[x2,y2]] = r.p;
+      doc.moveTo(tx(x1),ty(y1)).lineTo(tx(x2),ty(y2))
+         .lineWidth(0.7).stroke('#1A2D48');
+    });
+
+    // 2. Active routes — bright
+    const activeRoutes = new Map();
+    CHANNELS.forEach(([g1,g2]) => {
+      const rk = BG_CHANNEL_ROUTE[Math.min(g1,g2)+'-'+Math.max(g1,g2)];
+      if (!rk) return;
+      const hasP = pGateMap[g1] && pGateMap[g2];
+      const hasD = dGateMap[g1] && dGateMap[g2];
+      const any  = (pGateMap[g1]||dGateMap[g1]) && (pGateMap[g2]||dGateMap[g2]);
+      if (!any) return;
+      const col = (hasP && hasD) ? '#8B6EE0' : hasP ? '#C8C0A0' : '#CC4444';
+      if (!activeRoutes.has(rk) || col==='#8B6EE0') activeRoutes.set(rk, col);
+    });
+    activeRoutes.forEach((col, rk) => {
+      const r = BG_ROUTES_LOCAL.find(x => x.k===rk);
+      if (!r) return;
+      const [[x1,y1],[x2,y2]] = r.p;
+      doc.moveTo(tx(x1),ty(y1)).lineTo(tx(x2),ty(y2))
+         .lineWidth(4.5).stroke(col);
+    });
+
+    // 3. Centers — correct shapes
+    const CENTER_LABELS = {
+      head:'Голова', ajna:'Аджна', throat:'Горло', g:'G-центр',
+      heart:'Серце', sp:'Емоції', sacral:'Сакрал', spleen:'Сел-ка', root:'Корінь',
+    };
+    const CENTER_SUB = {
+      head:'Натхнення', ajna:'Ментал', throat:'Вираження', g:'Ідентичність',
+      heart:'Воля', sp:'Почуття', sacral:'Жива сила', spleen:'Інстинкт', root:'Адреналін',
+    };
+
+    Object.entries(BG_CENTERS_LOCAL).forEach(([key, c]) => {
+      const { x, y, w, h, s } = c;
+      const cx = tx(x), cy = ty(y);
+      const sw = w * SCALE, sh = h * SCALE;
+      const x0 = cx - sw/2, y0 = cy - sh/2;
+
+      const isDefined = definedCenters.has(key);
+      const fill   = isDefined ? (BG_DEF_COLORS_LOCAL[key]||'#4A3E8A') : '#0C1624';
+      const stroke = isDefined ? lightenHex(fill, 55) : '#1C2C42';
+
+      switch(s) {
+        case 'r':  doc.roundedRect(x0, y0, sw, sh, 3*SCALE); break;
+        case 'd':  doc.moveTo(cx,y0).lineTo(cx+sw/2,cy).lineTo(cx,y0+sh).lineTo(cx-sw/2,cy).closePath(); break;
+        case 'tu': doc.moveTo(cx,y0).lineTo(cx+sw/2,y0+sh).lineTo(cx-sw/2,y0+sh).closePath(); break;
+        case 'td': doc.moveTo(cx,y0+sh).lineTo(cx+sw/2,y0).lineTo(cx-sw/2,y0).closePath(); break;
+      }
+      doc.fillAndStroke(fill, stroke);
+
+      // Label
+      const lY = s==='tu' ? cy + sh/2 - 15*SCALE : s==='td' ? cy - sh/2 + 4*SCALE : cy - 7*SCALE;
+      doc.font(flow.FDB).fontSize(6.5*SCALE).fillColor(isDefined ? '#E8DCC8' : '#4A5A6A')
+         .text(CENTER_LABELS[key]||key, x0, lY, { width:sw, align:'center' });
+      doc.font(flow.FDV).fontSize(4.8*SCALE).fillColor(isDefined ? C.gold : '#243040')
+         .text(CENTER_SUB[key]||'', x0, lY + 8*SCALE, { width:sw, align:'center' });
+    });
+
+    // 4. Active gate numbers around centers (small, elegant)
+    allGates.forEach(g => {
+      const centerKey = Object.keys(CENTER_GATES).find(c => CENTER_GATES[c].includes(g));
+      if (!centerKey) return;
+      const c = BG_CENTERS_LOCAL[centerKey];
+      if (!c) return;
+      const gateList = CENTER_GATES[centerKey];
+      const idx = gateList.indexOf(g);
+      const total = gateList.length;
+      const angle  = (idx / total) * 2 * Math.PI - Math.PI / 2;
+      const radius = (Math.max(c.w, c.h) / 2 + 10) * SCALE;
+      const gx = tx(c.x) + Math.cos(angle) * radius;
+      const gy = ty(c.y) + Math.sin(angle) * radius;
+      if (gx < 70 || gx > 525 || gy < 130 || gy > 710) return;
+      const col = (pGateMap[g] && dGateMap[g]) ? C.gold : pGateMap[g] ? '#C8C0A0' : '#CC4444';
+      doc.font(flow.FDB).fontSize(5).fillColor(col)
+         .text(String(g), gx-6, gy-3.5, { width:12, align:'center' });
+    });
+
+  } catch(e) { /* silent fail */ }
 }
 
 // ════════════════════════════════════════════════════════════════
