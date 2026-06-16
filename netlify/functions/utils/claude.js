@@ -902,55 +902,55 @@ async function generateReading(order) {
   // Start with HD calculator data
   const reading = { ...(hd || {}) };
 
+  // Run independent prompt parts concurrently and merge their fields into `reading`.
+  const runParts = async (parts) => {
+    const results = await Promise.allSettled(
+      parts.map(part => {
+        console.log(`Generating ${part.label}...`);
+        return callClaude(SYSTEM, part.fn(), part.maxTokens || 12000);
+      })
+    );
+    results.forEach((r, i) => {
+      const { label } = parts[i];
+      if (r.status === 'fulfilled') {
+        Object.assign(reading, r.value);
+        console.log(`${label} done. Fields:`, Object.keys(r.value).length);
+      } else {
+        console.error(`${label} failed:`, r.reason.message);
+        // Non-fatal: continue with other parts
+      }
+    });
+  };
+
   if (plan === 'full') {
-    console.log('Generating FULL reading (6 parts)...');
+    console.log('Generating FULL reading (6 parts, in parallel)...');
 
     // Append language reminder to every prompt
     const langReminder = `\n\n⚠️ ВАЖЛИВО: Весь текст у JSON генеруй ${langLabel}.`;
 
-    const parts = [
+    await runParts([
       { fn: () => promptFull1_Intro_Type(ctx, order)               + langReminder, label: 'Part1: Intro+Type' },
       { fn: () => promptFull2_Authority_Strategy(ctx, order)        + langReminder, label: 'Part2: Authority+Strategy' },
       { fn: () => promptFull3_Profile(ctx, order)                   + langReminder, label: 'Part3: Profile' },
       { fn: () => promptFull4_Centers(ctx, order)                   + langReminder, label: 'Part4: Centers', maxTokens: 20000 },
       { fn: () => promptFull5_Channels_Planets(ctx, order, hd||{}) + langReminder, label: 'Part5: Channels+Planets' },
       { fn: () => promptFull6_Cross_Advanced(ctx, order, hd||{})   + langReminder, label: 'Part6: Cross+Advanced', maxTokens: 20000 },
-    ];
-
-    for (const part of parts) {
-      try {
-        console.log(`Generating ${part.label}...`);
-        const result = await callClaude(SYSTEM, part.fn(), part.maxTokens || 12000);
-        Object.assign(reading, result);
-        console.log(`${part.label} done. Fields:`, Object.keys(result).length);
-      } catch(e) {
-        console.error(`${part.label} failed:`, e.message);
-        // Non-fatal: continue with other parts
-      }
-    }
+    ]);
 
   } else {
-    // BASIC reading — 3 parts
+    // BASIC reading — Part1+Part2 are independent, Part3 needs their merged output
     console.log('Generating BASIC reading (3 parts)...');
 
     const langReminder = `\n\n⚠️ ВАЖЛИВО: Весь текст у JSON генеруй ${langLabel}.`;
 
-    const parts = [
-      { fn: () => promptBasic1_Core(ctx, order)                    + langReminder, label: 'Basic Part1' },
-      { fn: () => promptBasic2_Profile_Centers(ctx, order)          + langReminder, label: 'Basic Part2' },
-      { fn: () => promptBasic3_Recommendations(ctx, order, reading) + langReminder, label: 'Basic Part3' },
-    ];
+    await runParts([
+      { fn: () => promptBasic1_Core(ctx, order)            + langReminder, label: 'Basic Part1', maxTokens: 10000 },
+      { fn: () => promptBasic2_Profile_Centers(ctx, order) + langReminder, label: 'Basic Part2', maxTokens: 10000 },
+    ]);
 
-    for (const part of parts) {
-      try {
-        console.log(`Generating ${part.label}...`);
-        const result = await callClaude(SYSTEM, part.fn(), 10000);
-        Object.assign(reading, result);
-        console.log(`${part.label} done. Fields:`, Object.keys(result).length);
-      } catch(e) {
-        console.error(`${part.label} failed:`, e.message);
-      }
-    }
+    await runParts([
+      { fn: () => promptBasic3_Recommendations(ctx, order, reading) + langReminder, label: 'Basic Part3', maxTokens: 10000 },
+    ]);
   }
 
   // Map center_* fields → reading.centers object (for PDF renderer)
