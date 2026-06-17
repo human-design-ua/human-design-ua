@@ -93,10 +93,13 @@ class PDFFlow {
   }
   _footer(name) {
     const d = this.doc;
+    const origBottom = d.page.margins.bottom;
+    d.page.margins.bottom = 0;
     d.rect(0, 818, 595, 24).fill(C.surface);
     d.font(this.FDV).fontSize(7).fillColor(C.muted)
      .text(`HUMAN DESIGN UA  ·  ${(name||'').toUpperCase()}  ·  ${this.pg}`,
            55, 825, { align: 'center', width: 485 });
+    d.page.margins.bottom = origBottom;
   }
 
   newPage(name) {
